@@ -68,6 +68,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
   const [activeTab, setActiveTab] = useState<SidebarTab>("photos");
   const [selectedAssets, setSelectedAssets] = useState<Set<string>>(new Set());
   const [uploadQueue, setUploadQueue] = useState<UploadItem[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -143,10 +144,8 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
     }
   }
 
-  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files || []);
+  function startUpload(files: File[]) {
     if (!files.length || !gallery) return;
-
     const items: UploadItem[] = files.map((file) => ({
       file,
       progress: 0,
@@ -154,7 +153,20 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
     }));
     setUploadQueue((prev) => [...prev, ...items]);
     processUploads(items);
+  }
+
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    startUpload(Array.from(e.target.files || []));
     e.target.value = "";
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setIsDragging(false);
+    const files = Array.from(e.dataTransfer.files).filter((f) =>
+      f.type.startsWith("image/")
+    );
+    startUpload(files);
   }
 
   async function processUploads(items: UploadItem[]) {
@@ -164,55 +176,25 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
       try {
         setUploadQueue((prev) =>
           prev.map((u) =>
-            u.file === item.file ? { ...u, status: "uploading", progress: 20 } : u
+            u.file === item.file ? { ...u, status: "uploading", progress: 30 } : u
           )
         );
 
-        const presignRes = await fetch("/api/admin/upload", {
+        const formData = new FormData();
+        formData.append("file", item.file);
+        formData.append("galleryId", galleryId);
+        formData.append("gallerySlug", gallery.slug);
+        formData.append("type", "gallery");
+
+        const res = await fetch("/api/admin/upload", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            filename: item.file.name,
-            contentType: item.file.type,
-            gallerySlug: gallery.slug,
-          }),
+          body: formData,
         });
 
-        if (!presignRes.ok) throw new Error("Failed to get upload URL");
-        const { uploadUrl, fullKey } = await presignRes.json();
-
-        setUploadQueue((prev) =>
-          prev.map((u) =>
-            u.file === item.file ? { ...u, progress: 40 } : u
-          )
-        );
-
-        await fetch(uploadUrl, {
-          method: "PUT",
-          body: item.file,
-          headers: { "Content-Type": item.file.type },
-        });
-
-        setUploadQueue((prev) =>
-          prev.map((u) =>
-            u.file === item.file
-              ? { ...u, status: "processing", progress: 70 }
-              : u
-          )
-        );
-
-        const processRes = await fetch("/api/admin/process", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            fullKey,
-            gallerySlug: gallery.slug,
-            filename: item.file.name,
-          }),
-        });
-
-        if (!processRes.ok) throw new Error("Processing failed");
-        const { webUrl, fullUrl } = await processRes.json();
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || "Upload failed");
+        }
 
         setUploadQueue((prev) =>
           prev.map((u) =>
@@ -220,24 +202,8 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
           )
         );
 
-        const assetRes = await fetch(
-          `/api/admin/galleries/${galleryId}/assets`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              web_url: webUrl,
-              full_url: fullUrl,
-              type: "gallery",
-              filename: item.file.name,
-            }),
-          }
-        );
-
-        if (assetRes.ok) {
-          const newAssets = await assetRes.json();
-          setAssets((prev) => [...prev, ...newAssets]);
-        }
+        const newAsset = await res.json();
+        setAssets((prev) => [...prev, newAsset]);
 
         setUploadQueue((prev) =>
           prev.map((u) =>
@@ -257,7 +223,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
 
     setTimeout(() => {
       setUploadQueue((prev) => prev.filter((u) => u.status !== "done"));
-    }, 3000);
+    }, 5000);
   }
 
   async function deleteSelected() {
@@ -405,11 +371,20 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
             <div className="space-y-4">
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl px-4 py-8 text-sm text-gray-400 hover:border-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all"
+                onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={handleDrop}
+                className={`w-full flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl px-4 py-8 text-sm transition-all ${
+                  isDragging
+                    ? "border-blue-400 bg-blue-50 text-blue-600"
+                    : "border-gray-200 text-gray-400 hover:border-gray-400 hover:text-gray-600 hover:bg-gray-50"
+                }`}
               >
                 <Upload className="w-5 h-5" />
-                <span className="font-medium">Upload Photos</span>
-                <span className="text-[11px]">Click to browse files</span>
+                <span className="font-medium">
+                  {isDragging ? "Drop photos here" : "Upload Photos"}
+                </span>
+                <span className="text-[11px]">Drag & drop or click to browse</span>
               </button>
               <input
                 ref={fileInputRef}
@@ -633,7 +608,12 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto bg-gray-50">
+      <main
+        className="flex-1 overflow-y-auto bg-gray-50"
+        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+        onDragLeave={(e) => { if (e.currentTarget === e.target) setIsDragging(false); }}
+        onDrop={handleDrop}
+      >
         {/* Top Bar */}
         <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-100 px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
