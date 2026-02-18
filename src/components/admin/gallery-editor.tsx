@@ -176,33 +176,61 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
       try {
         setUploadQueue((prev) =>
           prev.map((u) =>
-            u.file === item.file ? { ...u, status: "uploading", progress: 30 } : u
+            u.file === item.file ? { ...u, status: "uploading", progress: 10 } : u
           )
         );
 
-        const formData = new FormData();
-        formData.append("file", item.file);
-        formData.append("galleryId", galleryId);
-        formData.append("gallerySlug", gallery.slug);
-        formData.append("type", "gallery");
-
-        const res = await fetch("/api/admin/upload", {
+        const presignRes = await fetch("/api/admin/presign", {
           method: "POST",
-          body: formData,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            filename: item.file.name,
+            contentType: item.file.type,
+            gallerySlug: gallery.slug,
+          }),
         });
 
-        if (!res.ok) {
-          const data = await res.json();
-          throw new Error(data.error || "Upload failed");
-        }
+        if (!presignRes.ok) throw new Error("Failed to get upload URL");
+        const { url, key } = await presignRes.json();
 
         setUploadQueue((prev) =>
           prev.map((u) =>
-            u.file === item.file ? { ...u, progress: 90 } : u
+            u.file === item.file ? { ...u, progress: 25 } : u
           )
         );
 
-        const newAsset = await res.json();
+        const uploadRes = await fetch(url, {
+          method: "PUT",
+          body: item.file,
+          headers: { "Content-Type": item.file.type },
+        });
+
+        if (!uploadRes.ok) throw new Error("Upload to storage failed");
+
+        setUploadQueue((prev) =>
+          prev.map((u) =>
+            u.file === item.file ? { ...u, status: "processing", progress: 65 } : u
+          )
+        );
+
+        const processRes = await fetch("/api/admin/process", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fullKey: key,
+            galleryId,
+            gallerySlug: gallery.slug,
+            filename: item.file.name,
+            type: "gallery",
+          }),
+        });
+
+        if (!processRes.ok) {
+          const data = await processRes.json();
+          throw new Error(data.error || "Processing failed");
+        }
+
+        const newAsset = await processRes.json();
         setAssets((prev) => [...prev, newAsset]);
 
         setUploadQueue((prev) =>

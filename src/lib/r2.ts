@@ -51,14 +51,12 @@ export async function getObjectBuffer(key: string): Promise<Buffer> {
   const response = await s3.send(
     new GetObjectCommand({ Bucket: BUCKET, Key: key })
   );
-  const stream = response.Body as ReadableStream;
-  const reader = stream.getReader();
-  const chunks: Uint8Array[] = [];
-  let done = false;
-  while (!done) {
-    const result = await reader.read();
-    if (result.value) chunks.push(result.value);
-    done = result.done;
+  const body = response.Body;
+  if (!body) throw new Error("Empty response body from R2");
+
+  const chunks: Buffer[] = [];
+  for await (const chunk of body as AsyncIterable<Uint8Array>) {
+    chunks.push(Buffer.from(chunk));
   }
   return Buffer.concat(chunks);
 }
