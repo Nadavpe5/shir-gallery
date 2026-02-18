@@ -9,14 +9,19 @@ import { GalleryGrid } from "./gallery-grid";
 import { OriginalsSection } from "./originals-section";
 import { DownloadButton } from "./download-button";
 import { ImageViewer } from "./image-viewer";
+import { GalleryHeader } from "./gallery-header";
+import { ShareModal } from "./share-modal";
+import { BackToTop } from "./back-to-top";
 
 interface GalleryContentProps {
   gallery: GalleryWithAssets;
+  galleryUrl: string;
 }
 
-export function GalleryContent({ gallery }: GalleryContentProps) {
+export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0);
+  const [shareOpen, setShareOpen] = useState(false);
 
   const daysRemaining = useMemo(() => {
     const exp = new Date(gallery.expires_at);
@@ -52,6 +57,11 @@ export function GalleryContent({ gallery }: GalleryContentProps) {
 
   return (
     <main className="min-h-screen bg-background">
+      <GalleryHeader
+        gallery={gallery}
+        onShareClick={() => setShareOpen(true)}
+      />
+
       <HeroSection gallery={gallery} daysRemaining={daysRemaining} />
 
       <MarqueeTicker gallery={gallery} daysRemaining={daysRemaining} />
@@ -94,6 +104,15 @@ export function GalleryContent({ gallery }: GalleryContentProps) {
         onClose={() => setViewerOpen(false)}
         onIndexChange={setViewerIndex}
       />
+
+      <ShareModal
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+        galleryUrl={galleryUrl}
+        clientName={gallery.client_name}
+      />
+
+      <BackToTop />
     </main>
   );
 }

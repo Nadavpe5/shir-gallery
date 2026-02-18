@@ -21,7 +21,8 @@ CREATE TABLE galleries (
   created_at TIMESTAMPTZ DEFAULT now(),
   zip_url TEXT,
   edited_count INT DEFAULT 0,
-  originals_count INT DEFAULT 0
+  originals_count INT DEFAULT 0,
+  status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'published'))
 );
 
 CREATE INDEX idx_galleries_slug ON galleries(slug);

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import type { GalleryAsset } from "@/lib/types";
+import { ImageOverlay } from "./image-overlay";
 
 interface OriginalsSectionProps {
   assets: GalleryAsset[];
@@ -38,7 +39,9 @@ export function OriginalsSection({
         <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
           {assets.length} Unedited Photographs
         </p>
-        <h2 className="font-serif text-3xl md:text-4xl font-bold">Originals</h2>
+        <h2 className="font-serif text-3xl md:text-4xl font-bold">
+          Originals
+        </h2>
         <div className="w-px h-8 bg-sage/40 mx-auto mt-5" />
       </motion.div>
 
@@ -53,6 +56,10 @@ export function OriginalsSection({
             className="relative aspect-[3/2] cursor-pointer group overflow-hidden animate-shimmer"
             onClick={() => onImageClick(indexOffset + i)}
           >
+            <ImageOverlay
+              downloadUrl={asset.full_url}
+              filename={asset.filename || undefined}
+            />
             <Image
               src={asset.web_url}
               alt={asset.filename || `Original ${i + 1}`}

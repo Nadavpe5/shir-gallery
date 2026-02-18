@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import type { GalleryAsset } from "@/lib/types";
+import { ImageOverlay } from "./image-overlay";
 
 interface GalleryGridProps {
   assets: GalleryAsset[];
@@ -46,6 +47,10 @@ export function GalleryGrid({
             className="relative aspect-[3/4] cursor-pointer group overflow-hidden animate-shimmer"
             onClick={() => onImageClick(indexOffset + i)}
           >
+            <ImageOverlay
+              downloadUrl={asset.full_url}
+              filename={asset.filename || undefined}
+            />
             <Image
               src={asset.web_url}
               alt={asset.filename || `Photo ${i + 1}`}

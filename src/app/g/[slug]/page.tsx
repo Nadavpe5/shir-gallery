@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import type { Metadata } from "next";
 import { validateSession } from "@/lib/auth";
 import { getGalleryWithAssets, getGalleryBySlug } from "@/lib/queries";
@@ -39,5 +40,10 @@ export default async function GalleryPage({ params }: PageProps) {
   const galleryWithAssets = await getGalleryWithAssets(slug);
   if (!galleryWithAssets) notFound();
 
-  return <GalleryContent gallery={galleryWithAssets} />;
+  const headersList = await headers();
+  const host = headersList.get("host") || "localhost:3000";
+  const protocol = host.includes("localhost") ? "http" : "https";
+  const galleryUrl = `${protocol}://${host}/g/${slug}`;
+
+  return <GalleryContent gallery={galleryWithAssets} galleryUrl={galleryUrl} />;
 }

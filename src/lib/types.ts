@@ -13,6 +13,7 @@ export interface Gallery {
   zip_url: string | null;
   edited_count: number;
   originals_count: number;
+  status: "draft" | "published";
 }
 
 export interface GalleryAsset {

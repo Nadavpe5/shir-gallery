@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import type { GalleryAsset } from "@/lib/types";
+import { ImageOverlay } from "./image-overlay";
 
 interface HighlightsSectionProps {
   assets: GalleryAsset[];
@@ -27,7 +28,9 @@ export function HighlightsSection({
         <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
           Curated Selection
         </p>
-        <h2 className="font-serif text-3xl md:text-4xl font-bold">Highlights</h2>
+        <h2 className="font-serif text-3xl md:text-4xl font-bold">
+          Highlights
+        </h2>
         <div className="w-px h-8 bg-sage/40 mx-auto mt-5" />
       </motion.div>
 
@@ -51,6 +54,10 @@ export function HighlightsSection({
                   isLarge ? "aspect-[4/5]" : "aspect-[3/4]"
                 }`}
               >
+                <ImageOverlay
+                  downloadUrl={asset.full_url}
+                  filename={asset.filename || undefined}
+                />
                 <Image
                   src={asset.web_url}
                   alt={asset.filename || `Highlight ${i + 1}`}
