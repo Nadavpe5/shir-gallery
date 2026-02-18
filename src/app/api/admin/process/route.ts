@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validateAdminSession } from "@/lib/admin-auth";
-import { generateWebThumbnail } from "@/lib/image-processing";
 import { getPublicUrl } from "@/lib/r2";
 import { supabaseAdmin } from "@/lib/supabase-server";
 
@@ -22,23 +21,27 @@ export async function POST(request: NextRequest) {
       type = "gallery",
     } = await request.json();
 
+    console.log("[process] Starting:", { fullKey, galleryId, gallerySlug, filename, type });
+
     if (!fullKey || !galleryId || !gallerySlug || !filename) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
 
+    const fullUrl = getPublicUrl(fullKey);
     const timestamp = Date.now();
-    const safeFilename = filename.replace(/[^a-zA-Z0-9._-]/g, "_");
-    const webKey = `${gallerySlug}/web/${timestamp}-${safeFilename}`;
 
-    let webUrl: string;
+    let webUrl = fullUrl;
     try {
+      const { generateWebThumbnail } = await import("@/lib/image-processing");
+      const safeFilename = filename.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const webKey = `${gallerySlug}/web/${timestamp}-${safeFilename}`;
       webUrl = await generateWebThumbnail(fullKey, webKey);
+      console.log("[process] Thumbnail generated:", webKey);
     } catch (err) {
-      console.error("Thumbnail generation failed, using full URL:", err);
-      webUrl = getPublicUrl(fullKey);
+      console.warn("[process] Thumbnail failed, using full URL:", err instanceof Error ? err.message : err);
     }
 
-    const fullUrl = getPublicUrl(fullKey);
+    console.log("[process] Inserting into DB:", { galleryId, webUrl, fullUrl, type, filename });
 
     const { data, error } = await supabaseAdmin
       .from("gallery_assets")
@@ -54,14 +57,16 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
+      console.error("[process] DB insert error:", error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    console.log("[process] Success, asset ID:", data.id);
     return NextResponse.json(data, { status: 201 });
   } catch (err) {
-    console.error("Process error:", err);
+    console.error("[process] Unexpected error:", err);
     return NextResponse.json(
-      { error: "Processing failed" },
+      { error: err instanceof Error ? err.message : "Processing failed" },
       { status: 500 }
     );
   }
