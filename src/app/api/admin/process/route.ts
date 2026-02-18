@@ -28,20 +28,20 @@ export async function POST(request: NextRequest) {
     }
 
     const fullUrl = getPublicUrl(fullKey);
-    const timestamp = Date.now();
+    const sortOrder = Math.floor(Date.now() / 1000);
 
     let webUrl = fullUrl;
     try {
       const { generateWebThumbnail } = await import("@/lib/image-processing");
       const safeFilename = filename.replace(/[^a-zA-Z0-9._-]/g, "_");
-      const webKey = `${gallerySlug}/web/${timestamp}-${safeFilename}`;
+      const webKey = `${gallerySlug}/web/${sortOrder}-${safeFilename}`;
       webUrl = await generateWebThumbnail(fullKey, webKey);
       console.log("[process] Thumbnail generated:", webKey);
     } catch (err) {
       console.warn("[process] Thumbnail failed, using full URL:", err instanceof Error ? err.message : err);
     }
 
-    console.log("[process] Inserting into DB:", { galleryId, webUrl, fullUrl, type, filename });
+    console.log("[process] Inserting into DB:", { galleryId, webUrl, fullUrl, type, filename, sortOrder });
 
     const { data, error } = await supabaseAdmin
       .from("gallery_assets")
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
         full_url: fullUrl,
         type,
         filename,
-        sort_order: timestamp,
+        sort_order: sortOrder,
       })
       .select()
       .single();

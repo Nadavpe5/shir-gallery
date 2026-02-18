@@ -30,13 +30,13 @@ export async function POST(request: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    const timestamp = Date.now();
+    const sortOrder = Math.floor(Date.now() / 1000);
     const safeFilename = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-    const fullKey = `${gallerySlug}/full/${timestamp}-${safeFilename}`;
+    const fullKey = `${gallerySlug}/full/${sortOrder}-${safeFilename}`;
 
     await uploadBuffer(fullKey, buffer, file.type);
 
-    const webKey = `${gallerySlug}/web/${timestamp}-${safeFilename}`;
+    const webKey = `${gallerySlug}/web/${sortOrder}-${safeFilename}`;
     let webUrl: string;
     try {
       webUrl = await generateWebThumbnail(fullKey, webKey);
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
         full_url: fullUrl,
         type,
         filename: file.name,
-        sort_order: timestamp,
+        sort_order: sortOrder,
       })
       .select()
       .single();
