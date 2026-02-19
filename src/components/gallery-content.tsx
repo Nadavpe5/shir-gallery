@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import type { GalleryWithAssets, DesignSettings, TypographyPreset } from "@/lib/types";
 import { DEFAULT_DESIGN } from "@/lib/types";
 import { HeroSection } from "./hero-section";
@@ -32,6 +32,16 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0);
   const [shareOpen, setShareOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!window.location.search.includes("preview=1")) return;
+    document.documentElement.style.scrollbarWidth = "none";
+    const style = document.createElement("style");
+    style.textContent = "html::-webkit-scrollbar{display:none}html{-ms-overflow-style:none}";
+    document.head.appendChild(style);
+    return () => { document.head.removeChild(style); };
+  }, []);
 
   const daysRemaining = useMemo(() => {
     const exp = new Date(gallery.expires_at);
@@ -73,6 +83,20 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
     spacing: ds.gridSpacing,
   };
 
+  const resolvedCoverUrl = useMemo(() => {
+    if (!gallery.cover_image_url) return null;
+    const allAssets = [...gallery.highlights, ...gallery.gallery, ...gallery.originals];
+    const match = allAssets.find(
+      (a) => a.full_url === gallery.cover_image_url || a.web_url === gallery.cover_image_url
+    );
+    return match ? match.full_url : gallery.cover_image_url;
+  }, [gallery.cover_image_url, gallery.highlights, gallery.gallery, gallery.originals]);
+
+  const galleryWithResolvedCover = useMemo(
+    () => ({ ...gallery, cover_image_url: resolvedCoverUrl }),
+    [gallery, resolvedCoverUrl]
+  );
+
   return (
     <main className="min-h-screen bg-background" data-theme={ds.color}>
       <GalleryHeader
@@ -80,7 +104,7 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
         onShareClick={() => setShareOpen(true)}
       />
 
-      <HeroSection gallery={gallery} daysRemaining={daysRemaining} fontClass={fontClass} />
+      <HeroSection gallery={galleryWithResolvedCover} daysRemaining={daysRemaining} fontClass={fontClass} />
 
       <MarqueeTicker gallery={gallery} daysRemaining={daysRemaining} />
 
