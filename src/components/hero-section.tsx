@@ -150,7 +150,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
 
   if (cover === "left") {
     return (
-      <section className="min-h-[70dvh] md:min-h-[80vh] flex flex-col md:flex-row w-full">
+      <section className="flex flex-col md:flex-row md:min-h-[80vh] w-full">
         <motion.div
           {...anim}
           className="flex-1 flex flex-col justify-center px-5 md:px-16 lg:px-20 py-10 md:py-24"
@@ -178,7 +178,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
           )}
         </motion.div>
         {coverUrl && (
-          <div className="relative flex-1 min-h-[50vh] md:min-h-0 overflow-hidden">
+          <div className="relative flex-1 min-h-[35dvh] md:min-h-0 overflow-hidden">
             {isFit ? (
               <>
                 <div className="absolute inset-0 bg-cover bg-center scale-110 blur-2xl opacity-60" style={fitBlurStyle} />
@@ -225,23 +225,23 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
 
   // Default "full" layout -- full-bleed cover image
   return (
-    <section className="relative w-full min-h-[60dvh] md:min-h-[75vh] flex items-end overflow-hidden">
+    <section className="relative w-full min-h-[35dvh] md:min-h-[75vh] flex items-end overflow-hidden">
       {renderCoverImage()}
-      <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
-      <div className="relative z-10 w-full px-5 md:px-16 lg:px-24 pb-10 md:pb-24">
+      <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+      <div className="relative z-10 w-full px-4 md:px-16 lg:px-24 pb-5 md:pb-24">
         <motion.div {...anim} className="max-w-4xl">
-          <p className="text-[10px] tracking-[0.3em] uppercase text-white/70 mb-4 md:mb-6">
+          <p className="text-[9px] md:text-[10px] tracking-[0.3em] uppercase text-white/70 mb-2 md:mb-6">
             {gallery.shoot_title}
           </p>
-          <h1 className={`${serifClass} text-4xl md:text-7xl lg:text-8xl text-white tracking-tight mb-4 md:mb-6 font-bold`}>
+          <h1 className={`${serifClass} text-3xl md:text-7xl lg:text-8xl text-white tracking-tight mb-2 md:mb-6 font-bold`}>
             {nameContent}
           </h1>
           {gallery.subtitle && (
-            <p className={`${serifClass} text-lg md:text-xl text-white/70 max-w-xl mb-8`}>
+            <p className={`${serifClass} text-sm md:text-xl text-white/70 max-w-xl mb-4 md:mb-8`}>
               {gallery.subtitle}
             </p>
           )}
-          <div className="mb-8 md:mb-10">{metaContent("text-white/60")}</div>
+          <div className="mb-4 md:mb-10">{metaContent("text-white/60")}</div>
           {gallery.zip_url && (
             <a
               href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
