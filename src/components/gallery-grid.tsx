@@ -56,6 +56,22 @@ function getEditorialClass(index: number, total: number): string {
   return "";
 }
 
+function getSmartObjectPosition(asset: GalleryAsset, isHero: boolean): string {
+  const w = asset.width;
+  const h = asset.height;
+
+  if (!w || !h) return "center 30%";
+
+  const ratio = w / h;
+  const isPortrait = ratio < 0.85;
+  const isLandscape = ratio > 1.2;
+
+  if (isHero) return "center";
+  if (isPortrait) return "center 20%";
+  if (isLandscape) return "center";
+  return "center 30%";
+}
+
 export function GalleryGrid({
   assets,
   onImageClick,
@@ -108,6 +124,8 @@ export function GalleryGrid({
         >
           {assets.map((asset, i) => {
             const spanClass = getEditorialClass(i, assets.length);
+            const isHero = spanClass.includes("row-span-2");
+            const objPos = getSmartObjectPosition(asset, isHero);
             return (
               <motion.div
                 key={asset.id}
@@ -128,6 +146,7 @@ export function GalleryGrid({
                   fill
                   unoptimized
                   className="object-cover w-full h-full transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                  style={{ objectPosition: objPos }}
                   loading={i < 6 ? "eager" : "lazy"}
                 />
               </motion.div>
@@ -153,8 +172,8 @@ export function GalleryGrid({
               <Image
                 src={asset.web_url}
                 alt={asset.filename || `Photo ${i + 1}`}
-                width={800}
-                height={1200}
+                width={asset.width || 800}
+                height={asset.height || 1200}
                 unoptimized
                 className="w-full h-auto object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
                 loading="lazy"
@@ -164,30 +183,34 @@ export function GalleryGrid({
         </div>
       ) : (
         <div className={`grid ${cols} ${gap}`}>
-          {assets.map((asset, i) => (
-            <motion.div
-              key={asset.id}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true, margin: "-30px" }}
-              transition={{ duration: 0.5, delay: (i % 8) * 0.04 }}
-              className={`relative ${aspect} cursor-pointer group overflow-hidden rounded-sm md:rounded-none animate-shimmer`}
-              onClick={() => onImageClick(indexOffset + i)}
-            >
-              <ImageOverlay
-                downloadUrl={asset.full_url}
-                filename={asset.filename || undefined}
-              />
-              <Image
-                src={asset.web_url}
-                alt={asset.filename || `Photo ${i + 1}`}
-                fill
-                unoptimized
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
-                loading="lazy"
-              />
-            </motion.div>
-          ))}
+          {assets.map((asset, i) => {
+            const objPos = getSmartObjectPosition(asset, false);
+            return (
+              <motion.div
+                key={asset.id}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true, margin: "-30px" }}
+                transition={{ duration: 0.5, delay: (i % 8) * 0.04 }}
+                className={`relative ${aspect} cursor-pointer group overflow-hidden rounded-sm md:rounded-none animate-shimmer`}
+                onClick={() => onImageClick(indexOffset + i)}
+              >
+                <ImageOverlay
+                  downloadUrl={asset.full_url}
+                  filename={asset.filename || undefined}
+                />
+                <Image
+                  src={asset.web_url}
+                  alt={asset.filename || `Photo ${i + 1}`}
+                  fill
+                  unoptimized
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                  style={{ objectPosition: objPos }}
+                  loading="lazy"
+                />
+              </motion.div>
+            );
+          })}
         </div>
       )}
     </section>

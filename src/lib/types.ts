@@ -62,6 +62,8 @@ export interface GalleryAsset {
   sort_order: number;
   filename: string | null;
   created_at: string;
+  width?: number | null;
+  height?: number | null;
 }
 
 export interface GallerySession {

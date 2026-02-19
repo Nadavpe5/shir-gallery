@@ -38,8 +38,13 @@ export async function POST(request: NextRequest) {
 
     const webKey = `${gallerySlug}/web/${sortOrder}-${safeFilename}`;
     let webUrl: string;
+    let imgWidth: number | null = null;
+    let imgHeight: number | null = null;
     try {
-      webUrl = await generateWebThumbnail(fullKey, webKey);
+      const result = await generateWebThumbnail(fullKey, webKey);
+      webUrl = result.url;
+      imgWidth = result.width;
+      imgHeight = result.height;
     } catch {
       webUrl = getPublicUrl(fullKey);
     }
@@ -52,6 +57,7 @@ export async function POST(request: NextRequest) {
         gallery_id: galleryId,
         web_url: webUrl,
         full_url: fullUrl,
+        ...(imgWidth && imgHeight ? { width: imgWidth, height: imgHeight } : {}),
         type,
         filename: file.name,
         sort_order: sortOrder,

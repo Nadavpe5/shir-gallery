@@ -54,30 +54,37 @@ export function OriginalsSection({
       </motion.div>
 
       <div className={`grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 ${gridSettings?.spacing === "large" ? "gap-5 md:gap-6" : "gap-3 md:gap-4"}`}>
-        {visible.map((asset, i) => (
-          <motion.div
-            key={asset.id}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, margin: "-30px" }}
-            transition={{ duration: 0.5, delay: (i % 10) * 0.04 }}
-            className="relative aspect-[3/2] cursor-pointer group overflow-hidden animate-shimmer"
-            onClick={() => onImageClick(indexOffset + i)}
-          >
-            <ImageOverlay
-              downloadUrl={asset.full_url}
-              filename={asset.filename || undefined}
-            />
-            <Image
-              src={asset.web_url}
-              alt={asset.filename || `Original ${i + 1}`}
-              fill
-              unoptimized
-              className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
-              loading="lazy"
-            />
-          </motion.div>
-        ))}
+        {visible.map((asset, i) => {
+          const w = asset.width;
+          const h = asset.height;
+          const isPortrait = w && h ? w / h < 0.85 : false;
+          const objPos = isPortrait ? "center 20%" : "center";
+          return (
+            <motion.div
+              key={asset.id}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true, margin: "-30px" }}
+              transition={{ duration: 0.5, delay: (i % 10) * 0.04 }}
+              className="relative aspect-[3/2] cursor-pointer group overflow-hidden animate-shimmer"
+              onClick={() => onImageClick(indexOffset + i)}
+            >
+              <ImageOverlay
+                downloadUrl={asset.full_url}
+                filename={asset.filename || undefined}
+              />
+              <Image
+                src={asset.web_url}
+                alt={asset.filename || `Original ${i + 1}`}
+                fill
+                unoptimized
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                style={{ objectPosition: objPos }}
+                loading="lazy"
+              />
+            </motion.div>
+          );
+        })}
       </div>
 
       {hasMore && (

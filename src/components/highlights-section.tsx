@@ -17,6 +17,22 @@ interface HighlightsSectionProps {
   gridSettings?: GridSettings;
 }
 
+function getSmartObjectPosition(asset: GalleryAsset, isHero: boolean): string {
+  const w = asset.width;
+  const h = asset.height;
+
+  if (!w || !h) return "center 30%";
+
+  const ratio = w / h;
+  const isPortrait = ratio < 0.85;
+  const isLandscape = ratio > 1.2;
+
+  if (isHero) return "center";
+  if (isPortrait) return "center 20%";
+  if (isLandscape) return "center";
+  return "center 30%";
+}
+
 export function HighlightsSection({
   assets,
   onImageClick,
@@ -78,6 +94,9 @@ export function HighlightsSection({
               }
             }
 
+            const isHero = spanClass.includes("row-span-2");
+            const objPos = getSmartObjectPosition(asset, isHero);
+
             return (
               <motion.div
                 key={asset.id}
@@ -98,6 +117,7 @@ export function HighlightsSection({
                   fill
                   unoptimized
                   className="object-cover w-full h-full transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                  style={{ objectPosition: objPos }}
                   loading={i < 4 ? "eager" : "lazy"}
                 />
               </motion.div>
@@ -123,8 +143,8 @@ export function HighlightsSection({
               <Image
                 src={asset.web_url}
                 alt={asset.filename || `Highlight ${i + 1}`}
-                width={800}
-                height={1200}
+                width={asset.width || 800}
+                height={asset.height || 1200}
                 unoptimized
                 className="w-full h-auto object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
                 loading={i < 4 ? "eager" : "lazy"}
@@ -136,6 +156,7 @@ export function HighlightsSection({
         <div className={`grid grid-cols-2 md:grid-cols-3 ${gridSettings?.spacing === "large" ? "gap-5 md:gap-8" : "gap-4 md:gap-6"}`}>
           {assets.map((asset, i) => {
             const isLarge = i % 5 === 0;
+            const objPos = getSmartObjectPosition(asset, isLarge);
             return (
               <motion.div
                 key={asset.id}
@@ -163,6 +184,7 @@ export function HighlightsSection({
                     fill
                     unoptimized
                     className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                    style={{ objectPosition: objPos }}
                     loading={i < 4 ? "eager" : "lazy"}
                   />
                 </div>

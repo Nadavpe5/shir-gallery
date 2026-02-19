@@ -31,12 +31,17 @@ export async function POST(request: NextRequest) {
     const sortOrder = Math.floor(Date.now() / 1000);
 
     let webUrl = fullUrl;
+    let imgWidth: number | null = null;
+    let imgHeight: number | null = null;
     try {
       const { generateWebThumbnail } = await import("@/lib/image-processing");
       const safeFilename = filename.replace(/[^a-zA-Z0-9._-]/g, "_");
       const webKey = `${gallerySlug}/web/${sortOrder}-${safeFilename}`;
-      webUrl = await generateWebThumbnail(fullKey, webKey);
-      console.log("[process] Thumbnail generated:", webKey);
+      const result = await generateWebThumbnail(fullKey, webKey);
+      webUrl = result.url;
+      imgWidth = result.width;
+      imgHeight = result.height;
+      console.log("[process] Thumbnail generated:", webKey, `${imgWidth}x${imgHeight}`);
     } catch (err) {
       console.warn("[process] Thumbnail failed, using full URL:", err instanceof Error ? err.message : err);
     }
@@ -52,6 +57,7 @@ export async function POST(request: NextRequest) {
         type,
         filename,
         sort_order: sortOrder,
+        ...(imgWidth && imgHeight ? { width: imgWidth, height: imgHeight } : {}),
       })
       .select()
       .single();

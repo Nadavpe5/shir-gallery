@@ -46,11 +46,11 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
       const fullKey = asset.full_url.replace(`${publicUrl}/`, "");
       const webKey = `${gallery.slug}/web/${Date.now()}-${fullKey.split("/").pop()}`;
 
-      const newWebUrl = await generateWebThumbnail(fullKey, webKey);
+      const result = await generateWebThumbnail(fullKey, webKey);
 
       await supabaseAdmin
         .from("gallery_assets")
-        .update({ web_url: newWebUrl })
+        .update({ web_url: result.url, width: result.width, height: result.height })
         .eq("id", asset.id);
 
       processed++;

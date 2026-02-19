@@ -48,10 +48,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const webKey = asset.web_url.replace(`${publicUrl}/`, "").split("?")[0];
     const WEB_MAX_WIDTH = 2400;
     const WEB_QUALITY = 85;
-    const rotatedWeb = await sharp(rotatedFull)
+    const { data: rotatedWeb, info: webInfo } = await sharp(rotatedFull)
       .resize(WEB_MAX_WIDTH, undefined, { withoutEnlargement: true })
       .jpeg({ quality: WEB_QUALITY, progressive: true })
-      .toBuffer();
+      .toBuffer({ resolveWithObject: true });
     await uploadBuffer(webKey, rotatedWeb, "image/jpeg");
 
     const cacheBust = `?v=${Date.now()}`;
@@ -60,7 +60,12 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     const { data: updated, error: updateError } = await supabaseAdmin
       .from("gallery_assets")
-      .update({ full_url: newFullUrl, web_url: newWebUrl })
+      .update({
+        full_url: newFullUrl,
+        web_url: newWebUrl,
+        width: webInfo.width,
+        height: webInfo.height,
+      })
       .eq("id", assetId)
       .select()
       .single();
