@@ -66,12 +66,15 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
 
   const zipName = gallery.zip_url?.split("/").pop() || "gallery.zip";
 
+  const zoomScale = zoom > 100 ? zoom / 100 : 1;
+
   const fillStyle = coverUrl
     ? {
         backgroundImage: `url(${coverUrl})`,
         backgroundPosition: `${pos.x}% ${pos.y}%`,
-        backgroundSize: `${zoom + 50}%`,
-        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover" as const,
+        backgroundRepeat: "no-repeat" as const,
+        transform: zoomScale > 1 ? `scale(${zoomScale})` : undefined,
       }
     : undefined;
 
@@ -82,9 +85,9 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
   const fitStyle = coverUrl
     ? {
         backgroundImage: `url(${coverUrl})`,
-        backgroundSize: "contain",
+        backgroundSize: "contain" as const,
         backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
+        backgroundRepeat: "no-repeat" as const,
       }
     : undefined;
 

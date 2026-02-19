@@ -843,8 +843,9 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                             style={{
                               backgroundImage: `url(${gallery.cover_image_url})`,
                               backgroundPosition: `${design.coverPosition?.x ?? 50}% ${design.coverPosition?.y ?? 30}%`,
-                              backgroundSize: `${(design.coverZoom ?? 100) + 50}%`,
+                              backgroundSize: "cover",
                               backgroundRepeat: "no-repeat",
+                              transform: (design.coverZoom ?? 100) > 100 ? `scale(${(design.coverZoom ?? 100) / 100})` : undefined,
                             }}
                           />
                           <div
@@ -885,15 +886,15 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                           </div>
                           <input
                             type="range"
-                            min={0}
-                            max={300}
+                            min={100}
+                            max={200}
                             step={5}
                             value={design.coverZoom ?? 100}
                             onChange={(e) => saveDesign({ ...design, coverZoom: Number(e.target.value) })}
                             className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-900"
                           />
                           <div className="flex justify-between text-[9px] text-gray-300">
-                            <span>Show more</span>
+                            <span>Normal</span>
                             <span>Zoom in</span>
                           </div>
                         </div>
