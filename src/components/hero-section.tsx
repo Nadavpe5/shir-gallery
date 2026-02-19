@@ -64,6 +64,8 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
     ? { backgroundImage: `url(${coverUrl})` }
     : undefined;
 
+  const zipName = gallery.zip_url?.split("/").pop() || "gallery.zip";
+
   if (cover === "center") {
     return (
       <section className="py-14 md:py-32 px-5 md:px-16 lg:px-24 text-center">
@@ -92,7 +94,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
           </div>
           {gallery.zip_url && (
             <a
-              href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=gallery.zip`}
+              href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
               className="inline-flex items-center gap-2 bg-sage text-sage-foreground tracking-[0.15em] uppercase text-[11px] font-medium px-7 py-3 transition-all hover:opacity-85"
             >
               <Download className="w-3.5 h-3.5" />
@@ -125,7 +127,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
           <div className="mb-10">{metaContent("text-muted-foreground/60")}</div>
           {gallery.zip_url && (
             <a
-              href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=gallery.zip`}
+              href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
               className="inline-flex items-center gap-2 bg-sage text-sage-foreground tracking-[0.15em] uppercase text-[11px] font-medium px-7 py-3 transition-all hover:opacity-85 self-start"
             >
               <Download className="w-3.5 h-3.5" />
@@ -161,7 +163,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
           <div className="mb-10">{metaContent("text-muted-foreground/60")}</div>
           {gallery.zip_url && (
             <a
-              href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=gallery.zip`}
+              href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
               className="inline-flex items-center gap-2 bg-sage text-sage-foreground tracking-[0.15em] uppercase text-[11px] font-medium px-7 py-3 transition-all hover:opacity-85"
             >
               <Download className="w-3.5 h-3.5" />
@@ -199,7 +201,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
           <div className="mb-8 md:mb-10">{metaContent("text-white/60")}</div>
           {gallery.zip_url && (
             <a
-              href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=gallery.zip`}
+              href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
               className="inline-flex items-center gap-2 bg-white text-black tracking-[0.15em] uppercase text-[11px] font-medium px-7 py-3 transition-all hover:bg-white/90 active:scale-[0.98]"
             >
               <Download className="w-3.5 h-3.5" />

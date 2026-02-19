@@ -37,7 +37,7 @@ export function GalleryHeader({ gallery, onShareClick }: GalleryHeaderProps) {
         <div className="flex items-center gap-1 md:gap-2 shrink-0">
           {gallery.zip_url && (
             <a
-              href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=gallery.zip`}
+              href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(gallery.zip_url.split("/").pop() || "gallery.zip")}`}
               className="inline-flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full hover:bg-secondary transition-colors"
               aria-label="Download all"
             >

@@ -34,6 +34,19 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         .eq("gallery_id", id);
 
       if (gallery && assets && assets.length > 0) {
+        // Delete old ZIP from R2 before creating new one
+        if (gallery.zip_url) {
+          try {
+            const { deleteObject } = await import("@/lib/r2");
+            const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL!;
+            const oldKey = gallery.zip_url.replace(`${publicUrl}/`, "");
+            await deleteObject(oldKey);
+            console.log("[publish] Deleted old ZIP:", oldKey);
+          } catch (e) {
+            console.warn("[publish] Failed to delete old ZIP:", e);
+          }
+        }
+
         const { generateAndUploadZip } = await import("@/lib/zip-generator");
         zipUrl = await generateAndUploadZip(gallery.slug, assets, gallery.client_name, gallery.shoot_date);
         console.log("[publish] ZIP generated:", zipUrl);

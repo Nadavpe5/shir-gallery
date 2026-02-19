@@ -20,7 +20,7 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
 
   const { data: gallery } = await supabaseAdmin
     .from("galleries")
-    .select("slug")
+    .select("slug, cover_image_url")
     .eq("id", id)
     .single();
 
@@ -58,6 +58,21 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
     } catch (err) {
       failed++;
       console.error(`[regenerate] Failed asset ${asset.id}:`, err);
+    }
+  }
+
+  // Update cover_image_url if it pointed to an old web_url that was regenerated
+  if (gallery.cover_image_url) {
+    const oldWebUrls = assets.map((a) => a.web_url);
+    if (oldWebUrls.includes(gallery.cover_image_url)) {
+      const coverAsset = assets.find((a) => a.web_url === gallery.cover_image_url);
+      if (coverAsset) {
+        await supabaseAdmin
+          .from("galleries")
+          .update({ cover_image_url: coverAsset.full_url })
+          .eq("id", id);
+        console.log(`[regenerate] Updated cover_image_url to full_url`);
+      }
     }
   }
 

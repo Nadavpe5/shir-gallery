@@ -86,9 +86,17 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
   const coverUrl = useMemo(() => {
     if (!gallery.cover_image_url) return null;
     const allAssets = [...gallery.highlights, ...gallery.gallery, ...gallery.originals];
-    const match = allAssets.find(
+    // Try exact URL match first
+    let match = allAssets.find(
       (a) => a.full_url === gallery.cover_image_url || a.web_url === gallery.cover_image_url
     );
+    // Fallback: match by filename extracted from cover URL
+    if (!match) {
+      const coverFilename = gallery.cover_image_url.split("/").pop()?.replace(/^\d+-/, "") || "";
+      if (coverFilename) {
+        match = allAssets.find((a) => a.filename === coverFilename);
+      }
+    }
     return match ? match.full_url : gallery.cover_image_url;
   }, [gallery.cover_image_url, gallery.highlights, gallery.gallery, gallery.originals]);
 
