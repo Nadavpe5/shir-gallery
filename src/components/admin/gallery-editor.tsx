@@ -992,21 +992,56 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                 <div className="space-y-5">
                   <div>
                     <p className="text-xs text-gray-400 mb-2.5">Style</p>
-                    <div className="grid grid-cols-3 gap-2.5">
+                    <div className="grid grid-cols-2 gap-2.5">
                       {([
-                        { value: "vertical", label: "Portrait" },
-                        { value: "horizontal", label: "Landscape" },
-                        { value: "masonry", label: "Masonry" },
-                      ] as { value: GridStyle; label: string }[]).map(({ value, label }) => (
+                        { value: "vertical", label: "Portrait", icon: (
+                          <div className="flex gap-[3px] justify-center mb-1.5">
+                            <div className="w-2.5 h-5 rounded-[2px] bg-current" />
+                            <div className="w-2.5 h-5 rounded-[2px] bg-current" />
+                            <div className="w-2.5 h-5 rounded-[2px] bg-current" />
+                          </div>
+                        )},
+                        { value: "horizontal", label: "Landscape", icon: (
+                          <div className="flex flex-col gap-[3px] items-center mb-1.5">
+                            <div className="w-8 h-2 rounded-[2px] bg-current" />
+                            <div className="w-8 h-2 rounded-[2px] bg-current" />
+                            <div className="w-8 h-2 rounded-[2px] bg-current" />
+                          </div>
+                        )},
+                        { value: "masonry", label: "Masonry", icon: (
+                          <div className="flex gap-[3px] justify-center mb-1.5">
+                            <div className="flex flex-col gap-[3px]">
+                              <div className="w-2.5 h-4 rounded-[2px] bg-current" />
+                              <div className="w-2.5 h-2.5 rounded-[2px] bg-current" />
+                            </div>
+                            <div className="flex flex-col gap-[3px]">
+                              <div className="w-2.5 h-2.5 rounded-[2px] bg-current" />
+                              <div className="w-2.5 h-4 rounded-[2px] bg-current" />
+                            </div>
+                            <div className="flex flex-col gap-[3px]">
+                              <div className="w-2.5 h-3 rounded-[2px] bg-current" />
+                              <div className="w-2.5 h-3 rounded-[2px] bg-current" />
+                            </div>
+                          </div>
+                        )},
+                        { value: "editorial", label: "Editorial", icon: (
+                          <div className="grid grid-cols-3 gap-[2px] w-8 mx-auto mb-1.5">
+                            <div className="col-span-2 row-span-2 h-[18px] rounded-[2px] bg-current" />
+                            <div className="h-2 rounded-[2px] bg-current" />
+                            <div className="h-2 rounded-[2px] bg-current" />
+                          </div>
+                        )},
+                      ] as { value: GridStyle; label: string; icon: React.ReactNode }[]).map(({ value, label, icon }) => (
                         <button
                           key={value}
                           onClick={() => saveDesign({ ...design, gridStyle: value })}
-                          className={`p-3 rounded-xl border-2 text-sm font-medium text-center transition-all ${
+                          className={`p-3 rounded-xl border-2 text-xs font-medium text-center transition-all ${
                             design.gridStyle === value
-                              ? "border-gray-900 bg-gray-50"
-                              : "border-gray-100 hover:border-gray-300"
+                              ? "border-gray-900 bg-gray-50 text-gray-900"
+                              : "border-gray-100 hover:border-gray-300 text-gray-400"
                           }`}
                         >
+                          {icon}
                           {label}
                         </button>
                       ))}

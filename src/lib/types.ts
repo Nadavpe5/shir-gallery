@@ -4,7 +4,7 @@ export type CoverFocusPoint = "top" | "center" | "bottom";
 export interface CoverPosition { x: number; y: number; }
 export type TypographyPreset = "sans" | "serif" | "modern" | "timeless" | "bold" | "subtle";
 export type ColorTheme = "light" | "gold" | "rose" | "terracotta" | "olive" | "sea" | "dark";
-export type GridStyle = "vertical" | "horizontal" | "masonry";
+export type GridStyle = "vertical" | "horizontal" | "masonry" | "editorial";
 export type GridSize = "regular" | "large";
 export type GridSpacing = "regular" | "large";
 
