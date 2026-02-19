@@ -2,8 +2,8 @@ import "server-only";
 import sharp from "sharp";
 import { getObjectBuffer, uploadBuffer } from "./r2";
 
-const WEB_MAX_WIDTH = 1200;
-const WEB_QUALITY = 80;
+const WEB_MAX_WIDTH = 2400;
+const WEB_QUALITY = 85;
 
 export async function generateWebThumbnail(
   fullKey: string,

@@ -27,6 +27,7 @@ import {
   LayoutGrid,
   Monitor,
   Smartphone,
+  RefreshCw,
 } from "lucide-react";
 import { AdminNav } from "./admin-nav";
 import type {
@@ -90,6 +91,8 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
   const [copied, setCopied] = useState(false);
   const [designSection, setDesignSection] = useState<"cover" | "typography" | "color" | "grid">("cover");
   const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">("desktop");
+  const [regenerating, setRegenerating] = useState(false);
+  const [regenResult, setRegenResult] = useState<string | null>(null);
 
   const [editName, setEditName] = useState("");
   const [editTitle, setEditTitle] = useState("");
@@ -663,6 +666,46 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                 )}
                 Save Settings
               </button>
+
+              <div className="pt-4 border-t border-gray-100">
+                <label className="block text-xs font-medium uppercase tracking-wider text-gray-500 mb-2">
+                  Photo Quality
+                </label>
+                <p className="text-[11px] text-gray-400 mb-3">
+                  Re-generate all web thumbnails at higher quality from the original uploads.
+                </p>
+                <button
+                  onClick={async () => {
+                    setRegenerating(true);
+                    setRegenResult(null);
+                    try {
+                      const res = await fetch(`/api/admin/galleries/${galleryId}/regenerate`, { method: "POST" });
+                      const data = await res.json();
+                      if (res.ok) {
+                        setRegenResult(`Done: ${data.processed} regenerated${data.failed ? `, ${data.failed} failed` : ""}`);
+                        fetchGallery();
+                      } else {
+                        setRegenResult(data.error || "Failed");
+                      }
+                    } catch {
+                      setRegenResult("Network error");
+                    }
+                    setRegenerating(false);
+                  }}
+                  disabled={regenerating}
+                  className="w-full inline-flex items-center justify-center gap-2 border border-gray-200 text-gray-700 rounded-lg px-4 py-3 text-sm font-medium hover:bg-gray-50 disabled:opacity-40 transition-colors"
+                >
+                  {regenerating ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="w-4 h-4" />
+                  )}
+                  {regenerating ? "Regenerating..." : "Regenerate Thumbnails"}
+                </button>
+                {regenResult && (
+                  <p className="text-xs text-gray-500 mt-2">{regenResult}</p>
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -914,16 +957,18 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
             </div>
             <div className="flex-1 flex items-start justify-center p-6 overflow-auto">
               <div
-                className={`bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 ${
+                className={`bg-white shadow-lg transition-all duration-300 ${
                   previewMode === "mobile"
-                    ? "w-[375px] h-[680px] border-[8px] border-gray-800 rounded-[2rem]"
-                    : "w-full h-full"
+                    ? "w-[375px] h-[680px] border-[8px] border-gray-800 rounded-[2.5rem] overflow-hidden"
+                    : "w-full h-full rounded-xl overflow-hidden"
                 }`}
               >
                 <iframe
                   key={`${design.cover}-${design.typography}-${design.color}-${design.gridStyle}-${design.gridSize}-${design.gridSpacing}`}
                   src={`/g/${gallery.slug}?preview=1`}
-                  className="w-full h-full border-0 preview-iframe"
+                  className={`h-full border-0 ${
+                    previewMode === "mobile" ? "w-[calc(100%+20px)]" : "w-full"
+                  }`}
                   style={{ scrollbarWidth: "none" }}
                   title="Gallery Preview"
                 />
