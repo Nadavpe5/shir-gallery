@@ -1099,7 +1099,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                               </div>
                             </div>
                           )}
-                          {gallery.cover_image_url === asset.web_url && (
+                          {(gallery.cover_image_url === asset.full_url || gallery.cover_image_url === asset.web_url) && (
                             <div className="absolute top-2 left-2 bg-black/70 text-white text-[9px] uppercase tracking-wider font-medium px-2 py-1 rounded-md backdrop-blur-sm">
                               Cover
                             </div>
@@ -1107,7 +1107,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              setCoverImage(asset.web_url);
+                              setCoverImage(asset.full_url);
                             }}
                             className="absolute bottom-2 right-2 bg-black/70 text-white text-[9px] uppercase tracking-wider font-medium px-2 py-1 rounded-md backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
                           >

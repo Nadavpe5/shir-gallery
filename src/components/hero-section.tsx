@@ -64,10 +64,11 @@ export function HeroSection({ gallery, daysRemaining, fontClass }: HeroSectionPr
       <section className="py-14 md:py-32 px-5 md:px-16 lg:px-24 text-center">
         <motion.div {...anim} className="max-w-3xl mx-auto">
           {gallery.cover_image_url && (
-            <div className="w-full aspect-[4/3] md:aspect-[16/9] mb-8 md:mb-12 overflow-hidden rounded-lg md:rounded-none">
-              <div
-                className="w-full h-full bg-cover bg-center"
-                style={{ backgroundImage: `url(${gallery.cover_image_url})` }}
+            <div className="w-full aspect-[4/3] md:aspect-[16/9] mb-8 md:mb-12 overflow-hidden rounded-lg md:rounded-none relative">
+              <img
+                src={gallery.cover_image_url}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover"
               />
             </div>
           )}
@@ -129,10 +130,11 @@ export function HeroSection({ gallery, daysRemaining, fontClass }: HeroSectionPr
           )}
         </motion.div>
         {gallery.cover_image_url && (
-          <div className="flex-1 min-h-[50vh] md:min-h-0">
-            <div
-              className="w-full h-full bg-cover bg-center"
-              style={{ backgroundImage: `url(${gallery.cover_image_url})` }}
+          <div className="flex-1 min-h-[50vh] md:min-h-0 relative">
+            <img
+              src={gallery.cover_image_url}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover"
             />
           </div>
         )}
@@ -171,12 +173,13 @@ export function HeroSection({ gallery, daysRemaining, fontClass }: HeroSectionPr
   }
 
   return (
-    <section className="relative min-h-[80vh] md:min-h-[90vh] flex items-end">
+    <section className="relative min-h-[85vh] md:min-h-[90vh] flex items-end overflow-hidden">
       {gallery.cover_image_url && (
         <div className="absolute inset-0 z-0">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${gallery.cover_image_url})` }}
+          <img
+            src={gallery.cover_image_url}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
         </div>

@@ -2,7 +2,6 @@
 
 import Lightbox from "yet-another-react-lightbox";
 import Counter from "yet-another-react-lightbox/plugins/counter";
-import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/counter.css";
 import { Download } from "lucide-react";
@@ -43,7 +42,7 @@ export function ImageViewer({ slides, open, index, onClose, onIndexChange }: Ima
       close={onClose}
       index={index}
       slides={lightboxSlides}
-      plugins={[Counter, Zoom]}
+      plugins={[Counter]}
       counter={{ container: { style: { top: "unset", bottom: 0 } } }}
       styles={{
         container: { backgroundColor: "rgba(0, 0, 0, 0.95)" },

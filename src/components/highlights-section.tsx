@@ -75,6 +75,7 @@ export function HighlightsSection({
                       ? "(max-width: 768px) 100vw, 66vw"
                       : "(max-width: 768px) 50vw, 33vw"
                   }
+                  quality={90}
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
                   loading={i < 4 ? "eager" : "lazy"}
                 />
