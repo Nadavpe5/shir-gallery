@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { LogOut } from "lucide-react";
 
 export function AdminNav() {
@@ -14,15 +15,20 @@ export function AdminNav() {
 
   return (
     <nav className="border-b border-gray-100 bg-white">
-      <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-14">
+      <div className="w-full px-6 lg:px-10 xl:px-14 flex items-center justify-between h-16">
         <button
           onClick={() => router.push("/admin")}
           className="flex items-center gap-3 group"
         >
-          <span className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center text-white text-[10px] font-bold tracking-widest group-hover:bg-gray-700 transition-colors">
-            SYP
-          </span>
-          <span className="text-sm font-medium tracking-wide text-gray-700 hidden sm:block">
+          <Image
+            src="/camera-login.png"
+            alt="Shir Yadgar Photography"
+            width={48}
+            height={48}
+            className="group-hover:opacity-80 transition-opacity"
+            priority
+          />
+          <span className="text-base font-medium tracking-wide text-gray-800 hidden sm:block">
             Shir Yadgar Photography
           </span>
         </button>

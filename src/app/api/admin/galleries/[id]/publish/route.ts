@@ -24,7 +24,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     try {
       const { data: gallery } = await supabaseAdmin
         .from("galleries")
-        .select("slug, zip_url")
+        .select("slug, zip_url, client_name, shoot_date")
         .eq("id", id)
         .single();
 
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
       if (gallery && assets && assets.length > 0) {
         const { generateAndUploadZip } = await import("@/lib/zip-generator");
-        zipUrl = await generateAndUploadZip(gallery.slug, assets);
+        zipUrl = await generateAndUploadZip(gallery.slug, assets, gallery.client_name, gallery.shoot_date);
         console.log("[publish] ZIP generated:", zipUrl);
       }
     } catch (err) {

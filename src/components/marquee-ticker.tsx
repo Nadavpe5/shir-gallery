@@ -18,7 +18,7 @@ export function MarqueeTicker({ gallery, daysRemaining }: MarqueeTickerProps) {
   ].filter(Boolean);
 
   const separator = (
-    <span className="mx-8 text-sage/40 select-none" aria-hidden>
+    <span className="mx-4 md:mx-8 text-sage/40 select-none" aria-hidden>
       |
     </span>
   );

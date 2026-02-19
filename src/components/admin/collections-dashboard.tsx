@@ -81,7 +81,7 @@ export function CollectionsDashboard() {
     <div>
       <AdminNav />
 
-      <div className="max-w-6xl mx-auto px-6 py-10">
+      <div className="w-full px-6 lg:px-10 xl:px-14 py-10">
         <div className="flex items-center justify-between mb-10">
           <div>
             <h1 className="text-2xl font-semibold">Collections</h1>
@@ -119,7 +119,7 @@ export function CollectionsDashboard() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {galleries.map((gallery) => {
               const assetCount = gallery.gallery_assets?.[0]?.count ?? 0;
               return (

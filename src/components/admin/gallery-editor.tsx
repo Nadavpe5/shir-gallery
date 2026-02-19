@@ -22,6 +22,9 @@ import {
   MessageCircle,
   Mail,
   Paintbrush,
+  Type,
+  Palette,
+  LayoutGrid,
 } from "lucide-react";
 import { AdminNav } from "./admin-nav";
 import type {
@@ -521,7 +524,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
               {/* Cover Layout */}
               <div>
                 <h4 className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-3">
-                  🖼️ Cover Layout
+                  <ImageIcon className="w-3.5 h-3.5 inline-block mr-1.5 -mt-0.5" />Cover Layout
                 </h4>
                 <div className="grid grid-cols-2 gap-2">
                   {([
@@ -549,7 +552,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
               {/* Typography */}
               <div>
                 <h4 className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-3">
-                  ✏️ Typography
+                  <Type className="w-3.5 h-3.5 inline-block mr-1.5 -mt-0.5" />Typography
                 </h4>
                 <div className="grid grid-cols-2 gap-2">
                   {([
@@ -584,7 +587,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
               {/* Color Theme */}
               <div>
                 <h4 className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-3">
-                  🎨 Color Theme
+                  <Palette className="w-3.5 h-3.5 inline-block mr-1.5 -mt-0.5" />Color Theme
                 </h4>
                 <div className="grid grid-cols-2 gap-2">
                   {([
@@ -623,7 +626,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
               {/* Grid Settings */}
               <div>
                 <h4 className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-3">
-                  📐 Grid
+                  <LayoutGrid className="w-3.5 h-3.5 inline-block mr-1.5 -mt-0.5" />Grid
                 </h4>
                 <div className="space-y-3">
                   <div>

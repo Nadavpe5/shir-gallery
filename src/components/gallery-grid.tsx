@@ -36,21 +36,21 @@ export function GalleryGrid({
   const serifClass = fontClass || "font-serif";
 
   return (
-    <section className="px-8 md:px-16 lg:px-24 py-20 md:py-32">
+    <section className="px-3 md:px-16 lg:px-24 py-14 md:py-32">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.7 }}
-        className="text-center mb-14"
+        className="text-center mb-10 md:mb-14"
       >
         <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
           {assets.length} Photographs
         </p>
-        <h2 className={`${serifClass} text-3xl md:text-4xl font-bold`}>
+        <h2 className={`${serifClass} text-2xl md:text-4xl font-bold`}>
           Full Gallery
         </h2>
-        <div className="w-px h-8 bg-sage/40 mx-auto mt-5" />
+        <div className="w-px h-6 md:h-8 bg-sage/40 mx-auto mt-4 md:mt-5" />
       </motion.div>
 
       <div className={`grid ${cols} ${gap}`}>
@@ -61,7 +61,7 @@ export function GalleryGrid({
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-30px" }}
             transition={{ duration: 0.5, delay: (i % 8) * 0.04 }}
-            className={`relative ${aspect} cursor-pointer group overflow-hidden animate-shimmer`}
+            className={`relative ${aspect} cursor-pointer group overflow-hidden rounded-sm md:rounded-none animate-shimmer`}
             onClick={() => onImageClick(indexOffset + i)}
           >
             <ImageOverlay

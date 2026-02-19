@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Loader2 } from "lucide-react";
 
 export default function AdminLoginPage() {
@@ -35,11 +36,16 @@ export default function AdminLoginPage() {
     <div className="min-h-screen flex items-center justify-center px-6 bg-gray-50">
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center mb-10">
-          <span className="w-14 h-14 bg-gray-900 rounded-2xl flex items-center justify-center text-white text-xs font-bold tracking-widest mb-4 shadow-lg">
-            SYP
-          </span>
-          <h1 className="text-xl font-semibold">Shir Yadgar Photography</h1>
-          <p className="text-gray-400 text-sm mt-1">
+          <Image
+            src="/camera-login.png"
+            alt="Shir Yadgar Photography"
+            width={100}
+            height={100}
+            className="mb-5"
+            priority
+          />
+          <h1 className="text-2xl font-semibold tracking-tight">Shir Yadgar Photography</h1>
+          <p className="text-gray-400 text-sm mt-1.5">
             Admin access
           </p>
         </div>

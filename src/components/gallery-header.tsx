@@ -24,22 +24,21 @@ export function GalleryHeader({ gallery, onShareClick }: GalleryHeaderProps) {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border transition-all duration-300">
-      <div className="flex items-center justify-between px-6 md:px-12 py-3">
-        <div>
-          <p className="text-sm font-medium tracking-wide uppercase">
+      <div className="flex items-center justify-between px-4 md:px-12 py-2.5 md:py-3">
+        <div className="min-w-0 flex-1 mr-3">
+          <p className="text-xs md:text-sm font-medium tracking-wide uppercase truncate">
             {gallery.client_name}
           </p>
-          <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
-            Shir Yadgar Perez
+          <p className="text-[9px] md:text-[10px] tracking-[0.2em] uppercase text-muted-foreground truncate">
+            Shir Yadgar Photography
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 md:gap-2 shrink-0">
           {gallery.zip_url && (
             <a
-              href={gallery.zip_url}
-              download
-              className="inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-secondary transition-colors"
+              href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=gallery.zip`}
+              className="inline-flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full hover:bg-secondary transition-colors"
               aria-label="Download all"
             >
               <Download className="w-4 h-4" />
@@ -47,7 +46,7 @@ export function GalleryHeader({ gallery, onShareClick }: GalleryHeaderProps) {
           )}
           <button
             onClick={onShareClick}
-            className="inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-secondary transition-colors"
+            className="inline-flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full hover:bg-secondary transition-colors"
             aria-label="Share"
           >
             <Share2 className="w-4 h-4" />

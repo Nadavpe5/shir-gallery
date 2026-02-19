@@ -90,7 +90,7 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
         gridSettings={gridSettings}
       />
 
-      <div className="mx-8 md:mx-16 lg:mx-24 border-t border-border" />
+      <div className="mx-3 md:mx-16 lg:mx-24 border-t border-border" />
 
       <GalleryGrid
         assets={gallery.gallery}
@@ -100,7 +100,7 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
         fontClass={fontClass}
       />
 
-      <div className="mx-8 md:mx-16 lg:mx-24 border-t border-border" />
+      <div className="mx-3 md:mx-16 lg:mx-24 border-t border-border" />
 
       <OriginalsSection
         assets={gallery.originals}
@@ -109,13 +109,14 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
         gridSettings={gridSettings}
       />
 
-      <div className="mx-8 md:mx-16 lg:mx-24 border-t border-border" />
+      <div className="mx-3 md:mx-16 lg:mx-24 border-t border-border" />
 
       <DownloadButton zipUrl={gallery.zip_url} />
 
-      <footer className="border-t border-border py-10 px-8 md:px-16 text-center">
-        <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground/50">
-          Shir Yadgar Perez Photography
+      <footer className="border-t border-border py-8 md:py-10 px-5 md:px-16 flex flex-col items-center gap-2.5">
+        <img src="/camera-nav.png" alt="Shir Yadgar Photography" className="w-7 h-7 md:w-8 md:h-8 opacity-40 object-contain" />
+        <p className="text-[9px] md:text-[10px] tracking-[0.25em] uppercase text-muted-foreground/50">
+          Shir Yadgar Photography
         </p>
       </footer>
 

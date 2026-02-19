@@ -23,7 +23,7 @@ export async function setAdminCookie(): Promise<void> {
   const value = hashSecret(ADMIN_SECRET);
   cookieStore.set(COOKIE_NAME, value, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.NODE_ENV === "production" && !process.env.DISABLE_SECURE_COOKIE,
     sameSite: "lax",
     path: "/",
     maxAge: ADMIN_TTL_DAYS * 24 * 60 * 60,

@@ -36,21 +36,21 @@ export function OriginalsSection({
   const hasMore = visibleCount < assets.length;
 
   return (
-    <section className="px-8 md:px-16 lg:px-24 py-20 md:py-32">
+    <section className="px-3 md:px-16 lg:px-24 py-14 md:py-32">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.7 }}
-        className="text-center mb-14"
+        className="text-center mb-10 md:mb-14"
       >
         <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
           {assets.length} Unedited Photographs
         </p>
-        <h2 className="font-serif text-3xl md:text-4xl font-bold">
+        <h2 className="font-serif text-2xl md:text-4xl font-bold">
           Originals
         </h2>
-        <div className="w-px h-8 bg-sage/40 mx-auto mt-5" />
+        <div className="w-px h-6 md:h-8 bg-sage/40 mx-auto mt-4 md:mt-5" />
       </motion.div>
 
       <div className={`grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 ${gridSettings?.spacing === "large" ? "gap-5 md:gap-6" : "gap-3 md:gap-4"}`}>

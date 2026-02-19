@@ -27,7 +27,7 @@ export function DownloadButton({ zipUrl }: DownloadButtonProps) {
   }
 
   return (
-    <section className="px-8 md:px-16 lg:px-24 py-20 md:py-32 text-center">
+    <section className="px-5 md:px-16 lg:px-24 py-14 md:py-32 text-center">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -37,7 +37,7 @@ export function DownloadButton({ zipUrl }: DownloadButtonProps) {
         <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
           Take Them Home
         </p>
-        <h2 className="font-serif text-3xl md:text-4xl font-bold mb-4">
+        <h2 className="font-serif text-2xl md:text-4xl font-bold mb-4">
           Download All
         </h2>
         <div className="w-px h-8 bg-sage/40 mx-auto mb-8" />

@@ -10,7 +10,9 @@ interface ZipAsset {
 
 export async function generateAndUploadZip(
   gallerySlug: string,
-  assets: ZipAsset[]
+  assets: ZipAsset[],
+  clientName?: string,
+  shootDate?: string | null
 ): Promise<string> {
   const archive = archiver("zip", { zlib: { level: 5 } });
   const passThrough = new PassThrough();
@@ -53,7 +55,12 @@ export async function generateAndUploadZip(
   await archive.finalize();
   const zipBuffer = await done;
 
-  const zipKey = `${gallerySlug}/${gallerySlug}-gallery.zip`;
+  const safeName = (clientName || gallerySlug).replace(/[^a-zA-Z0-9._-]/g, "_");
+  const dateStr = shootDate
+    ? new Date(shootDate).toISOString().slice(0, 10)
+    : new Date().toISOString().slice(0, 10);
+  const zipFilename = `${safeName}_${dateStr}`;
+  const zipKey = `${gallerySlug}/${zipFilename}.zip`;
   const zipUrl = await uploadBuffer(zipKey, zipBuffer, "application/zip");
 
   console.log(`[zip] Generated ZIP: ${zipKey} (${(zipBuffer.length / 1024 / 1024).toFixed(1)}MB, ${assets.length} photos)`);

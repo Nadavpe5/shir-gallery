@@ -61,20 +61,20 @@ export function HeroSection({ gallery, daysRemaining, fontClass }: HeroSectionPr
 
   if (cover === "center") {
     return (
-      <section className="py-20 md:py-32 px-8 md:px-16 lg:px-24 text-center">
+      <section className="py-14 md:py-32 px-5 md:px-16 lg:px-24 text-center">
         <motion.div {...anim} className="max-w-3xl mx-auto">
           {gallery.cover_image_url && (
-            <div className="w-full aspect-[16/9] mb-12 overflow-hidden">
+            <div className="w-full aspect-[4/3] md:aspect-[16/9] mb-8 md:mb-12 overflow-hidden rounded-lg md:rounded-none">
               <div
                 className="w-full h-full bg-cover bg-center"
                 style={{ backgroundImage: `url(${gallery.cover_image_url})` }}
               />
             </div>
           )}
-          <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-6">
+          <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4 md:mb-6">
             {gallery.shoot_title}
           </p>
-          <h1 className={`${serifClass} text-5xl md:text-7xl tracking-tight mb-6 font-bold text-foreground`}>
+          <h1 className={`${serifClass} text-4xl md:text-7xl tracking-tight mb-4 md:mb-6 font-bold text-foreground`}>
             {nameContent}
           </h1>
           {gallery.subtitle && (
@@ -101,15 +101,15 @@ export function HeroSection({ gallery, daysRemaining, fontClass }: HeroSectionPr
 
   if (cover === "left") {
     return (
-      <section className="min-h-[80vh] flex flex-col md:flex-row">
+      <section className="min-h-[70vh] md:min-h-[80vh] flex flex-col md:flex-row">
         <motion.div
           {...anim}
-          className="flex-1 flex flex-col justify-center px-8 md:px-16 lg:px-20 py-16 md:py-24"
+          className="flex-1 flex flex-col justify-center px-5 md:px-16 lg:px-20 py-10 md:py-24"
         >
-          <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-6">
+          <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4 md:mb-6">
             {gallery.shoot_title}
           </p>
-          <h1 className={`${serifClass} text-5xl md:text-6xl lg:text-7xl tracking-tight mb-6 font-bold text-foreground`}>
+          <h1 className={`${serifClass} text-4xl md:text-6xl lg:text-7xl tracking-tight mb-4 md:mb-6 font-bold text-foreground`}>
             {nameContent}
           </h1>
           {gallery.subtitle && (
@@ -142,12 +142,12 @@ export function HeroSection({ gallery, daysRemaining, fontClass }: HeroSectionPr
 
   if (cover === "minimal") {
     return (
-      <section className="py-24 md:py-40 px-8 md:px-16 lg:px-24">
+      <section className="py-16 md:py-40 px-5 md:px-16 lg:px-24">
         <motion.div {...anim} className="max-w-3xl">
-          <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-6">
+          <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4 md:mb-6">
             {gallery.shoot_title}
           </p>
-          <h1 className={`${serifClass} text-6xl md:text-8xl lg:text-9xl tracking-tight mb-8 font-bold text-foreground`}>
+          <h1 className={`${serifClass} text-5xl md:text-8xl lg:text-9xl tracking-tight mb-6 md:mb-8 font-bold text-foreground`}>
             {nameContent}
           </h1>
           {gallery.subtitle && (
@@ -171,7 +171,7 @@ export function HeroSection({ gallery, daysRemaining, fontClass }: HeroSectionPr
   }
 
   return (
-    <section className="relative min-h-[90vh] flex items-end">
+    <section className="relative min-h-[80vh] md:min-h-[90vh] flex items-end">
       {gallery.cover_image_url && (
         <div className="absolute inset-0 z-0">
           <div
@@ -181,12 +181,12 @@ export function HeroSection({ gallery, daysRemaining, fontClass }: HeroSectionPr
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
         </div>
       )}
-      <div className="relative z-10 w-full px-8 md:px-16 lg:px-24 pb-16 md:pb-24">
+      <div className="relative z-10 w-full px-5 md:px-16 lg:px-24 pb-10 md:pb-24">
         <motion.div {...anim} className="max-w-4xl">
-          <p className="text-[10px] tracking-[0.3em] uppercase text-white/70 mb-6">
+          <p className="text-[10px] tracking-[0.3em] uppercase text-white/70 mb-4 md:mb-6">
             {gallery.shoot_title}
           </p>
-          <h1 className={`${serifClass} text-5xl md:text-7xl lg:text-8xl text-white tracking-tight mb-6 font-bold`}>
+          <h1 className={`${serifClass} text-4xl md:text-7xl lg:text-8xl text-white tracking-tight mb-4 md:mb-6 font-bold`}>
             {nameContent}
           </h1>
           {gallery.subtitle && (
