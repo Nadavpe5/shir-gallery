@@ -34,6 +34,7 @@ export function CollectionsDashboard() {
   const [galleries, setGalleries] = useState<GalleryRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
+  const [brokenImages, setBrokenImages] = useState<Set<string>>(new Set());
 
   const fetchGalleries = useCallback(async () => {
     const res = await fetch("/api/admin/galleries");
@@ -129,12 +130,14 @@ export function CollectionsDashboard() {
                   onClick={() => router.push(`/admin/galleries/${gallery.id}`)}
                 >
                   <div className="relative aspect-[16/10] bg-gray-50 rounded-t-xl overflow-hidden">
-                    {gallery.cover_image_url ? (
+                    {gallery.cover_image_url && !brokenImages.has(gallery.id) ? (
                       <Image
                         src={gallery.cover_image_url}
                         alt={gallery.client_name}
                         fill
+                        unoptimized
                         className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                        onError={() => setBrokenImages((prev) => new Set(prev).add(gallery.id))}
                       />
                     ) : (
                       <div className="flex items-center justify-center h-full bg-gradient-to-br from-gray-50 to-gray-100">

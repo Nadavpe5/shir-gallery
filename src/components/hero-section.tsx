@@ -177,7 +177,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
 
   // Default "full" layout -- full-bleed cover image
   return (
-    <section className="relative w-full min-h-[100dvh] md:min-h-[90vh] flex items-end">
+    <section className="relative w-full min-h-[75dvh] md:min-h-[90vh] flex items-end">
       {bgStyle && (
         <div
           className="absolute inset-0 z-0 bg-cover bg-center"
