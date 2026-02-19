@@ -40,10 +40,12 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
   const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL!;
   let processed = 0;
   let failed = 0;
+  let orphaned = 0;
+  const orphanIds: string[] = [];
 
   for (const asset of assets) {
     try {
-      const fullKey = asset.full_url.replace(`${publicUrl}/`, "");
+      const fullKey = asset.full_url.replace(`${publicUrl}/`, "").split("?")[0];
       const webKey = `${gallery.slug}/web/${Date.now()}-${fullKey.split("/").pop()}`;
 
       const result = await generateWebThumbnail(fullKey, webKey);
@@ -55,18 +57,34 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
 
       processed++;
       console.log(`[regenerate] ${processed}/${assets.length}: ${asset.id}`);
-    } catch (err) {
-      failed++;
-      console.error(`[regenerate] Failed asset ${asset.id}:`, err);
+    } catch (err: unknown) {
+      const isNoSuchKey = err instanceof Error && (
+        err.message.includes("NoSuchKey") || err.name === "NoSuchKey"
+      );
+      if (isNoSuchKey) {
+        orphaned++;
+        orphanIds.push(asset.id);
+        console.warn(`[regenerate] Orphan (source missing in R2): ${asset.id}`);
+      } else {
+        failed++;
+        console.error(`[regenerate] Failed asset ${asset.id}:`, err);
+      }
     }
   }
 
-  // Update cover_image_url if it pointed to an old web_url that was regenerated
+  if (orphanIds.length > 0) {
+    await supabaseAdmin
+      .from("gallery_assets")
+      .delete()
+      .in("id", orphanIds);
+    console.log(`[regenerate] Cleaned up ${orphanIds.length} orphan assets`);
+  }
+
   if (gallery.cover_image_url) {
     const oldWebUrls = assets.map((a) => a.web_url);
     if (oldWebUrls.includes(gallery.cover_image_url)) {
       const coverAsset = assets.find((a) => a.web_url === gallery.cover_image_url);
-      if (coverAsset) {
+      if (coverAsset && !orphanIds.includes(coverAsset.id)) {
         await supabaseAdmin
           .from("galleries")
           .update({ cover_image_url: coverAsset.full_url })
@@ -80,5 +98,6 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
     total: assets.length,
     processed,
     failed,
+    orphaned,
   });
 }

@@ -716,7 +716,10 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                       const res = await fetch(`/api/admin/galleries/${galleryId}/regenerate`, { method: "POST" });
                       const data = await res.json();
                       if (res.ok) {
-                        setRegenResult(`Done: ${data.processed} regenerated${data.failed ? `, ${data.failed} failed` : ""}`);
+                        const parts = [`${data.processed} regenerated`];
+                        if (data.orphaned) parts.push(`${data.orphaned} broken removed`);
+                        if (data.failed) parts.push(`${data.failed} failed`);
+                        setRegenResult(`Done: ${parts.join(", ")}`);
                         fetchGallery();
                       } else {
                         setRegenResult(data.error || "Failed");
