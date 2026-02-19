@@ -56,7 +56,7 @@ export function HeroSection({ gallery, daysRemaining, fontClass }: HeroSectionPr
   const anim = {
     initial: { opacity: 0, y: 30 },
     animate: { opacity: 1, y: 0 },
-    transition: { duration: 1, ease: [0.22, 1, 0.36, 1] as number[] },
+    transition: { duration: 1, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
   };
 
   if (cover === "center") {
