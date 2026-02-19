@@ -367,12 +367,12 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
   const originals = assets.filter((a) => a.type === "original");
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col min-h-[100dvh] lg:h-screen">
       <AdminNav />
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-col lg:flex-row flex-1 overflow-y-auto lg:overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-80 border-r border-gray-100 flex flex-col bg-white shrink-0">
-        <div className="p-5 border-b border-gray-100">
+      <aside className="w-full lg:w-80 lg:border-r border-b lg:border-b-0 border-gray-100 flex flex-col bg-white lg:shrink-0">
+        <div className="p-4 lg:p-5 border-b border-gray-100">
           <button
             onClick={() => router.push("/admin")}
             className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-900 transition-colors mb-5"
@@ -434,7 +434,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
           ))}
         </div>
 
-        <div className="flex-1 overflow-y-auto p-5">
+        <div className="lg:flex-1 lg:overflow-y-auto p-4 lg:p-5">
           {activeTab === "photos" && (
             <div className="space-y-4">
               <button
@@ -585,7 +585,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                   className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 focus:bg-white transition-all"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium uppercase tracking-wider text-gray-500 mb-2">
                     Location
@@ -711,7 +711,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
         </div>
 
         {/* Action Bar */}
-        <div className="p-5 border-t border-gray-100 space-y-2.5">
+        <div className="p-4 lg:p-5 border-t border-gray-100 space-y-2.5">
           {gallery.status === "draft" ? (
             <button
               onClick={() => handlePublish(true)}
@@ -741,9 +741,9 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
 
       {/* Main Content */}
       {activeTab === "design" ? (
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
           {/* Design Options Panel */}
-          <div className="w-[340px] shrink-0 border-r border-gray-100 bg-white overflow-y-auto p-6">
+          <div className="w-full lg:w-[340px] lg:shrink-0 lg:border-r border-gray-100 bg-white overflow-y-auto p-4 lg:p-6">
             {designSection === "cover" && (
               <div>
                 <h4 className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-4 flex items-center gap-2">
@@ -927,7 +927,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
           </div>
 
           {/* Live Preview Panel */}
-          <div className="flex-1 flex flex-col bg-gray-100 overflow-hidden">
+          <div className="hidden lg:flex flex-1 flex-col bg-gray-100 overflow-hidden">
             <div className="flex items-center justify-between px-5 py-3 bg-white border-b border-gray-100">
               <span className="text-sm text-gray-500 font-medium">Live Preview</span>
               <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
@@ -975,20 +975,20 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
         </div>
       ) : (
       <main
-        className="flex-1 overflow-y-auto bg-gray-50"
+        className="flex-1 lg:overflow-y-auto bg-gray-50"
         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
         onDragLeave={(e) => { if (e.currentTarget === e.target) setIsDragging(false); }}
         onDrop={handleDrop}
       >
         {/* Top Bar */}
-        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-100 px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-100 px-4 lg:px-6 py-3 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 lg:gap-3 flex-wrap">
             {selectedAssets.size > 0 ? (
               <>
                 <span className="text-sm font-medium text-gray-700">
                   {selectedAssets.size} selected
                 </span>
-                <div className="h-4 w-px bg-gray-200" />
+                <div className="h-4 w-px bg-gray-200 hidden sm:block" />
                 <select
                   onChange={(e) => {
                     selectedAssets.forEach((id) =>
@@ -1041,7 +1041,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
         </div>
 
         {/* Photo Grid */}
-        <div className="p-6">
+        <div className="p-4 lg:p-6">
           {assets.length === 0 ? (
             <div className="text-center py-32">
               <ImageIcon className="w-16 h-16 mx-auto text-gray-200 mb-4" />
@@ -1071,7 +1071,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                       {label}{" "}
                       <span className="text-gray-300">({items.length})</span>
                     </h3>
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 lg:gap-3">
                       {items.map((asset) => (
                         <div
                           key={asset.id}

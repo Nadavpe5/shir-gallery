@@ -108,7 +108,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
 
   if (cover === "left") {
     return (
-      <section className="min-h-[70vh] md:min-h-[80vh] flex flex-col md:flex-row w-full">
+      <section className="min-h-[70dvh] md:min-h-[80vh] flex flex-col md:flex-row w-full">
         <motion.div
           {...anim}
           className="flex-1 flex flex-col justify-center px-5 md:px-16 lg:px-20 py-10 md:py-24"
@@ -177,7 +177,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
 
   // Default "full" layout -- full-bleed cover image
   return (
-    <section className="relative w-full min-h-[80vh] min-h-[80svh] md:min-h-[90vh] flex items-end">
+    <section className="relative w-full min-h-[100dvh] md:min-h-[90vh] flex items-end">
       {bgStyle && (
         <div
           className="absolute inset-0 z-0 bg-cover bg-center"

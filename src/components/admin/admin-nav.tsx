@@ -15,7 +15,7 @@ export function AdminNav() {
 
   return (
     <nav className="border-b border-gray-100 bg-white">
-      <div className="w-full px-6 lg:px-10 xl:px-14 flex items-center justify-between h-16">
+      <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-14 flex items-center justify-between h-14 sm:h-16">
         <button
           onClick={() => router.push("/admin")}
           className="flex items-center gap-3 group"
@@ -25,10 +25,10 @@ export function AdminNav() {
             alt="Shir Yadgar Photography"
             width={48}
             height={48}
-            className="group-hover:opacity-80 transition-opacity"
+            className="w-9 h-9 sm:w-12 sm:h-12 group-hover:opacity-80 transition-opacity"
             priority
           />
-          <span className="text-base font-medium tracking-wide text-gray-800 hidden sm:block">
+          <span className="text-sm sm:text-base font-medium tracking-wide text-gray-800 truncate">
             Shir Yadgar Photography
           </span>
         </button>

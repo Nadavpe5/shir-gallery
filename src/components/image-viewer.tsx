@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Lightbox from "yet-another-react-lightbox";
 import Counter from "yet-another-react-lightbox/plugins/counter";
 import "yet-another-react-lightbox/styles.css";
@@ -22,6 +23,22 @@ interface ImageViewerProps {
 }
 
 export function ImageViewer({ slides, open, index, onClose, onIndexChange }: ImageViewerProps) {
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed";
+      document.body.style.width = "100%";
+      document.body.style.top = `-${window.scrollY}px`;
+    } else {
+      const scrollY = document.body.style.top;
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.width = "";
+      document.body.style.top = "";
+      window.scrollTo(0, parseInt(scrollY || "0") * -1);
+    }
+  }, [open]);
+
   const lightboxSlides = slides.map((s) => ({
     src: s.src,
     alt: s.alt,
@@ -45,7 +62,8 @@ export function ImageViewer({ slides, open, index, onClose, onIndexChange }: Ima
       plugins={[Counter]}
       counter={{ container: { style: { top: "unset", bottom: 0 } } }}
       styles={{
-        container: { backgroundColor: "rgba(0, 0, 0, 0.95)" },
+        container: { backgroundColor: "rgba(0, 0, 0, 1)" },
+        root: { position: "fixed", inset: 0, zIndex: 9999, height: "100dvh" },
       }}
       toolbar={{
         buttons: [

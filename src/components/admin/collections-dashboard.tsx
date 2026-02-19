@@ -81,8 +81,8 @@ export function CollectionsDashboard() {
     <div>
       <AdminNav />
 
-      <div className="w-full px-6 lg:px-10 xl:px-14 py-10">
-        <div className="flex items-center justify-between mb-10">
+      <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-14 py-6 sm:py-10">
+        <div className="flex items-center justify-between mb-6 sm:mb-10">
           <div>
             <h1 className="text-2xl font-semibold">Collections</h1>
             <p className="text-gray-400 text-sm mt-1">
