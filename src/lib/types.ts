@@ -1,3 +1,28 @@
+export type CoverLayout = "full" | "center" | "left" | "minimal";
+export type TypographyPreset = "sans" | "serif" | "modern" | "timeless" | "bold" | "subtle";
+export type ColorTheme = "light" | "gold" | "rose" | "terracotta" | "olive" | "sea" | "dark";
+export type GridStyle = "vertical" | "horizontal";
+export type GridSize = "regular" | "large";
+export type GridSpacing = "regular" | "large";
+
+export interface DesignSettings {
+  cover: CoverLayout;
+  typography: TypographyPreset;
+  color: ColorTheme;
+  gridStyle: GridStyle;
+  gridSize: GridSize;
+  gridSpacing: GridSpacing;
+}
+
+export const DEFAULT_DESIGN: DesignSettings = {
+  cover: "full",
+  typography: "serif",
+  color: "light",
+  gridStyle: "vertical",
+  gridSize: "regular",
+  gridSpacing: "regular",
+};
+
 export interface Gallery {
   id: string;
   slug: string;
@@ -14,6 +39,7 @@ export interface Gallery {
   edited_count: number;
   originals_count: number;
   status: "draft" | "published";
+  design_settings: DesignSettings;
 }
 
 export interface GalleryAsset {

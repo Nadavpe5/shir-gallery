@@ -4,13 +4,20 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
-import type { GalleryAsset } from "@/lib/types";
+import type { GalleryAsset, GridStyle, GridSize, GridSpacing } from "@/lib/types";
 import { ImageOverlay } from "./image-overlay";
+
+interface GridSettings {
+  style: GridStyle;
+  size: GridSize;
+  spacing: GridSpacing;
+}
 
 interface OriginalsSectionProps {
   assets: GalleryAsset[];
   onImageClick: (index: number) => void;
   indexOffset: number;
+  gridSettings?: GridSettings;
 }
 
 const BATCH_SIZE = 20;
@@ -19,6 +26,7 @@ export function OriginalsSection({
   assets,
   onImageClick,
   indexOffset,
+  gridSettings,
 }: OriginalsSectionProps) {
   const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
 
@@ -45,7 +53,7 @@ export function OriginalsSection({
         <div className="w-px h-8 bg-sage/40 mx-auto mt-5" />
       </motion.div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
+      <div className={`grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 ${gridSettings?.spacing === "large" ? "gap-5 md:gap-6" : "gap-3 md:gap-4"}`}>
         {visible.map((asset, i) => (
           <motion.div
             key={asset.id}

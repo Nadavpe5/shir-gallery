@@ -50,11 +50,18 @@ export function CollectionsDashboard() {
 
   useEffect(() => {
     if (!menuOpen) return;
-    function handleClickOutside() {
+    function handleClickOutside(e: MouseEvent) {
+      const target = e.target as HTMLElement;
+      if (target.closest("[data-menu]")) return;
       setMenuOpen(null);
     }
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
+    const timer = setTimeout(() => {
+      document.addEventListener("click", handleClickOutside);
+    }, 0);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("click", handleClickOutside);
+    };
   }, [menuOpen]);
 
   async function handleDelete(id: string) {
@@ -165,7 +172,7 @@ export function CollectionsDashboard() {
                         </p>
                       </div>
 
-                      <div className="relative">
+                      <div className="relative" data-menu>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();

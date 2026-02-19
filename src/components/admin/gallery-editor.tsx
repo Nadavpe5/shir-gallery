@@ -21,8 +21,19 @@ import {
   Copy,
   MessageCircle,
   Mail,
+  Paintbrush,
 } from "lucide-react";
 import { AdminNav } from "./admin-nav";
+import type {
+  DesignSettings,
+  CoverLayout,
+  TypographyPreset,
+  ColorTheme,
+  GridStyle,
+  GridSize,
+  GridSpacing,
+} from "@/lib/types";
+import { DEFAULT_DESIGN } from "@/lib/types";
 
 interface GalleryData {
   id: string;
@@ -36,6 +47,7 @@ interface GalleryData {
   cover_image_url: string | null;
   zip_url: string | null;
   expires_at: string;
+  design_settings: DesignSettings | null;
 }
 
 interface AssetData {
@@ -48,7 +60,7 @@ interface AssetData {
   filename: string | null;
 }
 
-type SidebarTab = "photos" | "details" | "settings";
+type SidebarTab = "photos" | "design" | "details" | "settings";
 
 interface UploadItem {
   file: File;
@@ -79,6 +91,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
   const [editDate, setEditDate] = useState("");
   const [editPassword, setEditPassword] = useState("");
   const [editExpiry, setEditExpiry] = useState("");
+  const [design, setDesign] = useState<DesignSettings>(DEFAULT_DESIGN);
 
   const fetchGallery = useCallback(async () => {
     const [gRes, aRes] = await Promise.all([
@@ -95,6 +108,9 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
       setEditLocation(data.location || "");
       setEditDate(data.shoot_date || "");
       setEditExpiry(data.expires_at?.split("T")[0] || "");
+      if (data.design_settings) {
+        setDesign({ ...DEFAULT_DESIGN, ...data.design_settings });
+      }
     }
     if (aRes.ok) {
       setAssets(await aRes.json());
@@ -130,6 +146,19 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
       setEditPassword("");
     }
     setSaving(false);
+  }
+
+  async function saveDesign(updated: DesignSettings) {
+    setDesign(updated);
+    const res = await fetch(`/api/admin/galleries/${galleryId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ design_settings: updated }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setGallery(data);
+    }
   }
 
   async function handlePublish(published: boolean) {
@@ -375,6 +404,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
           {(
             [
               { key: "photos", icon: Camera, label: "Photos" },
+              { key: "design", icon: Paintbrush, label: "Design" },
               { key: "details", icon: Info, label: "Details" },
               { key: "settings", icon: Settings, label: "Settings" },
             ] as const
@@ -482,6 +512,184 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                     <span className="text-gray-400">{count}</span>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === "design" && (
+            <div className="space-y-6">
+              {/* Cover Layout */}
+              <div>
+                <h4 className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-3">
+                  🖼️ Cover Layout
+                </h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {([
+                    { value: "full", label: "Full", desc: "Image fills screen" },
+                    { value: "center", label: "Center", desc: "Centered title" },
+                    { value: "left", label: "Left", desc: "Split layout" },
+                    { value: "minimal", label: "Minimal", desc: "Text only" },
+                  ] as { value: CoverLayout; label: string; desc: string }[]).map(({ value, label, desc }) => (
+                    <button
+                      key={value}
+                      onClick={() => saveDesign({ ...design, cover: value })}
+                      className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 text-center transition-all ${
+                        design.cover === value
+                          ? "border-gray-900 bg-gray-50"
+                          : "border-gray-100 hover:border-gray-300"
+                      }`}
+                    >
+                      <span className="text-sm font-medium">{label}</span>
+                      <span className="text-[10px] text-gray-400">{desc}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Typography */}
+              <div>
+                <h4 className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-3">
+                  ✏️ Typography
+                </h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {([
+                    { value: "serif", label: "Serif", font: "font-serif", desc: "Classic" },
+                    { value: "sans", label: "Sans", font: "font-sans", desc: "Neutral" },
+                    { value: "modern", label: "Modern", font: "var(--font-montserrat)", desc: "Sophisticated" },
+                    { value: "timeless", label: "Timeless", font: "var(--font-cormorant)", desc: "Light & airy" },
+                    { value: "bold", label: "Bold", font: "var(--font-oswald)", desc: "Punchy" },
+                    { value: "subtle", label: "Subtle", font: "var(--font-raleway)", desc: "Minimal" },
+                  ] as { value: TypographyPreset; label: string; font: string; desc: string }[]).map(({ value, label, font, desc }) => (
+                    <button
+                      key={value}
+                      onClick={() => saveDesign({ ...design, typography: value })}
+                      className={`flex flex-col items-center gap-0.5 p-3 rounded-xl border-2 text-center transition-all ${
+                        design.typography === value
+                          ? "border-gray-900 bg-gray-50"
+                          : "border-gray-100 hover:border-gray-300"
+                      }`}
+                    >
+                      <span
+                        className="text-base font-semibold"
+                        style={font.startsWith("var(") ? { fontFamily: font } : undefined}
+                      >
+                        {label}
+                      </span>
+                      <span className="text-[10px] text-gray-400">{desc}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Color Theme */}
+              <div>
+                <h4 className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-3">
+                  🎨 Color Theme
+                </h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {([
+                    { value: "light", label: "Light", colors: ["#f8f5f0", "#2a2520", "#9da68d"] },
+                    { value: "gold", label: "Gold", colors: ["#faf6ed", "#3d3425", "#c8a95e"] },
+                    { value: "rose", label: "Rose", colors: ["#faf5f5", "#3d2b2b", "#c4929a"] },
+                    { value: "terracotta", label: "Terracotta", colors: ["#faf5f0", "#3d2e25", "#c49272"] },
+                    { value: "olive", label: "Olive", colors: ["#f5f6f2", "#2e3128", "#7a8c65"] },
+                    { value: "sea", label: "Sea", colors: ["#f3f6f8", "#262e34", "#6e8a9e"] },
+                    { value: "dark", label: "Dark", colors: ["#1a1a1a", "#e8e4e0", "#9da68d"] },
+                  ] as { value: ColorTheme; label: string; colors: string[] }[]).map(({ value, label, colors }) => (
+                    <button
+                      key={value}
+                      onClick={() => saveDesign({ ...design, color: value })}
+                      className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${
+                        design.color === value
+                          ? "border-gray-900 bg-gray-50"
+                          : "border-gray-100 hover:border-gray-300"
+                      }`}
+                    >
+                      <div className="flex -space-x-1">
+                        {colors.map((c, i) => (
+                          <span
+                            key={i}
+                            className="w-5 h-5 rounded-full border border-gray-200"
+                            style={{ backgroundColor: c }}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-xs font-medium">{label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Grid Settings */}
+              <div>
+                <h4 className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-3">
+                  📐 Grid
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-[11px] text-gray-400 mb-2">Style</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {([
+                        { value: "vertical", label: "Portrait" },
+                        { value: "horizontal", label: "Landscape" },
+                      ] as { value: GridStyle; label: string }[]).map(({ value, label }) => (
+                        <button
+                          key={value}
+                          onClick={() => saveDesign({ ...design, gridStyle: value })}
+                          className={`p-2.5 rounded-lg border-2 text-xs font-medium text-center transition-all ${
+                            design.gridStyle === value
+                              ? "border-gray-900 bg-gray-50"
+                              : "border-gray-100 hover:border-gray-300"
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-[11px] text-gray-400 mb-2">Size</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {([
+                        { value: "regular", label: "Regular" },
+                        { value: "large", label: "Large" },
+                      ] as { value: GridSize; label: string }[]).map(({ value, label }) => (
+                        <button
+                          key={value}
+                          onClick={() => saveDesign({ ...design, gridSize: value })}
+                          className={`p-2.5 rounded-lg border-2 text-xs font-medium text-center transition-all ${
+                            design.gridSize === value
+                              ? "border-gray-900 bg-gray-50"
+                              : "border-gray-100 hover:border-gray-300"
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-[11px] text-gray-400 mb-2">Spacing</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {([
+                        { value: "regular", label: "Regular" },
+                        { value: "large", label: "Large" },
+                      ] as { value: GridSpacing; label: string }[]).map(({ value, label }) => (
+                        <button
+                          key={value}
+                          onClick={() => saveDesign({ ...design, gridSpacing: value })}
+                          className={`p-2.5 rounded-lg border-2 text-xs font-medium text-center transition-all ${
+                            design.gridSpacing === value
+                              ? "border-gray-900 bg-gray-50"
+                              : "border-gray-100 hover:border-gray-300"
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}

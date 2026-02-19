@@ -2,21 +2,38 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import type { GalleryAsset } from "@/lib/types";
+import type { GalleryAsset, GridStyle, GridSize, GridSpacing } from "@/lib/types";
 import { ImageOverlay } from "./image-overlay";
+
+interface GridSettings {
+  style: GridStyle;
+  size: GridSize;
+  spacing: GridSpacing;
+}
 
 interface GalleryGridProps {
   assets: GalleryAsset[];
   onImageClick: (index: number) => void;
   indexOffset: number;
+  gridSettings?: GridSettings;
+  fontClass?: string;
 }
 
 export function GalleryGrid({
   assets,
   onImageClick,
   indexOffset,
+  gridSettings,
+  fontClass,
 }: GalleryGridProps) {
   if (assets.length === 0) return null;
+
+  const aspect = gridSettings?.style === "horizontal" ? "aspect-[4/3]" : "aspect-[3/4]";
+  const cols = gridSettings?.size === "large"
+    ? "grid-cols-2 md:grid-cols-2 lg:grid-cols-3"
+    : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4";
+  const gap = gridSettings?.spacing === "large" ? "gap-5 md:gap-6" : "gap-3 md:gap-4";
+  const serifClass = fontClass || "font-serif";
 
   return (
     <section className="px-8 md:px-16 lg:px-24 py-20 md:py-32">
@@ -30,13 +47,13 @@ export function GalleryGrid({
         <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
           {assets.length} Photographs
         </p>
-        <h2 className="font-serif text-3xl md:text-4xl font-bold">
+        <h2 className={`${serifClass} text-3xl md:text-4xl font-bold`}>
           Full Gallery
         </h2>
         <div className="w-px h-8 bg-sage/40 mx-auto mt-5" />
       </motion.div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+      <div className={`grid ${cols} ${gap}`}>
         {assets.map((asset, i) => (
           <motion.div
             key={asset.id}
@@ -44,7 +61,7 @@ export function GalleryGrid({
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-30px" }}
             transition={{ duration: 0.5, delay: (i % 8) * 0.04 }}
-            className="relative aspect-[3/4] cursor-pointer group overflow-hidden animate-shimmer"
+            className={`relative ${aspect} cursor-pointer group overflow-hidden animate-shimmer`}
             onClick={() => onImageClick(indexOffset + i)}
           >
             <ImageOverlay

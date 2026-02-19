@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import type { GalleryWithAssets } from "@/lib/types";
+import type { GalleryWithAssets, DesignSettings, TypographyPreset } from "@/lib/types";
+import { DEFAULT_DESIGN } from "@/lib/types";
 import { HeroSection } from "./hero-section";
 import { MarqueeTicker } from "./marquee-ticker";
 import { HighlightsSection } from "./highlights-section";
@@ -12,6 +13,15 @@ import { ImageViewer } from "./image-viewer";
 import { GalleryHeader } from "./gallery-header";
 import { ShareModal } from "./share-modal";
 import { BackToTop } from "./back-to-top";
+
+const FONT_MAP: Record<TypographyPreset, string> = {
+  sans: "font-sans",
+  serif: "font-serif",
+  modern: "font-[family-name:var(--font-montserrat)]",
+  timeless: "font-[family-name:var(--font-cormorant)]",
+  bold: "font-[family-name:var(--font-oswald)]",
+  subtle: "font-[family-name:var(--font-raleway)]",
+};
 
 interface GalleryContentProps {
   gallery: GalleryWithAssets;
@@ -55,20 +65,29 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
     setViewerOpen(true);
   }
 
+  const ds: DesignSettings = { ...DEFAULT_DESIGN, ...gallery.design_settings };
+  const fontClass = FONT_MAP[ds.typography] || "font-serif";
+  const gridSettings = {
+    style: ds.gridStyle,
+    size: ds.gridSize,
+    spacing: ds.gridSpacing,
+  };
+
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background" data-theme={ds.color}>
       <GalleryHeader
         gallery={gallery}
         onShareClick={() => setShareOpen(true)}
       />
 
-      <HeroSection gallery={gallery} daysRemaining={daysRemaining} />
+      <HeroSection gallery={gallery} daysRemaining={daysRemaining} fontClass={fontClass} />
 
       <MarqueeTicker gallery={gallery} daysRemaining={daysRemaining} />
 
       <HighlightsSection
         assets={gallery.highlights}
         onImageClick={(i) => openViewer(highlightOffset + i)}
+        gridSettings={gridSettings}
       />
 
       <div className="mx-8 md:mx-16 lg:mx-24 border-t border-border" />
@@ -77,6 +96,8 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
         assets={gallery.gallery}
         onImageClick={openViewer}
         indexOffset={galleryOffset}
+        gridSettings={gridSettings}
+        fontClass={fontClass}
       />
 
       <div className="mx-8 md:mx-16 lg:mx-24 border-t border-border" />
@@ -85,6 +106,7 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
         assets={gallery.originals}
         onImageClick={openViewer}
         indexOffset={originalsOffset}
+        gridSettings={gridSettings}
       />
 
       <div className="mx-8 md:mx-16 lg:mx-24 border-t border-border" />

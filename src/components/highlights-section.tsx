@@ -2,17 +2,25 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import type { GalleryAsset } from "@/lib/types";
+import type { GalleryAsset, GridStyle, GridSize, GridSpacing } from "@/lib/types";
 import { ImageOverlay } from "./image-overlay";
+
+interface GridSettings {
+  style: GridStyle;
+  size: GridSize;
+  spacing: GridSpacing;
+}
 
 interface HighlightsSectionProps {
   assets: GalleryAsset[];
   onImageClick: (index: number) => void;
+  gridSettings?: GridSettings;
 }
 
 export function HighlightsSection({
   assets,
   onImageClick,
+  gridSettings,
 }: HighlightsSectionProps) {
   if (assets.length === 0) return null;
 
@@ -34,7 +42,7 @@ export function HighlightsSection({
         <div className="w-px h-8 bg-sage/40 mx-auto mt-5" />
       </motion.div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+      <div className={`grid grid-cols-2 md:grid-cols-3 ${gridSettings?.spacing === "large" ? "gap-5 md:gap-8" : "gap-4 md:gap-6"}`}>
         {assets.map((asset, i) => {
           const isLarge = i % 5 === 0;
           return (
