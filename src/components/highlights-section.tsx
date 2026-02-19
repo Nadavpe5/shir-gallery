@@ -42,43 +42,73 @@ export function HighlightsSection({
         <div className="w-px h-6 md:h-8 bg-sage/40 mx-auto mt-4 md:mt-5" />
       </motion.div>
 
-      <div className={`grid grid-cols-2 md:grid-cols-3 ${gridSettings?.spacing === "large" ? "gap-5 md:gap-8" : "gap-4 md:gap-6"}`}>
-        {assets.map((asset, i) => {
-          const isLarge = i % 5 === 0;
-          return (
+      {gridSettings?.style === "masonry" ? (
+        <div className={`columns-2 md:columns-3 ${gridSettings?.spacing === "large" ? "gap-5 md:gap-8" : "gap-4 md:gap-6"}`}>
+          {assets.map((asset, i) => (
             <motion.div
               key={asset.id}
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.6, delay: i * 0.06 }}
-              className={`relative cursor-pointer group overflow-hidden ${
-                isLarge ? "col-span-2 row-span-2" : ""
-              }`}
+              className="relative break-inside-avoid mb-4 md:mb-6 cursor-pointer group overflow-hidden"
               onClick={() => onImageClick(i)}
             >
-              <div
-                className={`relative w-full animate-shimmer ${
-                  isLarge ? "aspect-[4/5]" : "aspect-[3/4]"
-                }`}
-              >
-                <ImageOverlay
-                  downloadUrl={asset.full_url}
-                  filename={asset.filename || undefined}
-                />
-                <Image
-                  src={asset.web_url}
-                  alt={asset.filename || `Highlight ${i + 1}`}
-                  fill
-                  unoptimized
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
-                  loading={i < 4 ? "eager" : "lazy"}
-                />
-              </div>
+              <ImageOverlay
+                downloadUrl={asset.full_url}
+                filename={asset.filename || undefined}
+              />
+              <Image
+                src={asset.web_url}
+                alt={asset.filename || `Highlight ${i + 1}`}
+                width={800}
+                height={1200}
+                unoptimized
+                className="w-full h-auto object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                loading={i < 4 ? "eager" : "lazy"}
+              />
             </motion.div>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className={`grid grid-cols-2 md:grid-cols-3 ${gridSettings?.spacing === "large" ? "gap-5 md:gap-8" : "gap-4 md:gap-6"}`}>
+          {assets.map((asset, i) => {
+            const isLarge = i % 5 === 0;
+            return (
+              <motion.div
+                key={asset.id}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: i * 0.06 }}
+                className={`relative cursor-pointer group overflow-hidden ${
+                  isLarge ? "col-span-2 row-span-2" : ""
+                }`}
+                onClick={() => onImageClick(i)}
+              >
+                <div
+                  className={`relative w-full animate-shimmer ${
+                    isLarge ? "aspect-[4/5]" : "aspect-[3/4]"
+                  }`}
+                >
+                  <ImageOverlay
+                    downloadUrl={asset.full_url}
+                    filename={asset.filename || undefined}
+                  />
+                  <Image
+                    src={asset.web_url}
+                    alt={asset.filename || `Highlight ${i + 1}`}
+                    fill
+                    unoptimized
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                    loading={i < 4 ? "eager" : "lazy"}
+                  />
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

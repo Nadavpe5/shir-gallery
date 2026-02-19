@@ -1,12 +1,14 @@
 export type CoverLayout = "full" | "center" | "left" | "minimal";
+export type CoverFocusPoint = "top" | "center" | "bottom";
 export type TypographyPreset = "sans" | "serif" | "modern" | "timeless" | "bold" | "subtle";
 export type ColorTheme = "light" | "gold" | "rose" | "terracotta" | "olive" | "sea" | "dark";
-export type GridStyle = "vertical" | "horizontal";
+export type GridStyle = "vertical" | "horizontal" | "masonry";
 export type GridSize = "regular" | "large";
 export type GridSpacing = "regular" | "large";
 
 export interface DesignSettings {
   cover: CoverLayout;
+  coverFocusPoint: CoverFocusPoint;
   typography: TypographyPreset;
   color: ColorTheme;
   gridStyle: GridStyle;
@@ -16,6 +18,7 @@ export interface DesignSettings {
 
 export const DEFAULT_DESIGN: DesignSettings = {
   cover: "full",
+  coverFocusPoint: "top",
   typography: "serif",
   color: "light",
   gridStyle: "vertical",

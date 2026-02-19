@@ -28,11 +28,13 @@ import {
   Monitor,
   Smartphone,
   RefreshCw,
+  RotateCw,
 } from "lucide-react";
 import { AdminNav } from "./admin-nav";
 import type {
   DesignSettings,
   CoverLayout,
+  CoverFocusPoint,
   TypographyPreset,
   ColorTheme,
   GridStyle,
@@ -93,6 +95,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
   const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">("desktop");
   const [regenerating, setRegenerating] = useState(false);
   const [regenResult, setRegenResult] = useState<string | null>(null);
+  const [rotatingAssets, setRotatingAssets] = useState<Set<string>>(new Set());
 
   const [editName, setEditName] = useState("");
   const [editTitle, setEditTitle] = useState("");
@@ -330,6 +333,28 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: assetId, type }),
+    });
+  }
+
+  async function rotateAsset(assetId: string) {
+    setRotatingAssets((prev) => new Set(prev).add(assetId));
+    try {
+      const res = await fetch(`/api/admin/galleries/${galleryId}/assets/rotate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ assetId, direction: "cw" }),
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setAssets((prev) => prev.map((a) => (a.id === assetId ? updated : a)));
+      }
+    } catch (err) {
+      console.error("Rotate failed:", err);
+    }
+    setRotatingAssets((prev) => {
+      const next = new Set(prev);
+      next.delete(assetId);
+      return next;
     });
   }
 
@@ -770,6 +795,29 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                     </button>
                   ))}
                 </div>
+
+                <h4 className="text-xs font-medium uppercase tracking-wider text-gray-500 mt-6 mb-3">
+                  Cover Focus Point
+                </h4>
+                <div className="grid grid-cols-3 gap-2">
+                  {([
+                    { value: "top" as CoverFocusPoint, label: "Top" },
+                    { value: "center" as CoverFocusPoint, label: "Center" },
+                    { value: "bottom" as CoverFocusPoint, label: "Bottom" },
+                  ]).map(({ value, label }) => (
+                    <button
+                      key={value}
+                      onClick={() => saveDesign({ ...design, coverFocusPoint: value })}
+                      className={`p-3 rounded-xl border-2 text-sm font-medium text-center transition-all ${
+                        design.coverFocusPoint === value
+                          ? "border-gray-900 bg-gray-50"
+                          : "border-gray-100 hover:border-gray-300"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -860,10 +908,11 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                 <div className="space-y-5">
                   <div>
                     <p className="text-xs text-gray-400 mb-2.5">Style</p>
-                    <div className="grid grid-cols-2 gap-2.5">
+                    <div className="grid grid-cols-3 gap-2.5">
                       {([
                         { value: "vertical", label: "Portrait" },
                         { value: "horizontal", label: "Landscape" },
+                        { value: "masonry", label: "Masonry" },
                       ] as { value: GridStyle; label: string }[]).map(({ value, label }) => (
                         <button
                           key={value}
@@ -1101,6 +1150,21 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                               Cover
                             </div>
                           )}
+                          {rotatingAssets.has(asset.id) && (
+                            <div className="absolute inset-0 bg-black/30 flex items-center justify-center z-10">
+                              <Loader2 className="w-5 h-5 text-white animate-spin" />
+                            </div>
+                          )}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              rotateAsset(asset.id);
+                            }}
+                            className="absolute bottom-2 left-2 bg-black/70 text-white p-1.5 rounded-md backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                            title="Rotate 90°"
+                          >
+                            <RotateCw className="w-3 h-3" />
+                          </button>
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
