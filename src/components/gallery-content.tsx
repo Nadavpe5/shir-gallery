@@ -83,7 +83,7 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
     spacing: ds.gridSpacing,
   };
 
-  const resolvedCoverUrl = useMemo(() => {
+  const coverUrl = useMemo(() => {
     if (!gallery.cover_image_url) return null;
     const allAssets = [...gallery.highlights, ...gallery.gallery, ...gallery.originals];
     const match = allAssets.find(
@@ -92,11 +92,6 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
     return match ? match.full_url : gallery.cover_image_url;
   }, [gallery.cover_image_url, gallery.highlights, gallery.gallery, gallery.originals]);
 
-  const galleryWithResolvedCover = useMemo(
-    () => ({ ...gallery, cover_image_url: resolvedCoverUrl }),
-    [gallery, resolvedCoverUrl]
-  );
-
   return (
     <main className="min-h-screen bg-background" data-theme={ds.color}>
       <GalleryHeader
@@ -104,7 +99,7 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
         onShareClick={() => setShareOpen(true)}
       />
 
-      <HeroSection gallery={galleryWithResolvedCover} daysRemaining={daysRemaining} fontClass={fontClass} />
+      <HeroSection gallery={gallery} coverUrl={coverUrl} daysRemaining={daysRemaining} fontClass={fontClass} />
 
       <MarqueeTicker gallery={gallery} daysRemaining={daysRemaining} />
 
