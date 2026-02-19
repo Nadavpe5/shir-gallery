@@ -70,7 +70,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
     ? {
         backgroundImage: `url(${coverUrl})`,
         backgroundPosition: `${pos.x}% ${pos.y}%`,
-        backgroundSize: zoom === 100 ? "cover" : `${zoom + 50}%`,
+        backgroundSize: `${zoom + 50}%`,
         backgroundRepeat: "no-repeat",
       }
     : undefined;

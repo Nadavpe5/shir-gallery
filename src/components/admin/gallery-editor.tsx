@@ -96,6 +96,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
   const [regenerating, setRegenerating] = useState(false);
   const [regenResult, setRegenResult] = useState<string | null>(null);
   const [rotatingAssets, setRotatingAssets] = useState<Set<string>>(new Set());
+  const [previewVersion, setPreviewVersion] = useState(0);
 
   const [editName, setEditName] = useState("");
   const [editTitle, setEditTitle] = useState("");
@@ -171,6 +172,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
     if (res.ok) {
       const data = await res.json();
       setGallery(data);
+      setPreviewVersion((v) => v + 1);
     }
   }
 
@@ -828,7 +830,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                         </h4>
                         <p className="text-[10px] text-gray-400 mb-2">Click on the image to set the focal point</p>
                         <div
-                          className="relative w-full aspect-[16/9] rounded-lg overflow-hidden border border-gray-200 cursor-crosshair mb-4"
+                          className="relative w-full aspect-[16/9] rounded-lg overflow-hidden border border-gray-200 cursor-crosshair mb-3"
                           onClick={(e) => {
                             const rect = e.currentTarget.getBoundingClientRect();
                             const x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
@@ -841,7 +843,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                             style={{
                               backgroundImage: `url(${gallery.cover_image_url})`,
                               backgroundPosition: `${design.coverPosition?.x ?? 50}% ${design.coverPosition?.y ?? 30}%`,
-                              backgroundSize: (design.coverZoom ?? 100) === 100 ? "cover" : `${(design.coverZoom ?? 100) + 50}%`,
+                              backgroundSize: `${(design.coverZoom ?? 100) + 50}%`,
                               backgroundRepeat: "no-repeat",
                             }}
                           />
@@ -856,6 +858,26 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                           </div>
                         </div>
 
+                        <div className="flex gap-1.5 mb-4">
+                          {([
+                            { label: "Top", pos: { x: 50, y: 15 } },
+                            { label: "Center", pos: { x: 50, y: 50 } },
+                            { label: "Bottom", pos: { x: 50, y: 85 } },
+                          ]).map(({ label, pos: p }) => (
+                            <button
+                              key={label}
+                              onClick={() => saveDesign({ ...design, coverPosition: p })}
+                              className={`flex-1 py-1.5 text-[10px] font-medium rounded-md border transition-all ${
+                                design.coverPosition?.x === p.x && design.coverPosition?.y === p.y
+                                  ? "border-gray-900 bg-gray-50"
+                                  : "border-gray-200 hover:border-gray-300 text-gray-500"
+                              }`}
+                            >
+                              {label}
+                            </button>
+                          ))}
+                        </div>
+
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
                             <span className="text-[11px] text-gray-500">Zoom</span>
@@ -863,8 +885,8 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                           </div>
                           <input
                             type="range"
-                            min={50}
-                            max={200}
+                            min={0}
+                            max={300}
                             step={5}
                             value={design.coverZoom ?? 100}
                             onChange={(e) => saveDesign({ ...design, coverZoom: Number(e.target.value) })}
@@ -1074,7 +1096,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                 }`}
               >
                 <iframe
-                  key={JSON.stringify(design)}
+                  key={previewVersion}
                   src={`/g/${gallery.slug}?preview=1`}
                   className="w-full h-full border-0"
                   title="Gallery Preview"
