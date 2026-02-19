@@ -1,4 +1,5 @@
 export type CoverLayout = "full" | "center" | "left" | "minimal";
+export type CoverFit = "fill" | "fit";
 export type CoverFocusPoint = "top" | "center" | "bottom";
 export type TypographyPreset = "sans" | "serif" | "modern" | "timeless" | "bold" | "subtle";
 export type ColorTheme = "light" | "gold" | "rose" | "terracotta" | "olive" | "sea" | "dark";
@@ -8,6 +9,7 @@ export type GridSpacing = "regular" | "large";
 
 export interface DesignSettings {
   cover: CoverLayout;
+  coverFit: CoverFit;
   coverFocusPoint: CoverFocusPoint;
   typography: TypographyPreset;
   color: ColorTheme;
@@ -18,6 +20,7 @@ export interface DesignSettings {
 
 export const DEFAULT_DESIGN: DesignSettings = {
   cover: "full",
+  coverFit: "fill",
   coverFocusPoint: "top",
   typography: "serif",
   color: "light",

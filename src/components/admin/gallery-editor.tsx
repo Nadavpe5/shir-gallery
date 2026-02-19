@@ -34,6 +34,8 @@ import { AdminNav } from "./admin-nav";
 import type {
   DesignSettings,
   CoverLayout,
+  CoverFit,
+  CoverFocusPoint,
   TypographyPreset,
   ColorTheme,
   GridStyle,
@@ -795,6 +797,59 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                   ))}
                 </div>
 
+                {design.cover !== "minimal" && (
+                  <>
+                    <h4 className="text-xs font-medium uppercase tracking-wider text-gray-500 mt-6 mb-3">
+                      Cover Fit
+                    </h4>
+                    <div className="grid grid-cols-2 gap-2.5">
+                      {([
+                        { value: "fill" as CoverFit, label: "Fill", desc: "Fills container, may crop" },
+                        { value: "fit" as CoverFit, label: "Fit", desc: "Full image, no crop" },
+                      ]).map(({ value, label, desc }) => (
+                        <button
+                          key={value}
+                          onClick={() => saveDesign({ ...design, coverFit: value })}
+                          className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 text-center transition-all ${
+                            design.coverFit === value
+                              ? "border-gray-900 bg-gray-50"
+                              : "border-gray-100 hover:border-gray-300"
+                          }`}
+                        >
+                          <span className="text-sm font-medium">{label}</span>
+                          <span className="text-[10px] text-gray-400 leading-tight">{desc}</span>
+                        </button>
+                      ))}
+                    </div>
+
+                    {design.coverFit !== "fit" && (
+                      <>
+                        <h4 className="text-xs font-medium uppercase tracking-wider text-gray-500 mt-6 mb-3">
+                          Focus Point
+                        </h4>
+                        <div className="grid grid-cols-3 gap-2">
+                          {([
+                            { value: "top" as CoverFocusPoint, label: "Top" },
+                            { value: "center" as CoverFocusPoint, label: "Center" },
+                            { value: "bottom" as CoverFocusPoint, label: "Bottom" },
+                          ]).map(({ value, label }) => (
+                            <button
+                              key={value}
+                              onClick={() => saveDesign({ ...design, coverFocusPoint: value })}
+                              className={`p-3 rounded-xl border-2 text-sm font-medium text-center transition-all ${
+                                design.coverFocusPoint === value
+                                  ? "border-gray-900 bg-gray-50"
+                                  : "border-gray-100 hover:border-gray-300"
+                              }`}
+                            >
+                              {label}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </>
+                )}
               </div>
             )}
 
