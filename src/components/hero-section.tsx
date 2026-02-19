@@ -7,11 +7,9 @@ import type { Gallery } from "@/lib/types";
 interface HeroSectionProps {
   gallery: Gallery;
   daysRemaining: number;
-  editedCount: number;
-  originalsCount: number;
 }
 
-export function HeroSection({ gallery, daysRemaining, editedCount, originalsCount }: HeroSectionProps) {
+export function HeroSection({ gallery, daysRemaining }: HeroSectionProps) {
   const formattedDate = gallery.shoot_date
     ? new Date(gallery.shoot_date).toLocaleDateString("en-US", {
         month: "long",
@@ -80,8 +78,8 @@ export function HeroSection({ gallery, daysRemaining, editedCount, originalsCoun
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-4">
-            {gallery.zip_url && (
+          {gallery.zip_url && (
+            <div className="flex flex-wrap items-center gap-4">
               <a
                 href={gallery.zip_url}
                 download
@@ -90,13 +88,8 @@ export function HeroSection({ gallery, daysRemaining, editedCount, originalsCoun
                 <Download className="w-3.5 h-3.5" />
                 Download All
               </a>
-            )}
-            {(editedCount > 0 || originalsCount > 0) && (
-              <span className="text-[11px] tracking-wide text-white/50">
-                {editedCount} edited{originalsCount > 0 ? ` + ${originalsCount} originals` : ""}
-              </span>
-            )}
-          </div>
+            </div>
+          )}
         </motion.div>
       </div>
     </section>

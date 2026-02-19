@@ -62,19 +62,9 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
         onShareClick={() => setShareOpen(true)}
       />
 
-      <HeroSection
-        gallery={gallery}
-        daysRemaining={daysRemaining}
-        editedCount={gallery.highlights.length + gallery.gallery.length}
-        originalsCount={gallery.originals.length}
-      />
+      <HeroSection gallery={gallery} daysRemaining={daysRemaining} />
 
-      <MarqueeTicker
-        gallery={gallery}
-        daysRemaining={daysRemaining}
-        editedCount={gallery.highlights.length + gallery.gallery.length}
-        originalsCount={gallery.originals.length}
-      />
+      <MarqueeTicker gallery={gallery} daysRemaining={daysRemaining} />
 
       <HighlightsSection
         assets={gallery.highlights}

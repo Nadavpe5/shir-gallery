@@ -46,8 +46,7 @@ export function DownloadButton({ zipUrl }: DownloadButtonProps) {
         </p>
 
         <a
-          href={zipUrl}
-          download
+          href={`/api/download?url=${encodeURIComponent(zipUrl)}&name=gallery.zip`}
           onClick={handleClick}
           className="inline-flex items-center gap-2 bg-sage text-sage-foreground tracking-[0.15em] uppercase text-[11px] font-medium px-8 py-3.5 transition-all hover:opacity-85 active:scale-[0.98]"
         >
