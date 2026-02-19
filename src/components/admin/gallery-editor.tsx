@@ -35,7 +35,6 @@ import type {
   DesignSettings,
   CoverLayout,
   CoverFit,
-  CoverFocusPoint,
   TypographyPreset,
   ColorTheme,
   GridStyle,
@@ -822,29 +821,59 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                       ))}
                     </div>
 
-                    {design.coverFit !== "fit" && (
+                    {design.coverFit !== "fit" && gallery.cover_image_url && (
                       <>
                         <h4 className="text-xs font-medium uppercase tracking-wider text-gray-500 mt-6 mb-3">
-                          Focus Point
+                          Position &amp; Zoom
                         </h4>
-                        <div className="grid grid-cols-3 gap-2">
-                          {([
-                            { value: "top" as CoverFocusPoint, label: "Top" },
-                            { value: "center" as CoverFocusPoint, label: "Center" },
-                            { value: "bottom" as CoverFocusPoint, label: "Bottom" },
-                          ]).map(({ value, label }) => (
-                            <button
-                              key={value}
-                              onClick={() => saveDesign({ ...design, coverFocusPoint: value })}
-                              className={`p-3 rounded-xl border-2 text-sm font-medium text-center transition-all ${
-                                design.coverFocusPoint === value
-                                  ? "border-gray-900 bg-gray-50"
-                                  : "border-gray-100 hover:border-gray-300"
-                              }`}
-                            >
-                              {label}
-                            </button>
-                          ))}
+                        <p className="text-[10px] text-gray-400 mb-2">Click on the image to set the focal point</p>
+                        <div
+                          className="relative w-full aspect-[16/9] rounded-lg overflow-hidden border border-gray-200 cursor-crosshair mb-4"
+                          onClick={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+                            const y = Math.round(((e.clientY - rect.top) / rect.height) * 100);
+                            saveDesign({ ...design, coverPosition: { x, y } });
+                          }}
+                        >
+                          <div
+                            className="absolute inset-0"
+                            style={{
+                              backgroundImage: `url(${gallery.cover_image_url})`,
+                              backgroundPosition: `${design.coverPosition?.x ?? 50}% ${design.coverPosition?.y ?? 30}%`,
+                              backgroundSize: (design.coverZoom ?? 100) === 100 ? "cover" : `${(design.coverZoom ?? 100) + 50}%`,
+                              backgroundRepeat: "no-repeat",
+                            }}
+                          />
+                          <div
+                            className="absolute w-5 h-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-md bg-white/30 pointer-events-none"
+                            style={{
+                              left: `${design.coverPosition?.x ?? 50}%`,
+                              top: `${design.coverPosition?.y ?? 30}%`,
+                            }}
+                          >
+                            <div className="absolute inset-[3px] rounded-full bg-white shadow-sm" />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[11px] text-gray-500">Zoom</span>
+                            <span className="text-[11px] text-gray-400 tabular-nums">{design.coverZoom ?? 100}%</span>
+                          </div>
+                          <input
+                            type="range"
+                            min={50}
+                            max={200}
+                            step={5}
+                            value={design.coverZoom ?? 100}
+                            onChange={(e) => saveDesign({ ...design, coverZoom: Number(e.target.value) })}
+                            className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-900"
+                          />
+                          <div className="flex justify-between text-[9px] text-gray-300">
+                            <span>Show more</span>
+                            <span>Zoom in</span>
+                          </div>
                         </div>
                       </>
                     )}
@@ -1045,7 +1074,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                 }`}
               >
                 <iframe
-                  key={`${design.cover}-${design.typography}-${design.color}-${design.gridStyle}-${design.gridSize}-${design.gridSpacing}`}
+                  key={JSON.stringify(design)}
                   src={`/g/${gallery.slug}?preview=1`}
                   className="w-full h-full border-0"
                   title="Gallery Preview"

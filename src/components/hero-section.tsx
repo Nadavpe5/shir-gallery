@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Download, MapPin, Calendar, Clock } from "lucide-react";
-import type { Gallery, CoverLayout, CoverFit, CoverFocusPoint } from "@/lib/types";
+import type { Gallery, CoverLayout, CoverFit } from "@/lib/types";
 
 interface HeroSectionProps {
   gallery: Gallery;
@@ -21,8 +21,8 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
 
   const cover: CoverLayout = gallery.design_settings?.cover || "full";
   const coverFit: CoverFit = gallery.design_settings?.coverFit || "fill";
-  const focusPoint: CoverFocusPoint = gallery.design_settings?.coverFocusPoint || "top";
-  const focusClass = focusPoint === "top" ? "bg-top" : focusPoint === "bottom" ? "bg-bottom" : "bg-center";
+  const pos = gallery.design_settings?.coverPosition || { x: 50, y: 30 };
+  const zoom = gallery.design_settings?.coverZoom ?? 100;
   const isFit = coverFit === "fit";
   const serifClass = fontClass || "font-serif";
 
@@ -64,25 +64,56 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
     transition: { duration: 1, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
   };
 
-  const bgStyle = coverUrl
+  const zipName = gallery.zip_url?.split("/").pop() || "gallery.zip";
+
+  const fillStyle = coverUrl
+    ? {
+        backgroundImage: `url(${coverUrl})`,
+        backgroundPosition: `${pos.x}% ${pos.y}%`,
+        backgroundSize: zoom === 100 ? "cover" : `${zoom + 50}%`,
+        backgroundRepeat: "no-repeat",
+      }
+    : undefined;
+
+  const fitBlurStyle = coverUrl
     ? { backgroundImage: `url(${coverUrl})` }
     : undefined;
 
-  const zipName = gallery.zip_url?.split("/").pop() || "gallery.zip";
+  const fitStyle = coverUrl
+    ? {
+        backgroundImage: `url(${coverUrl})`,
+        backgroundSize: "contain",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }
+    : undefined;
+
+  function renderCoverImage() {
+    if (!coverUrl) return null;
+    if (isFit) {
+      return (
+        <>
+          <div className="absolute inset-0 z-0 bg-cover bg-center scale-110 blur-2xl opacity-60" style={fitBlurStyle} />
+          <div className="absolute inset-0 z-0" style={fitStyle} />
+        </>
+      );
+    }
+    return <div className="absolute inset-0 z-0" style={fillStyle} />;
+  }
 
   if (cover === "center") {
     return (
       <section className="py-14 md:py-32 px-5 md:px-16 lg:px-24 text-center">
         <motion.div {...anim} className="max-w-3xl mx-auto">
-          {bgStyle && (
+          {coverUrl && (
             <div className="relative w-full aspect-[4/3] md:aspect-[16/9] mb-8 md:mb-12 overflow-hidden rounded-lg md:rounded-none">
               {isFit ? (
                 <>
-                  <div className="absolute inset-0 bg-cover bg-center scale-110 blur-2xl opacity-60" style={bgStyle} />
-                  <div className="absolute inset-0 bg-contain bg-center bg-no-repeat" style={bgStyle} />
+                  <div className="absolute inset-0 bg-cover bg-center scale-110 blur-2xl opacity-60" style={fitBlurStyle} />
+                  <div className="absolute inset-0" style={fitStyle} />
                 </>
               ) : (
-                <div className={`w-full h-full bg-cover ${focusClass}`} style={bgStyle} />
+                <div className="w-full h-full" style={fillStyle} />
               )}
             </div>
           )}
@@ -143,15 +174,15 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
             </a>
           )}
         </motion.div>
-        {bgStyle && (
+        {coverUrl && (
           <div className="relative flex-1 min-h-[50vh] md:min-h-0 overflow-hidden">
             {isFit ? (
               <>
-                <div className="absolute inset-0 bg-cover bg-center scale-110 blur-2xl opacity-60" style={bgStyle} />
-                <div className="absolute inset-0 bg-contain bg-center bg-no-repeat" style={bgStyle} />
+                <div className="absolute inset-0 bg-cover bg-center scale-110 blur-2xl opacity-60" style={fitBlurStyle} />
+                <div className="absolute inset-0" style={fitStyle} />
               </>
             ) : (
-              <div className={`absolute inset-0 bg-cover ${focusClass}`} style={bgStyle} />
+              <div className="absolute inset-0" style={fillStyle} />
             )}
           </div>
         )}
@@ -192,14 +223,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
   // Default "full" layout -- full-bleed cover image
   return (
     <section className="relative w-full min-h-[60dvh] md:min-h-[75vh] flex items-end overflow-hidden">
-      {bgStyle && isFit ? (
-        <>
-          <div className="absolute inset-0 z-0 bg-cover bg-center scale-110 blur-2xl opacity-60" style={bgStyle} />
-          <div className="absolute inset-0 z-0 bg-contain bg-center bg-no-repeat" style={bgStyle} />
-        </>
-      ) : bgStyle ? (
-        <div className={`absolute inset-0 z-0 bg-cover ${focusClass}`} style={bgStyle} />
-      ) : null}
+      {renderCoverImage()}
       <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
       <div className="relative z-10 w-full px-5 md:px-16 lg:px-24 pb-10 md:pb-24">
         <motion.div {...anim} className="max-w-4xl">
