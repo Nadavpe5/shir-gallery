@@ -48,6 +48,15 @@ export function CollectionsDashboard() {
     fetchGalleries();
   }, [fetchGalleries]);
 
+  useEffect(() => {
+    if (!menuOpen) return;
+    function handleClickOutside() {
+      setMenuOpen(null);
+    }
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [menuOpen]);
+
   async function handleDelete(id: string) {
     if (!confirm("Delete this gallery? This cannot be undone.")) return;
     await fetch(`/api/admin/galleries/${id}`, { method: "DELETE" });
