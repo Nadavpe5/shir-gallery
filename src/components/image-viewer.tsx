@@ -32,14 +32,9 @@ export function ImageViewer({ slides, open, index, onClose, onIndexChange }: Ima
     const current = slides[index];
     if (!current) return;
 
-    const link = document.createElement("a");
-    link.href = current.downloadUrl;
-    link.download = current.filename || "photo.jpg";
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const name = current.filename || "photo.jpg";
+    const proxyUrl = `/api/download?url=${encodeURIComponent(current.downloadUrl)}&name=${encodeURIComponent(name)}`;
+    window.open(proxyUrl, "_blank");
   }
 
   return (

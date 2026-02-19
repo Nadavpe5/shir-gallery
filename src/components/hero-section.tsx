@@ -7,9 +7,11 @@ import type { Gallery } from "@/lib/types";
 interface HeroSectionProps {
   gallery: Gallery;
   daysRemaining: number;
+  editedCount: number;
+  originalsCount: number;
 }
 
-export function HeroSection({ gallery, daysRemaining }: HeroSectionProps) {
+export function HeroSection({ gallery, daysRemaining, editedCount, originalsCount }: HeroSectionProps) {
   const formattedDate = gallery.shoot_date
     ? new Date(gallery.shoot_date).toLocaleDateString("en-US", {
         month: "long",
@@ -89,10 +91,11 @@ export function HeroSection({ gallery, daysRemaining }: HeroSectionProps) {
                 Download All
               </a>
             )}
-            <span className="text-[11px] tracking-wide text-white/50">
-              {gallery.edited_count} edited + {gallery.originals_count}{" "}
-              originals
-            </span>
+            {(editedCount > 0 || originalsCount > 0) && (
+              <span className="text-[11px] tracking-wide text-white/50">
+                {editedCount} edited{originalsCount > 0 ? ` + ${originalsCount} originals` : ""}
+              </span>
+            )}
           </div>
         </motion.div>
       </div>

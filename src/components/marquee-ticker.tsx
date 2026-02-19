@@ -5,13 +5,18 @@ import type { Gallery } from "@/lib/types";
 interface MarqueeTickerProps {
   gallery: Gallery;
   daysRemaining: number;
+  editedCount: number;
+  originalsCount: number;
 }
 
-export function MarqueeTicker({ gallery, daysRemaining }: MarqueeTickerProps) {
+export function MarqueeTicker({ gallery, daysRemaining, editedCount, originalsCount }: MarqueeTickerProps) {
+  const countsText = editedCount > 0 || originalsCount > 0
+    ? `${editedCount} edited${originalsCount > 0 ? ` + ${originalsCount} originals` : ""}`
+    : null;
   const items = [
     "Shir Yadgar Perez",
     gallery.shoot_title,
-    `${gallery.edited_count} edited + ${gallery.originals_count} originals`,
+    countsText,
     daysRemaining > 0
       ? `Download within ${daysRemaining} days`
       : "Gallery available",

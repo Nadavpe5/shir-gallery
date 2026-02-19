@@ -10,14 +10,9 @@ interface ImageOverlayProps {
 export function ImageOverlay({ downloadUrl, filename }: ImageOverlayProps) {
   function handleDownload(e: React.MouseEvent) {
     e.stopPropagation();
-    const link = document.createElement("a");
-    link.href = downloadUrl;
-    link.download = filename || "photo.jpg";
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const name = filename || "photo.jpg";
+    const proxyUrl = `/api/download?url=${encodeURIComponent(downloadUrl)}&name=${encodeURIComponent(name)}`;
+    window.open(proxyUrl, "_blank");
   }
 
   return (
