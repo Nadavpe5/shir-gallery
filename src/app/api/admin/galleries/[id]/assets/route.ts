@@ -58,6 +58,62 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   return NextResponse.json(data, { status: 201 });
 }
 
+export async function PATCH(request: NextRequest, { params }: RouteParams) {
+  const isAdmin = await validateAdminSession();
+  if (!isAdmin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { id } = await params;
+  const body = await request.json();
+
+  if (Array.isArray(body)) {
+    const results = [];
+    for (const item of body) {
+      const update: Record<string, unknown> = {};
+      if (item.type) update.type = item.type;
+      if (item.sort_order !== undefined) update.sort_order = item.sort_order;
+
+      const { data, error } = await supabaseAdmin
+        .from("gallery_assets")
+        .update(update)
+        .eq("id", item.id)
+        .eq("gallery_id", id)
+        .select()
+        .single();
+
+      if (error) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+      }
+      results.push(data);
+    }
+    return NextResponse.json(results);
+  }
+
+  const { assetId, type, sort_order } = body;
+  if (!assetId) {
+    return NextResponse.json({ error: "assetId required" }, { status: 400 });
+  }
+
+  const update: Record<string, unknown> = {};
+  if (type) update.type = type;
+  if (sort_order !== undefined) update.sort_order = sort_order;
+
+  const { data, error } = await supabaseAdmin
+    .from("gallery_assets")
+    .update(update)
+    .eq("id", assetId)
+    .eq("gallery_id", id)
+    .select()
+    .single();
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json(data);
+}
+
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   const isAdmin = await validateAdminSession();
   if (!isAdmin) {

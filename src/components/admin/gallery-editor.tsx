@@ -334,11 +334,15 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
     setAssets((prev) =>
       prev.map((a) => (a.id === assetId ? { ...a, type } : a))
     );
-    await fetch(`/api/admin/galleries/${galleryId}/assets`, {
-      method: "POST",
+    const res = await fetch(`/api/admin/galleries/${galleryId}/assets`, {
+      method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: assetId, type }),
+      body: JSON.stringify({ assetId, type }),
     });
+    if (!res.ok) {
+      console.error("Failed to update asset type:", await res.text());
+      fetchGallery();
+    }
   }
 
   async function rotateAsset(assetId: string) {
