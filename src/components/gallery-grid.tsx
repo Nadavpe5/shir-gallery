@@ -19,20 +19,41 @@ interface GalleryGridProps {
   fontClass?: string;
 }
 
-function getEditorialSlot(index: number): { span: string; aspect: string } {
-  const cycle = Math.floor(index / 5);
-  const pos = index % 5;
-  const flipSide = cycle % 2 === 1;
+const EDITORIAL_CYCLE = 6;
 
-  if (pos === 0) {
-    return {
-      span: flipSide
-        ? "md:col-start-2 md:col-span-2 md:row-span-2 col-span-2"
-        : "md:col-span-2 md:row-span-2 col-span-2",
-      aspect: "aspect-[4/5]",
-    };
+function getEditorialClass(index: number, total: number): string {
+  const fullCycles = Math.floor(total / EDITORIAL_CYCLE);
+  const trailing = total % EDITORIAL_CYCLE;
+  const cycle = Math.floor(index / EDITORIAL_CYCLE);
+  const pos = index % EDITORIAL_CYCLE;
+  const flip = cycle % 2 === 1;
+
+  if (cycle < fullCycles) {
+    if (pos !== 0) return "";
+    const base = "col-span-2 row-span-2";
+    return flip ? `${base} md:col-start-2` : base;
   }
-  return { span: "", aspect: "aspect-square" };
+
+  const trailIdx = index - fullCycles * EDITORIAL_CYCLE;
+  const trailFlip = fullCycles % 2 === 1;
+
+  if (trailing >= 4) {
+    if (trailIdx === 0) {
+      const base = "col-span-2 row-span-2";
+      return trailFlip ? `${base} md:col-start-2` : base;
+    }
+    return "";
+  }
+
+  if (trailing === 1 && trailIdx === 0) {
+    return "col-span-2 md:col-span-3";
+  }
+
+  if (trailing === 2 && trailIdx === 0) {
+    return "col-span-2";
+  }
+
+  return "";
 }
 
 export function GalleryGrid({
@@ -56,7 +77,7 @@ export function GalleryGrid({
     ? "columns-2 md:columns-2 lg:columns-3"
     : "columns-2 md:columns-3 lg:columns-4";
   const masonryGap = gridSettings?.spacing === "large" ? "gap-5 md:gap-6" : "gap-3 md:gap-4";
-  const editorialGap = gridSettings?.spacing === "large" ? "gap-4 md:gap-5" : "gap-2 md:gap-3";
+  const editorialGap = gridSettings?.spacing === "large" ? "gap-2.5 md:gap-3" : "gap-1.5 md:gap-2";
   const serifClass = fontClass || "font-serif";
 
   return (
@@ -78,9 +99,15 @@ export function GalleryGrid({
       </motion.div>
 
       {isEditorial ? (
-        <div className={`grid grid-cols-2 md:grid-cols-3 ${editorialGap}`}>
+        <div
+          className={`grid grid-cols-2 md:grid-cols-3 ${editorialGap}`}
+          style={{
+            gridAutoRows: "clamp(180px, 30vw, 420px)",
+            gridAutoFlow: "dense",
+          }}
+        >
           {assets.map((asset, i) => {
-            const slot = getEditorialSlot(i);
+            const spanClass = getEditorialClass(i, assets.length);
             return (
               <motion.div
                 key={asset.id}
@@ -88,7 +115,7 @@ export function GalleryGrid({
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true, margin: "-30px" }}
                 transition={{ duration: 0.5, delay: (i % 8) * 0.04 }}
-                className={`relative ${slot.aspect} ${slot.span} cursor-pointer group overflow-hidden`}
+                className={`relative cursor-pointer group overflow-hidden ${spanClass}`}
                 onClick={() => onImageClick(indexOffset + i)}
               >
                 <ImageOverlay
@@ -100,8 +127,8 @@ export function GalleryGrid({
                   alt={asset.filename || `Photo ${i + 1}`}
                   fill
                   unoptimized
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
-                  loading={i < 5 ? "eager" : "lazy"}
+                  className="object-cover w-full h-full transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                  loading={i < 6 ? "eager" : "lazy"}
                 />
               </motion.div>
             );

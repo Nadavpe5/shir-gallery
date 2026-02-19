@@ -43,18 +43,41 @@ export function HighlightsSection({
       </motion.div>
 
       {gridSettings?.style === "editorial" ? (
-        <div className={`grid grid-cols-2 md:grid-cols-3 ${gridSettings?.spacing === "large" ? "gap-4 md:gap-5" : "gap-2 md:gap-3"}`}>
+        <div
+          className={`grid grid-cols-2 md:grid-cols-3 ${gridSettings?.spacing === "large" ? "gap-2.5 md:gap-3" : "gap-1.5 md:gap-2"}`}
+          style={{
+            gridAutoRows: "clamp(180px, 30vw, 420px)",
+            gridAutoFlow: "dense",
+          }}
+        >
           {assets.map((asset, i) => {
-            const cycle = Math.floor(i / 5);
-            const pos = i % 5;
+            const CYCLE = 6;
+            const total = assets.length;
+            const fullCycles = Math.floor(total / CYCLE);
+            const trailing = total % CYCLE;
+            const cycle = Math.floor(i / CYCLE);
+            const pos = i % CYCLE;
             const flip = cycle % 2 === 1;
-            const isHero = pos === 0;
-            const spanClass = isHero
-              ? flip
-                ? "md:col-start-2 md:col-span-2 md:row-span-2 col-span-2"
-                : "md:col-span-2 md:row-span-2 col-span-2"
-              : "";
-            const aspectClass = isHero ? "aspect-[4/5]" : "aspect-square";
+
+            let spanClass = "";
+            if (cycle < fullCycles) {
+              if (pos === 0) {
+                const base = "col-span-2 row-span-2";
+                spanClass = flip ? `${base} md:col-start-2` : base;
+              }
+            } else {
+              const trailIdx = i - fullCycles * CYCLE;
+              const trailFlip = fullCycles % 2 === 1;
+              if (trailing >= 4 && trailIdx === 0) {
+                const base = "col-span-2 row-span-2";
+                spanClass = trailFlip ? `${base} md:col-start-2` : base;
+              } else if (trailing === 1 && trailIdx === 0) {
+                spanClass = "col-span-2 md:col-span-3";
+              } else if (trailing === 2 && trailIdx === 0) {
+                spanClass = "col-span-2";
+              }
+            }
+
             return (
               <motion.div
                 key={asset.id}
@@ -62,7 +85,7 @@ export function HighlightsSection({
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.6, delay: i * 0.06 }}
-                className={`relative ${aspectClass} ${spanClass} cursor-pointer group overflow-hidden`}
+                className={`relative cursor-pointer group overflow-hidden ${spanClass}`}
                 onClick={() => onImageClick(i)}
               >
                 <ImageOverlay
@@ -74,7 +97,7 @@ export function HighlightsSection({
                   alt={asset.filename || `Highlight ${i + 1}`}
                   fill
                   unoptimized
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                  className="object-cover w-full h-full transition-transform duration-700 ease-out group-hover:scale-[1.02]"
                   loading={i < 4 ? "eager" : "lazy"}
                 />
               </motion.div>

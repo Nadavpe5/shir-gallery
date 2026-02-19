@@ -29,6 +29,9 @@ import {
   Smartphone,
   RefreshCw,
   RotateCw,
+  CheckCircle2,
+  Sparkles,
+  AlertCircle,
 } from "lucide-react";
 import { AdminNav } from "./admin-nav";
 import type {
@@ -1046,6 +1049,36 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                         </button>
                       ))}
                     </div>
+
+                    {design.gridStyle === "editorial" && (
+                      <div className="mt-3 space-y-1.5">
+                        {[
+                          { label: "Highlights", count: highlights.length },
+                          { label: "Gallery", count: galleryPhotos.length },
+                          { label: "Originals", count: originals.length },
+                        ].filter(s => s.count > 0).map(({ label, count }) => {
+                          const trailing = count % 6;
+                          const isPerfect = trailing === 0 || trailing === 3;
+                          const isGood = trailing === 2 || trailing >= 4;
+                          const nextPerfect = trailing === 0 ? 0 : (trailing <= 3 ? 3 - trailing : 6 - trailing);
+                          return (
+                            <div key={label} className="flex items-center gap-2 text-[10px]">
+                              {isPerfect ? (
+                                <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />
+                              ) : isGood ? (
+                                <Sparkles className="w-3 h-3 text-amber-500 shrink-0" />
+                              ) : (
+                                <AlertCircle className="w-3 h-3 text-gray-300 shrink-0" />
+                              )}
+                              <span className={isPerfect ? "text-emerald-600" : isGood ? "text-amber-600" : "text-gray-400"}>
+                                {label} ({count})
+                                {isPerfect ? " — Perfect" : nextPerfect > 0 ? ` — +${nextPerfect} for perfect` : ""}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                   <div>
                     <p className="text-xs text-gray-400 mb-2.5">Size</p>
