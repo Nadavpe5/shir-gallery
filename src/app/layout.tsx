@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import {
   Inter,
   Playfair_Display,
@@ -49,6 +50,7 @@ const raleway = Raleway({
 export const metadata: Metadata = {
   title: "Shir Yadgar Photography",
   description: "Premium client gallery",
+  manifest: "/manifest.json",
   icons: {
     icon: [
       { url: "/favicon.png", sizes: "64x64", type: "image/png" },
@@ -57,6 +59,16 @@ export const metadata: Metadata = {
     ],
     apple: "/apple-touch-icon.png",
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Shir Gallery",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#f8f5f0",
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -70,6 +82,9 @@ export default function RootLayout({
         className={`${inter.variable} ${playfair.variable} ${montserrat.variable} ${cormorant.variable} ${oswald.variable} ${raleway.variable} font-sans`}
       >
         {children}
+        <Script id="sw-register" strategy="afterInteractive">
+          {`if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js")}`}
+        </Script>
       </body>
     </html>
   );
