@@ -3,12 +3,14 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import type { Metadata } from "next";
 import { validateSession } from "@/lib/auth";
+import { validateAdminSession } from "@/lib/admin-auth";
 import { getGalleryWithAssets, getGalleryBySlug } from "@/lib/queries";
 import { GalleryContent } from "@/components/gallery-content";
 import { ExpiredPage } from "@/components/expired-page";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -21,20 +23,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function GalleryPage({ params }: PageProps) {
+export default async function GalleryPage({ params, searchParams }: PageProps) {
   const { slug } = await params;
+  const sp = await searchParams;
 
   const gallery = await getGalleryBySlug(slug);
   if (!gallery) notFound();
 
+  const isPreview = sp.preview === "1";
+  const isAdmin = isPreview ? await validateAdminSession() : false;
+
   const isExpired = new Date(gallery.expires_at) < new Date();
-  if (isExpired) {
+  if (isExpired && !isAdmin) {
     return <ExpiredPage clientName={gallery.client_name} />;
   }
 
-  const session = await validateSession(slug);
-  if (!session) {
-    redirect(`/g/${slug}/login`);
+  if (!isAdmin) {
+    const session = await validateSession(slug);
+    if (!session) {
+      redirect(`/g/${slug}/login`);
+    }
   }
 
   const galleryWithAssets = await getGalleryWithAssets(slug);

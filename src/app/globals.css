@@ -201,3 +201,7 @@
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }
+
+.preview-iframe::-webkit-scrollbar {
+  display: none;
+}

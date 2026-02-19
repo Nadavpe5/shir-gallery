@@ -922,8 +922,9 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
               >
                 <iframe
                   key={`${design.cover}-${design.typography}-${design.color}-${design.gridStyle}-${design.gridSize}-${design.gridSpacing}`}
-                  src={`/g/${gallery.slug}`}
-                  className="w-full h-full border-0"
+                  src={`/g/${gallery.slug}?preview=1`}
+                  className="w-full h-full border-0 preview-iframe"
+                  style={{ scrollbarWidth: "none" }}
                   title="Gallery Preview"
                 />
               </div>
