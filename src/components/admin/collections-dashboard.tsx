@@ -125,10 +125,10 @@ export function CollectionsDashboard() {
               return (
                 <div
                   key={gallery.id}
-                  className="group bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-lg hover:border-gray-200 transition-all duration-200 cursor-pointer"
+                  className="group bg-white border border-gray-100 rounded-xl hover:shadow-lg hover:border-gray-200 transition-all duration-200 cursor-pointer"
                   onClick={() => router.push(`/admin/galleries/${gallery.id}`)}
                 >
-                  <div className="relative aspect-[16/10] bg-gray-50">
+                  <div className="relative aspect-[16/10] bg-gray-50 rounded-t-xl overflow-hidden">
                     {gallery.cover_image_url ? (
                       <Image
                         src={gallery.cover_image_url}
