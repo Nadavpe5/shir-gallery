@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Download, MapPin, Calendar, Clock } from "lucide-react";
-import type { Gallery, CoverLayout, CoverFocusPoint } from "@/lib/types";
+import type { Gallery, CoverLayout } from "@/lib/types";
 
 interface HeroSectionProps {
   gallery: Gallery;
@@ -20,8 +20,6 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
     : null;
 
   const cover: CoverLayout = gallery.design_settings?.cover || "full";
-  const focusPoint: CoverFocusPoint = gallery.design_settings?.coverFocusPoint || "top";
-  const focusClass = focusPoint === "top" ? "bg-top" : focusPoint === "bottom" ? "bg-bottom" : "bg-center";
   const serifClass = fontClass || "font-serif";
 
   const nameContent = gallery.client_name.split("&").map((part, i, arr) => (
@@ -75,7 +73,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
           {bgStyle && (
             <div className="w-full aspect-[4/3] md:aspect-[16/9] mb-8 md:mb-12 overflow-hidden rounded-lg md:rounded-none">
               <div
-                className={`w-full h-full bg-cover ${focusClass}`}
+                className="w-full h-full bg-cover bg-top"
                 style={bgStyle}
               />
             </div>
@@ -139,7 +137,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
         </motion.div>
         {bgStyle && (
           <div
-            className={`flex-1 min-h-[50vh] md:min-h-0 bg-cover ${focusClass}`}
+            className="flex-1 min-h-[50vh] md:min-h-0 bg-cover bg-top"
             style={bgStyle}
           />
         )}
@@ -179,10 +177,10 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
 
   // Default "full" layout -- full-bleed cover image
   return (
-    <section className="relative w-full min-h-[75dvh] md:min-h-[90vh] flex items-end">
+    <section className="relative w-full min-h-[60dvh] md:min-h-[75vh] flex items-end">
       {bgStyle && (
         <div
-          className={`absolute inset-0 z-0 bg-cover ${focusClass}`}
+          className="absolute inset-0 z-0 bg-cover bg-top"
           style={bgStyle}
         />
       )}
