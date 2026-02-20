@@ -161,7 +161,7 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
       <DownloadButton zipUrl={gallery.zip_url} fontClass={fontClass} />
 
       <footer className="border-t border-border py-8 md:py-10 px-5 md:px-16 flex flex-col items-center gap-2.5">
-        <img src="/favicon.png" alt="Shir Yadgar Photography" className="w-7 h-7 md:w-8 md:h-8 opacity-40 object-contain" />
+        <img src="/logo-64.png" alt="Shir Yadgar Photography" width={64} height={50} className="w-7 h-7 md:w-8 md:h-8 opacity-40 object-contain" />
         <p className="text-[9px] md:text-[10px] tracking-[0.25em] uppercase text-muted-foreground/50">
           Shir Yadgar Photography
         </p>

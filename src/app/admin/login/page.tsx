@@ -37,11 +37,11 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center mb-10">
           <Image
-            src="/favicon.png"
+            src="/logo-256.png"
             alt="Shir Yadgar Photography"
-            width={100}
-            height={100}
-            className="mb-5"
+            width={256}
+            height={199}
+            className="mb-5 object-contain w-32 h-[100px]"
             priority
           />
           <h1 className="text-2xl font-semibold tracking-tight">Shir Yadgar Photography</h1>

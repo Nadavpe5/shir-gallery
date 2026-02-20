@@ -21,11 +21,11 @@ export function AdminNav() {
           className="flex items-center gap-3 group"
         >
           <Image
-            src="/favicon.png"
+            src="/logo-96.png"
             alt="Shir Yadgar Photography"
-            width={48}
-            height={48}
-            className="w-9 h-9 sm:w-12 sm:h-12 group-hover:opacity-80 transition-opacity"
+            width={96}
+            height={75}
+            className="w-9 h-9 sm:w-12 sm:h-12 object-contain group-hover:opacity-80 transition-opacity"
             priority
           />
           <span className="text-sm sm:text-base font-medium tracking-wide text-gray-800 truncate">
