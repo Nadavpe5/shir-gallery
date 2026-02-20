@@ -35,6 +35,7 @@ import {
   Star,
   ChevronLeft,
   ChevronRight,
+  ArrowLeftRight,
 } from "lucide-react";
 import {
   DndContext,
@@ -97,30 +98,54 @@ interface UploadItem {
   error?: string;
 }
 
+const EDITORIAL_CYCLE = 6;
+
+function isHeroPosition(idx: number, total: number): boolean {
+  const fullCycles = Math.floor(total / EDITORIAL_CYCLE);
+  const trailing = total % EDITORIAL_CYCLE;
+  const cycle = Math.floor(idx / EDITORIAL_CYCLE);
+  const pos = idx % EDITORIAL_CYCLE;
+
+  if (cycle < fullCycles) return pos === 0;
+
+  const trailIdx = idx - fullCycles * EDITORIAL_CYCLE;
+  if (trailing >= 4 && trailIdx === 0) return true;
+
+  return false;
+}
+
 function SortablePhoto({
   asset,
   idx,
   items,
   isCover,
   isEditorial,
+  isHero,
   isRotating,
   isSelected,
+  swapMode,
   onSelect,
   onMoveAsset,
   onRotate,
   onSetCover,
+  onSwapStart,
+  onSwapTarget,
 }: {
   asset: AssetData;
   idx: number;
   items: AssetData[];
   isCover: boolean;
   isEditorial: boolean;
+  isHero: boolean;
   isRotating: boolean;
   isSelected: boolean;
+  swapMode: number | null;
   onSelect: (id: string) => void;
   onMoveAsset: (items: AssetData[], from: number, to: number) => void;
   onRotate: (id: string) => void;
   onSetCover: (url: string) => void;
+  onSwapStart: (idx: number) => void;
+  onSwapTarget: (idx: number) => void;
 }) {
   const {
     attributes,
@@ -171,11 +196,35 @@ function SortablePhoto({
           Cover
         </div>
       )}
-      {isEditorial && idx === 0 && !isCover && (
-        <div className="absolute top-2 left-2 bg-amber-500/90 text-white text-[9px] uppercase tracking-wider font-medium px-2 py-1 rounded-md backdrop-blur-sm flex items-center gap-1 pointer-events-none">
-          <Star className="w-2.5 h-2.5" />
-          Hero
+      {isEditorial && isHero && !isCover && (
+        <div className="absolute top-2 left-2 flex items-center gap-1">
+          <div className="bg-amber-500/90 text-white text-[9px] uppercase tracking-wider font-medium px-2 py-1 rounded-md backdrop-blur-sm flex items-center gap-1 pointer-events-none">
+            <Star className="w-2.5 h-2.5" />
+            Hero
+          </div>
+          <button
+            onClick={(e) => { e.stopPropagation(); onSwapStart(idx); }}
+            onPointerDown={(e) => e.stopPropagation()}
+            className="bg-amber-500/90 text-white p-1 rounded-md backdrop-blur-sm hover:bg-amber-600/90 transition-colors"
+            title="Swap hero with another photo"
+          >
+            <ArrowLeftRight className="w-3 h-3" />
+          </button>
         </div>
+      )}
+      {swapMode !== null && swapMode !== idx && !isHero && (
+        <div
+          className="absolute inset-0 z-20 flex items-center justify-center bg-blue-500/20 ring-2 ring-blue-400 ring-inset cursor-pointer"
+          onClick={(e) => { e.stopPropagation(); onSwapTarget(idx); }}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <span className="bg-blue-600 text-white text-[9px] uppercase tracking-wider font-medium px-2.5 py-1 rounded-md shadow-lg">
+            Select
+          </span>
+        </div>
+      )}
+      {swapMode !== null && swapMode === idx && (
+        <div className="absolute inset-0 z-20 ring-2 ring-amber-400 ring-inset pointer-events-none" />
       )}
       {isRotating && (
         <div className="absolute inset-0 bg-black/30 flex items-center justify-center z-10 pointer-events-none">
@@ -243,6 +292,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
   const [regenResult, setRegenResult] = useState<string | null>(null);
   const [rotatingAssets, setRotatingAssets] = useState<Set<string>>(new Set());
   const [previewVersion, setPreviewVersion] = useState(0);
+  const [swappingHeroIdx, setSwappingHeroIdx] = useState<{ section: string; idx: number } | null>(null);
 
   const [editName, setEditName] = useState("");
   const [editTitle, setEditTitle] = useState("");
@@ -252,6 +302,15 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
   const [editPassword, setEditPassword] = useState("");
   const [editExpiry, setEditExpiry] = useState("");
   const [design, setDesign] = useState<DesignSettings>(DEFAULT_DESIGN);
+
+  useEffect(() => {
+    if (!swappingHeroIdx) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSwappingHeroIdx(null);
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [swappingHeroIdx]);
 
   const dndSensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
@@ -565,6 +624,23 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
         .sort((a, b) => a.sort_order - b.sort_order);
     });
 
+    await fetch(`/api/admin/galleries/${galleryId}/assets`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
+    });
+  }
+
+  async function swapAssets(sectionItems: AssetData[], idxA: number, idxB: number) {
+    const reordered = [...sectionItems];
+    [reordered[idxA], reordered[idxB]] = [reordered[idxB], reordered[idxA]];
+    const updates = reordered.map((a, i) => ({ id: a.id, sort_order: i }));
+    setAssets((prev) => {
+      const updated = new Map(updates.map((u) => [u.id, u.sort_order]));
+      return prev
+        .map((a) => (updated.has(a.id) ? { ...a, sort_order: updated.get(a.id)! } : a))
+        .sort((a, b) => a.sort_order - b.sort_order);
+    });
     await fetch(`/api/admin/galleries/${galleryId}/assets`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -1426,7 +1502,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
           <div className="flex items-center gap-2">
             <button
               onClick={() =>
-                window.open(`/g/${gallery.slug}`, "_blank")
+                window.open(`/g/${gallery.slug}?preview=1`, "_blank")
               }
               className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors"
             >
@@ -1461,11 +1537,19 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                 { label: "Originals", items: originals, type: "original" },
               ]
                 .filter(({ items }) => items.length > 0)
-                .map(({ label, items }) => (
+                .map(({ label, items, type: sectionType }) => (
                   <div key={label}>
                     <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">
                       {label}{" "}
                       <span className="text-gray-300">({items.length})</span>
+                      {swappingHeroIdx?.section === sectionType && (
+                        <button
+                          onClick={() => setSwappingHeroIdx(null)}
+                          className="ml-3 text-[10px] normal-case tracking-normal text-amber-600 hover:text-amber-700"
+                        >
+                          Cancel swap
+                        </button>
+                      )}
                     </h3>
                     <DndContext sensors={dndSensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd(items)}>
                       <SortableContext items={items.map((a) => a.id)} strategy={rectSortingStrategy}>
@@ -1478,12 +1562,21 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                               items={items}
                               isCover={gallery.cover_image_url === asset.full_url || gallery.cover_image_url === asset.web_url}
                               isEditorial={isEditorial}
+                              isHero={isEditorial && isHeroPosition(idx, items.length)}
                               isRotating={rotatingAssets.has(asset.id)}
                               isSelected={selectedAssets.has(asset.id)}
+                              swapMode={swappingHeroIdx?.section === sectionType ? swappingHeroIdx.idx : null}
                               onSelect={toggleSelect}
                               onMoveAsset={moveAsset}
                               onRotate={rotateAsset}
                               onSetCover={setCoverImage}
+                              onSwapStart={(heroIdx) => setSwappingHeroIdx({ section: sectionType, idx: heroIdx })}
+                              onSwapTarget={(targetIdx) => {
+                                if (swappingHeroIdx) {
+                                  swapAssets(items, swappingHeroIdx.idx, targetIdx);
+                                  setSwappingHeroIdx(null);
+                                }
+                              }}
                             />
                           ))}
                         </div>

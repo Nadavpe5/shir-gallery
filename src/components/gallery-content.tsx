@@ -35,10 +35,13 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0);
   const [shareOpen, setShareOpen] = useState(false);
+  const [isPreview, setIsPreview] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (!window.location.search.includes("preview=1")) return;
+    const preview = window.location.search.includes("preview=1");
+    setIsPreview(preview);
+    if (!preview) return;
     document.documentElement.style.scrollbarWidth = "none";
     const style = document.createElement("style");
     style.textContent = "html::-webkit-scrollbar{display:none}html{-ms-overflow-style:none}";
@@ -105,6 +108,17 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
 
   return (
     <main className="min-h-screen bg-background text-foreground" data-theme={ds.color}>
+      {isPreview && (
+        <div className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between bg-gray-900/90 backdrop-blur-sm px-4 py-2 text-white text-xs">
+          <span className="opacity-70">Preview Mode</span>
+          <a
+            href={`/admin/galleries/${gallery.id}`}
+            className="inline-flex items-center gap-1.5 bg-white/15 hover:bg-white/25 px-3 py-1.5 rounded-md transition-colors font-medium"
+          >
+            Back to Admin
+          </a>
+        </div>
+      )}
       <GalleryHeader
         gallery={gallery}
         onShareClick={() => setShareOpen(true)}

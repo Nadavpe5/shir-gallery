@@ -153,13 +153,14 @@ export function GalleryGrid({
         <div
           className={`grid grid-cols-2 md:grid-cols-3 ${editorialGap}`}
           style={{
-            gridAutoRows: "clamp(180px, 30vw, 420px)",
+            gridAutoRows: "clamp(240px, 38vw, 520px)",
             gridAutoFlow: "dense",
           }}
         >
           {assets.map((asset, i) => {
             const spanClass = getEditorialClass(i, assets.length);
             const isHero = spanClass.includes("row-span-2");
+            const objPos = getSmartObjectPosition(asset, isHero);
             return (
               <motion.div
                 key={asset.id}
@@ -167,7 +168,7 @@ export function GalleryGrid({
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true, margin: "-30px" }}
                 transition={{ duration: 0.5, delay: (i % 8) * 0.04 }}
-                className={`relative cursor-pointer group overflow-hidden bg-secondary ${spanClass}`}
+                className={`relative cursor-pointer group overflow-hidden ${spanClass}`}
                 onClick={() => onImageClick(indexOffset + i)}
               >
                 <ImageOverlay
@@ -179,7 +180,8 @@ export function GalleryGrid({
                   alt={asset.filename || `Photo ${i + 1}`}
                   fill
                   unoptimized
-                  className={`w-full h-full transition-transform duration-700 ease-out group-hover:scale-[1.02] ${isHero ? "object-cover" : "object-contain"}`}
+                  className="object-cover w-full h-full transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                  style={{ objectPosition: objPos }}
                   loading={i < 6 ? "eager" : "lazy"}
                 />
               </motion.div>

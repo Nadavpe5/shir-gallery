@@ -129,7 +129,7 @@ export function HighlightsSection({
         <div
           className={`grid grid-cols-2 md:grid-cols-3 ${gridSettings?.spacing === "large" ? "gap-2.5 md:gap-3" : "gap-1.5 md:gap-2"}`}
           style={{
-            gridAutoRows: "clamp(180px, 30vw, 420px)",
+            gridAutoRows: "clamp(240px, 38vw, 520px)",
             gridAutoFlow: "dense",
           }}
         >
@@ -162,6 +162,7 @@ export function HighlightsSection({
             }
 
             const isHero = spanClass.includes("row-span-2");
+            const objPos = getSmartObjectPosition(asset, isHero);
 
             return (
               <motion.div
@@ -170,7 +171,7 @@ export function HighlightsSection({
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.6, delay: i * 0.06 }}
-                className={`relative cursor-pointer group overflow-hidden bg-secondary ${spanClass}`}
+                className={`relative cursor-pointer group overflow-hidden ${spanClass}`}
                 onClick={() => onImageClick(i)}
               >
                 <ImageOverlay
@@ -182,7 +183,8 @@ export function HighlightsSection({
                   alt={asset.filename || `Highlight ${i + 1}`}
                   fill
                   unoptimized
-                  className={`w-full h-full transition-transform duration-700 ease-out group-hover:scale-[1.02] ${isHero ? "object-cover" : "object-contain"}`}
+                  className="object-cover w-full h-full transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                  style={{ objectPosition: objPos }}
                   loading={i < 4 ? "eager" : "lazy"}
                 />
               </motion.div>
