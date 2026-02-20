@@ -103,11 +103,8 @@ export function GalleryGrid({
         transition={{ duration: 0.7 }}
         className="text-center mb-10 md:mb-14"
       >
-        <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
-          {assets.length} Photographs
-        </p>
         <h2 className={`${serifClass} text-2xl md:text-4xl font-bold`}>
-          Full Gallery
+          Gallery.
         </h2>
         <div className="w-px h-6 md:h-8 bg-sage/40 mx-auto mt-4 md:mt-5" />
       </motion.div>
@@ -190,7 +187,7 @@ export function GalleryGrid({
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true, margin: "-30px" }}
                 transition={{ duration: 0.5, delay: (i % 8) * 0.04 }}
-                className={`relative ${aspect} cursor-pointer group overflow-hidden rounded-sm md:rounded-none animate-shimmer`}
+                className={`relative ${aspect} cursor-pointer group overflow-hidden rounded-sm md:rounded-none bg-secondary`}
                 onClick={() => onImageClick(indexOffset + i)}
               >
                 <ImageOverlay

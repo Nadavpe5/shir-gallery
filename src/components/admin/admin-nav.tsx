@@ -21,7 +21,7 @@ export function AdminNav() {
           className="flex items-center gap-3 group"
         >
           <Image
-            src="/camera-login.png"
+            src="/favicon.png"
             alt="Shir Yadgar Photography"
             width={48}
             height={48}

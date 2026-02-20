@@ -36,6 +36,20 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  rectSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { AdminNav } from "./admin-nav";
 import type {
   DesignSettings,
@@ -83,6 +97,132 @@ interface UploadItem {
   error?: string;
 }
 
+function SortablePhoto({
+  asset,
+  idx,
+  items,
+  isCover,
+  isEditorial,
+  isRotating,
+  isSelected,
+  onSelect,
+  onMoveAsset,
+  onRotate,
+  onSetCover,
+}: {
+  asset: AssetData;
+  idx: number;
+  items: AssetData[];
+  isCover: boolean;
+  isEditorial: boolean;
+  isRotating: boolean;
+  isSelected: boolean;
+  onSelect: (id: string) => void;
+  onMoveAsset: (items: AssetData[], from: number, to: number) => void;
+  onRotate: (id: string) => void;
+  onSetCover: (url: string) => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging: isSorting,
+  } = useSortable({ id: asset.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isSorting ? 0.5 : 1,
+    zIndex: isSorting ? 50 : undefined,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`relative aspect-square rounded-lg overflow-hidden cursor-grab active:cursor-grabbing group ring-2 transition-all shadow-sm hover:shadow-md ${
+        isSelected
+          ? "ring-blue-500 ring-offset-2"
+          : "ring-transparent hover:ring-gray-300"
+      }`}
+      {...attributes}
+      {...listeners}
+    >
+      <div className="absolute inset-0" onClick={() => onSelect(asset.id)}>
+        <Image
+          src={asset.web_url}
+          alt={asset.filename || ""}
+          fill
+          className="object-cover pointer-events-none"
+          sizes="(max-width: 640px) 33vw, (max-width: 1024px) 20vw, 16vw"
+        />
+      </div>
+      {isSelected && (
+        <div className="absolute inset-0 bg-blue-500/15 flex items-center justify-center pointer-events-none">
+          <div className="w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
+            <Check className="w-3.5 h-3.5 text-white" />
+          </div>
+        </div>
+      )}
+      {isCover && (
+        <div className="absolute top-2 left-2 bg-black/70 text-white text-[9px] uppercase tracking-wider font-medium px-2 py-1 rounded-md backdrop-blur-sm pointer-events-none">
+          Cover
+        </div>
+      )}
+      {isEditorial && idx === 0 && !isCover && (
+        <div className="absolute top-2 left-2 bg-amber-500/90 text-white text-[9px] uppercase tracking-wider font-medium px-2 py-1 rounded-md backdrop-blur-sm flex items-center gap-1 pointer-events-none">
+          <Star className="w-2.5 h-2.5" />
+          Hero
+        </div>
+      )}
+      {isRotating && (
+        <div className="absolute inset-0 bg-black/30 flex items-center justify-center z-10 pointer-events-none">
+          <Loader2 className="w-5 h-5 text-white animate-spin" />
+        </div>
+      )}
+      <div className="absolute top-2 right-2 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+        {idx > 0 && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onMoveAsset(items, idx, idx - 1); }}
+            onPointerDown={(e) => e.stopPropagation()}
+            className="bg-black/60 text-white p-1 rounded-md backdrop-blur-sm hover:bg-black/80"
+            title="Move left"
+          >
+            <ChevronLeft className="w-3 h-3" />
+          </button>
+        )}
+        {idx < items.length - 1 && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onMoveAsset(items, idx, idx + 1); }}
+            onPointerDown={(e) => e.stopPropagation()}
+            className="bg-black/60 text-white p-1 rounded-md backdrop-blur-sm hover:bg-black/80"
+            title="Move right"
+          >
+            <ChevronRight className="w-3 h-3" />
+          </button>
+        )}
+      </div>
+      <button
+        onClick={(e) => { e.stopPropagation(); onRotate(asset.id); }}
+        onPointerDown={(e) => e.stopPropagation()}
+        className="absolute bottom-2 left-2 bg-black/70 text-white p-1.5 rounded-md backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
+        title="Rotate 90°"
+      >
+        <RotateCw className="w-3 h-3" />
+      </button>
+      <button
+        onClick={(e) => { e.stopPropagation(); onSetCover(asset.full_url); }}
+        onPointerDown={(e) => e.stopPropagation()}
+        className="absolute bottom-2 right-2 bg-black/70 text-white text-[9px] uppercase tracking-wider font-medium px-2 py-1 rounded-md backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
+      >
+        Set Cover
+      </button>
+    </div>
+  );
+}
+
 export function GalleryEditor({ galleryId }: { galleryId: string }) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -112,6 +252,10 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
   const [editPassword, setEditPassword] = useState("");
   const [editExpiry, setEditExpiry] = useState("");
   const [design, setDesign] = useState<DesignSettings>(DEFAULT_DESIGN);
+
+  const dndSensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  );
 
   const fetchGallery = useCallback(async () => {
     const [gRes, aRes] = await Promise.all([
@@ -426,6 +570,17 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updates),
     });
+  }
+
+  function handleDragEnd(sectionItems: AssetData[]) {
+    return (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+      const fromIdx = sectionItems.findIndex((a) => a.id === active.id);
+      const toIdx = sectionItems.findIndex((a) => a.id === over.id);
+      if (fromIdx === -1 || toIdx === -1) return;
+      moveAsset(sectionItems, fromIdx, toIdx);
+    };
   }
 
   return (
@@ -1313,86 +1468,28 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                       {label}{" "}
                       <span className="text-gray-300">({items.length})</span>
                     </h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 lg:gap-3">
-                      {items.map((asset, idx) => {
-                        const isCover = gallery.cover_image_url === asset.full_url || gallery.cover_image_url === asset.web_url;
-                        return (
-                          <div
-                            key={asset.id}
-                            className={`relative aspect-square rounded-lg overflow-hidden cursor-pointer group ring-2 transition-all shadow-sm hover:shadow-md ${
-                              selectedAssets.has(asset.id)
-                                ? "ring-blue-500 ring-offset-2"
-                                : "ring-transparent hover:ring-gray-300"
-                            }`}
-                            onClick={() => toggleSelect(asset.id)}
-                          >
-                            <Image
-                              src={asset.web_url}
-                              alt={asset.filename || ""}
-                              fill
-                              className="object-cover"
-                              sizes="(max-width: 640px) 33vw, (max-width: 1024px) 20vw, 16vw"
+                    <DndContext sensors={dndSensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd(items)}>
+                      <SortableContext items={items.map((a) => a.id)} strategy={rectSortingStrategy}>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 lg:gap-3">
+                          {items.map((asset, idx) => (
+                            <SortablePhoto
+                              key={asset.id}
+                              asset={asset}
+                              idx={idx}
+                              items={items}
+                              isCover={gallery.cover_image_url === asset.full_url || gallery.cover_image_url === asset.web_url}
+                              isEditorial={isEditorial}
+                              isRotating={rotatingAssets.has(asset.id)}
+                              isSelected={selectedAssets.has(asset.id)}
+                              onSelect={toggleSelect}
+                              onMoveAsset={moveAsset}
+                              onRotate={rotateAsset}
+                              onSetCover={setCoverImage}
                             />
-                            {selectedAssets.has(asset.id) && (
-                              <div className="absolute inset-0 bg-blue-500/15 flex items-center justify-center">
-                                <div className="w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
-                                  <Check className="w-3.5 h-3.5 text-white" />
-                                </div>
-                              </div>
-                            )}
-                            {isCover && (
-                              <div className="absolute top-2 left-2 bg-black/70 text-white text-[9px] uppercase tracking-wider font-medium px-2 py-1 rounded-md backdrop-blur-sm">
-                                Cover
-                              </div>
-                            )}
-                            {isEditorial && idx === 0 && !isCover && (
-                              <div className="absolute top-2 left-2 bg-amber-500/90 text-white text-[9px] uppercase tracking-wider font-medium px-2 py-1 rounded-md backdrop-blur-sm flex items-center gap-1">
-                                <Star className="w-2.5 h-2.5" />
-                                Hero
-                              </div>
-                            )}
-                            {rotatingAssets.has(asset.id) && (
-                              <div className="absolute inset-0 bg-black/30 flex items-center justify-center z-10">
-                                <Loader2 className="w-5 h-5 text-white animate-spin" />
-                              </div>
-                            )}
-                            <div className="absolute top-2 right-2 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                              {idx > 0 && (
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); moveAsset(items, idx, idx - 1); }}
-                                  className="bg-black/60 text-white p-1 rounded-md backdrop-blur-sm hover:bg-black/80"
-                                  title="Move left"
-                                >
-                                  <ChevronLeft className="w-3 h-3" />
-                                </button>
-                              )}
-                              {idx < items.length - 1 && (
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); moveAsset(items, idx, idx + 1); }}
-                                  className="bg-black/60 text-white p-1 rounded-md backdrop-blur-sm hover:bg-black/80"
-                                  title="Move right"
-                                >
-                                  <ChevronRight className="w-3 h-3" />
-                                </button>
-                              )}
-                            </div>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); rotateAsset(asset.id); }}
-                              className="absolute bottom-2 left-2 bg-black/70 text-white p-1.5 rounded-md backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
-                              title="Rotate 90°"
-                            >
-                              <RotateCw className="w-3 h-3" />
-                            </button>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); setCoverImage(asset.full_url); }}
-                              className="absolute bottom-2 right-2 bg-black/70 text-white text-[9px] uppercase tracking-wider font-medium px-2 py-1 rounded-md backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
-                            >
-                              Set Cover
-                            </button>
-                          </div>
-                        );
-                      })}
-                    </div>
+                          ))}
+                        </div>
+                      </SortableContext>
+                    </DndContext>
                   </div>
                 ))}
             </div>

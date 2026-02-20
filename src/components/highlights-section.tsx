@@ -171,7 +171,7 @@ export function HighlightsSection({
                 onClick={() => onImageClick(i)}
               >
                 <div
-                  className={`relative w-full animate-shimmer ${
+                  className={`relative w-full bg-secondary ${
                     isLarge ? "aspect-[4/5]" : "aspect-[3/4]"
                   }`}
                 >

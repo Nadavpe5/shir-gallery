@@ -69,7 +69,7 @@ export function OriginalsSection({
               whileInView={{ opacity: 1 }}
               viewport={{ once: true, margin: "-30px" }}
               transition={{ duration: 0.5, delay: (i % 10) * 0.04 }}
-              className="relative aspect-[3/2] cursor-pointer group overflow-hidden animate-shimmer"
+              className="relative aspect-[3/2] cursor-pointer group overflow-hidden bg-secondary"
               onClick={() => onImageClick(indexOffset + i)}
             >
               <ImageOverlay

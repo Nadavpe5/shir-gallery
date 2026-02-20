@@ -37,7 +37,7 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center mb-10">
           <Image
-            src="/camera-login.png"
+            src="/favicon.png"
             alt="Shir Yadgar Photography"
             width={100}
             height={100}

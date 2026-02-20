@@ -11,9 +11,6 @@ export function MarqueeTicker({ gallery, daysRemaining }: MarqueeTickerProps) {
   const items = [
     "Shir Yadgar Perez",
     gallery.shoot_title,
-    daysRemaining > 0
-      ? `Download within ${daysRemaining} days`
-      : "Gallery available",
     gallery.location || "",
   ].filter(Boolean);
 
@@ -23,20 +20,15 @@ export function MarqueeTicker({ gallery, daysRemaining }: MarqueeTickerProps) {
     </span>
   );
 
-  const content = items.map((item, i) => (
-    <span key={i} className="inline-flex items-center">
-      <span>{item}</span>
-      {separator}
-    </span>
-  ));
-
   return (
-    <div className="border-y border-border py-5 overflow-hidden bg-background">
-      <div className="animate-marquee whitespace-nowrap inline-flex">
-        <span className="inline-flex items-center text-[11px] tracking-[0.25em] uppercase text-muted-foreground">
-          {content}
-          {content}
-        </span>
+    <div className="border-y border-border py-5 bg-background">
+      <div className="flex items-center justify-center flex-wrap gap-y-2">
+        {items.map((item, i) => (
+          <span key={i} className="inline-flex items-center text-[11px] tracking-[0.25em] uppercase text-muted-foreground">
+            <span>{item}</span>
+            {i < items.length - 1 && separator}
+          </span>
+        ))}
       </div>
     </div>
   );
