@@ -32,23 +32,10 @@ import {
   CheckCircle2,
   Sparkles,
   AlertCircle,
-  GripVertical,
   Star,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
-import {
-  DndContext,
-  closestCenter,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  rectSortingStrategy,
-  useSortable,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import { AdminNav } from "./admin-nav";
 import type {
   DesignSettings,
@@ -94,114 +81,6 @@ interface UploadItem {
   progress: number;
   status: "pending" | "uploading" | "processing" | "done" | "error";
   error?: string;
-}
-
-function SortablePhoto({
-  asset,
-  isSelected,
-  isCover,
-  isHero,
-  isRotating,
-  onSelect,
-  onRotate,
-  onSetCover,
-}: {
-  asset: AssetData;
-  isSelected: boolean;
-  isCover: boolean;
-  isHero: boolean;
-  isRotating: boolean;
-  onSelect: () => void;
-  onRotate: () => void;
-  onSetCover: () => void;
-}) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: asset.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 50 : undefined,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={`relative aspect-square rounded-lg overflow-hidden cursor-pointer group ring-2 transition-all shadow-sm hover:shadow-md ${
-        isSelected
-          ? "ring-blue-500 ring-offset-2"
-          : "ring-transparent hover:ring-gray-300"
-      }`}
-      onClick={onSelect}
-    >
-      <Image
-        src={asset.web_url}
-        alt={asset.filename || ""}
-        fill
-        className="object-cover"
-        sizes="(max-width: 640px) 33vw, (max-width: 1024px) 20vw, 16vw"
-      />
-      {isSelected && (
-        <div className="absolute inset-0 bg-blue-500/15 flex items-center justify-center">
-          <div className="w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
-            <Check className="w-3.5 h-3.5 text-white" />
-          </div>
-        </div>
-      )}
-      {isCover && (
-        <div className="absolute top-2 left-2 bg-black/70 text-white text-[9px] uppercase tracking-wider font-medium px-2 py-1 rounded-md backdrop-blur-sm">
-          Cover
-        </div>
-      )}
-      {isHero && !isCover && (
-        <div className="absolute top-2 left-2 bg-amber-500/90 text-white text-[9px] uppercase tracking-wider font-medium px-2 py-1 rounded-md backdrop-blur-sm flex items-center gap-1">
-          <Star className="w-2.5 h-2.5" />
-          Hero
-        </div>
-      )}
-      {isRotating && (
-        <div className="absolute inset-0 bg-black/30 flex items-center justify-center z-10">
-          <Loader2 className="w-5 h-5 text-white animate-spin" />
-        </div>
-      )}
-      <div
-        {...attributes}
-        {...listeners}
-        onClick={(e) => e.stopPropagation()}
-        className="absolute top-2 right-2 bg-black/50 text-white p-1 rounded-md backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
-        title="Drag to reorder"
-      >
-        <GripVertical className="w-3 h-3" />
-      </div>
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onRotate();
-        }}
-        className="absolute bottom-2 left-2 bg-black/70 text-white p-1.5 rounded-md backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
-        title="Rotate 90°"
-      >
-        <RotateCw className="w-3 h-3" />
-      </button>
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onSetCover();
-        }}
-        className="absolute bottom-2 right-2 bg-black/70 text-white text-[9px] uppercase tracking-wider font-medium px-2 py-1 rounded-md backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
-      >
-        Set Cover
-      </button>
-    </div>
-  );
 }
 
 export function GalleryEditor({ galleryId }: { galleryId: string }) {
@@ -524,23 +403,14 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
   const galleryPhotos = assets.filter((a) => a.type === "gallery");
   const originals = assets.filter((a) => a.type === "original");
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
-  );
-
   const isEditorial = design.gridStyle === "editorial";
 
-  async function handleDragEnd(event: DragEndEvent, sectionItems: AssetData[]) {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-
-    const oldIndex = sectionItems.findIndex((a) => a.id === active.id);
-    const newIndex = sectionItems.findIndex((a) => a.id === over.id);
-    if (oldIndex === -1 || newIndex === -1) return;
+  async function moveAsset(sectionItems: AssetData[], fromIdx: number, toIdx: number) {
+    if (toIdx < 0 || toIdx >= sectionItems.length) return;
 
     const reordered = [...sectionItems];
-    const [moved] = reordered.splice(oldIndex, 1);
-    reordered.splice(newIndex, 0, moved);
+    const [moved] = reordered.splice(fromIdx, 1);
+    reordered.splice(toIdx, 0, moved);
 
     const updates = reordered.map((a, i) => ({ id: a.id, sort_order: i }));
 
@@ -1437,32 +1307,86 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                       {label}{" "}
                       <span className="text-gray-300">({items.length})</span>
                     </h3>
-                    <DndContext
-                      sensors={sensors}
-                      collisionDetection={closestCenter}
-                      onDragEnd={(e) => handleDragEnd(e, items)}
-                    >
-                      <SortableContext
-                        items={items.map((a) => a.id)}
-                        strategy={rectSortingStrategy}
-                      >
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 lg:gap-3">
-                          {items.map((asset, idx) => (
-                            <SortablePhoto
-                              key={asset.id}
-                              asset={asset}
-                              isSelected={selectedAssets.has(asset.id)}
-                              isCover={gallery.cover_image_url === asset.full_url || gallery.cover_image_url === asset.web_url}
-                              isHero={isEditorial && idx === 0}
-                              isRotating={rotatingAssets.has(asset.id)}
-                              onSelect={() => toggleSelect(asset.id)}
-                              onRotate={() => rotateAsset(asset.id)}
-                              onSetCover={() => setCoverImage(asset.full_url)}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 lg:gap-3">
+                      {items.map((asset, idx) => {
+                        const isCover = gallery.cover_image_url === asset.full_url || gallery.cover_image_url === asset.web_url;
+                        return (
+                          <div
+                            key={asset.id}
+                            className={`relative aspect-square rounded-lg overflow-hidden cursor-pointer group ring-2 transition-all shadow-sm hover:shadow-md ${
+                              selectedAssets.has(asset.id)
+                                ? "ring-blue-500 ring-offset-2"
+                                : "ring-transparent hover:ring-gray-300"
+                            }`}
+                            onClick={() => toggleSelect(asset.id)}
+                          >
+                            <Image
+                              src={asset.web_url}
+                              alt={asset.filename || ""}
+                              fill
+                              className="object-cover"
+                              sizes="(max-width: 640px) 33vw, (max-width: 1024px) 20vw, 16vw"
                             />
-                          ))}
-                        </div>
-                      </SortableContext>
-                    </DndContext>
+                            {selectedAssets.has(asset.id) && (
+                              <div className="absolute inset-0 bg-blue-500/15 flex items-center justify-center">
+                                <div className="w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
+                                  <Check className="w-3.5 h-3.5 text-white" />
+                                </div>
+                              </div>
+                            )}
+                            {isCover && (
+                              <div className="absolute top-2 left-2 bg-black/70 text-white text-[9px] uppercase tracking-wider font-medium px-2 py-1 rounded-md backdrop-blur-sm">
+                                Cover
+                              </div>
+                            )}
+                            {isEditorial && idx === 0 && !isCover && (
+                              <div className="absolute top-2 left-2 bg-amber-500/90 text-white text-[9px] uppercase tracking-wider font-medium px-2 py-1 rounded-md backdrop-blur-sm flex items-center gap-1">
+                                <Star className="w-2.5 h-2.5" />
+                                Hero
+                              </div>
+                            )}
+                            {rotatingAssets.has(asset.id) && (
+                              <div className="absolute inset-0 bg-black/30 flex items-center justify-center z-10">
+                                <Loader2 className="w-5 h-5 text-white animate-spin" />
+                              </div>
+                            )}
+                            <div className="absolute top-2 right-2 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                              {idx > 0 && (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); moveAsset(items, idx, idx - 1); }}
+                                  className="bg-black/60 text-white p-1 rounded-md backdrop-blur-sm hover:bg-black/80"
+                                  title="Move left"
+                                >
+                                  <ChevronLeft className="w-3 h-3" />
+                                </button>
+                              )}
+                              {idx < items.length - 1 && (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); moveAsset(items, idx, idx + 1); }}
+                                  className="bg-black/60 text-white p-1 rounded-md backdrop-blur-sm hover:bg-black/80"
+                                  title="Move right"
+                                >
+                                  <ChevronRight className="w-3 h-3" />
+                                </button>
+                              )}
+                            </div>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); rotateAsset(asset.id); }}
+                              className="absolute bottom-2 left-2 bg-black/70 text-white p-1.5 rounded-md backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                              title="Rotate 90°"
+                            >
+                              <RotateCw className="w-3 h-3" />
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setCoverImage(asset.full_url); }}
+                              className="absolute bottom-2 right-2 bg-black/70 text-white text-[9px] uppercase tracking-wider font-medium px-2 py-1 rounded-md backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              Set Cover
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 ))}
             </div>
