@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
+import { unstable_noStore } from "next/cache";
 import type { Metadata } from "next";
 import { validateSession } from "@/lib/auth";
 import { validateAdminSession } from "@/lib/admin-auth";
@@ -9,6 +10,7 @@ import { GalleryContent } from "@/components/gallery-content";
 import { ExpiredPage } from "@/components/expired-page";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -16,6 +18,7 @@ interface PageProps {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  unstable_noStore();
   const { slug } = await params;
   const gallery = await getGalleryBySlug(slug);
 
@@ -26,6 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function GalleryPage({ params, searchParams }: PageProps) {
+  unstable_noStore();
   const { slug } = await params;
   const sp = await searchParams;
 

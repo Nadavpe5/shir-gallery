@@ -41,7 +41,7 @@ export default function AdminLoginPage() {
             alt="Shir Yadgar Photography"
             width={256}
             height={199}
-            className="mb-5 object-contain w-32 h-[100px]"
+            className="mb-5 object-contain w-40 h-[125px]"
             priority
           />
           <h1 className="text-2xl font-semibold tracking-tight">Shir Yadgar Photography</h1>

@@ -226,14 +226,16 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
       <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
       <div className={`relative z-10 w-full px-4 md:px-16 lg:px-24 pb-5 md:pb-24 ${isRtl ? "text-right" : ""}`}>
         <motion.div {...anim} className={`max-w-4xl ${isRtl ? "ml-auto" : ""}`}>
-          <h1 className={`${serifClass} text-3xl md:text-7xl lg:text-8xl text-white tracking-tight mb-2 md:mb-6 font-bold ml-1 md:ml-2`}>
-            {nameContent}
-          </h1>
-          {gallery.subtitle && (
-            <p className={`${serifClass} text-sm md:text-xl text-white/70 max-w-xl mb-4 md:mb-8`}>
-              {gallery.subtitle}
-            </p>
-          )}
+          <div className="flex flex-col items-start">
+            <h1 className={`${serifClass} text-3xl md:text-7xl lg:text-8xl text-white tracking-tight mb-2 md:mb-6 font-bold w-full`}>
+              {nameContent}
+            </h1>
+            {gallery.subtitle && (
+              <p className={`${serifClass} text-sm md:text-xl text-white/70 max-w-xl mb-4 md:mb-8 self-start`}>
+                {gallery.subtitle}
+              </p>
+            )}
+          </div>
           <div className="mb-4 md:mb-10">{metaContent("text-white/60")}</div>
           {gallery.zip_url && (
             <a
