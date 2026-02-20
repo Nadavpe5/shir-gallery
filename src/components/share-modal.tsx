@@ -9,6 +9,7 @@ interface ShareModalProps {
   onClose: () => void;
   galleryUrl: string;
   clientName: string;
+  fontClass?: string;
 }
 
 export function ShareModal({
@@ -16,7 +17,9 @@ export function ShareModal({
   onClose,
   galleryUrl,
   clientName,
+  fontClass,
 }: ShareModalProps) {
+  const serifClass = fontClass || "font-serif";
   const [copied, setCopied] = useState(false);
 
   async function copyLink() {
@@ -54,7 +57,7 @@ export function ShareModal({
             className="fixed z-[61] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-md bg-card rounded-lg p-6 shadow-xl"
           >
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-serif text-xl font-bold">Share</h3>
+              <h3 className={`${serifClass} text-xl font-bold`}>Share</h3>
               <button
                 onClick={onClose}
                 className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-secondary transition-colors"

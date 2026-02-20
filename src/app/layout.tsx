@@ -7,6 +7,8 @@ import {
   Cormorant_Garamond,
   Oswald,
   Raleway,
+  Bodoni_Moda,
+  Lora,
 } from "next/font/google";
 import "./globals.css";
 
@@ -45,6 +47,20 @@ const raleway = Raleway({
   variable: "--font-raleway",
   subsets: ["latin"],
   weight: ["200", "300", "400", "500", "600"],
+});
+
+const bodoni = Bodoni_Moda({
+  variable: "--font-bodoni",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  style: ["normal", "italic"],
+});
+
+const lora = Lora({
+  variable: "--font-lora",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
@@ -91,7 +107,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${playfair.variable} ${montserrat.variable} ${cormorant.variable} ${oswald.variable} ${raleway.variable} font-sans`}
+        className={`${inter.variable} ${playfair.variable} ${montserrat.variable} ${cormorant.variable} ${oswald.variable} ${raleway.variable} ${bodoni.variable} ${lora.variable} font-sans`}
       >
         {children}
         <Script id="sw-register" strategy="afterInteractive">

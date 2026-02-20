@@ -21,6 +21,9 @@ const FONT_MAP: Record<TypographyPreset, string> = {
   timeless: "font-[family-name:var(--font-cormorant)]",
   bold: "font-[family-name:var(--font-oswald)]",
   subtle: "font-[family-name:var(--font-raleway)]",
+  ploni: "font-[family-name:Ploni]",
+  elegant: "font-[family-name:var(--font-bodoni)]",
+  editorial: "font-[family-name:var(--font-lora)]",
 };
 
 interface GalleryContentProps {
@@ -101,7 +104,7 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
   }, [gallery.cover_image_url, gallery.highlights, gallery.gallery, gallery.originals]);
 
   return (
-    <main className="min-h-screen bg-background" data-theme={ds.color}>
+    <main className="min-h-screen bg-background text-foreground" data-theme={ds.color}>
       <GalleryHeader
         gallery={gallery}
         onShareClick={() => setShareOpen(true)}
@@ -115,6 +118,7 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
         assets={gallery.highlights}
         onImageClick={(i) => openViewer(highlightOffset + i)}
         gridSettings={gridSettings}
+        fontClass={fontClass}
       />
 
       <div className="mx-3 md:mx-16 lg:mx-24 border-t border-border" />
@@ -134,11 +138,12 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
         onImageClick={openViewer}
         indexOffset={originalsOffset}
         gridSettings={gridSettings}
+        fontClass={fontClass}
       />
 
       <div className="mx-3 md:mx-16 lg:mx-24 border-t border-border" />
 
-      <DownloadButton zipUrl={gallery.zip_url} />
+      <DownloadButton zipUrl={gallery.zip_url} fontClass={fontClass} />
 
       <footer className="border-t border-border py-8 md:py-10 px-5 md:px-16 flex flex-col items-center gap-2.5">
         <img src="/camera-nav.png" alt="Shir Yadgar Photography" className="w-7 h-7 md:w-8 md:h-8 opacity-40 object-contain" />
@@ -160,6 +165,7 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
         onClose={() => setShareOpen(false)}
         galleryUrl={galleryUrl}
         clientName={gallery.client_name}
+        fontClass={fontClass}
       />
 
       <BackToTop />

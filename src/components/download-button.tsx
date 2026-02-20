@@ -6,9 +6,11 @@ import { motion } from "framer-motion";
 
 interface DownloadButtonProps {
   zipUrl: string | null;
+  fontClass?: string;
 }
 
-export function DownloadButton({ zipUrl }: DownloadButtonProps) {
+export function DownloadButton({ zipUrl, fontClass }: DownloadButtonProps) {
+  const serifClass = fontClass || "font-serif";
   const [showNote, setShowNote] = useState(false);
 
   if (!zipUrl) {
@@ -37,7 +39,7 @@ export function DownloadButton({ zipUrl }: DownloadButtonProps) {
         <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
           Take Them Home
         </p>
-        <h2 className="font-serif text-2xl md:text-4xl font-bold mb-4">
+        <h2 className={`${serifClass} text-2xl md:text-4xl font-bold mb-4`}>
           Download All
         </h2>
         <div className="w-px h-8 bg-sage/40 mx-auto mb-8" />

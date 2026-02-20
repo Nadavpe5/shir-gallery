@@ -18,6 +18,7 @@ interface OriginalsSectionProps {
   onImageClick: (index: number) => void;
   indexOffset: number;
   gridSettings?: GridSettings;
+  fontClass?: string;
 }
 
 const BATCH_SIZE = 20;
@@ -27,7 +28,9 @@ export function OriginalsSection({
   onImageClick,
   indexOffset,
   gridSettings,
+  fontClass,
 }: OriginalsSectionProps) {
+  const serifClass = fontClass || "font-serif";
   const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
 
   if (assets.length === 0) return null;
@@ -47,7 +50,7 @@ export function OriginalsSection({
         <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
           {assets.length} Unedited Photographs
         </p>
-        <h2 className="font-serif text-2xl md:text-4xl font-bold">
+        <h2 className={`${serifClass} text-2xl md:text-4xl font-bold`}>
           Originals
         </h2>
         <div className="w-px h-6 md:h-8 bg-sage/40 mx-auto mt-4 md:mt-5" />

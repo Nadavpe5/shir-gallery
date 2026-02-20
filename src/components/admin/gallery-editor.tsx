@@ -956,6 +956,9 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                     { value: "timeless", label: "Timeless", font: "var(--font-cormorant)", desc: "Light & airy" },
                     { value: "bold", label: "Bold", font: "var(--font-oswald)", desc: "Punchy" },
                     { value: "subtle", label: "Subtle", font: "var(--font-raleway)", desc: "Minimal" },
+                    { value: "ploni", label: "Ploni", font: "Ploni", desc: "Hebrew" },
+                    { value: "elegant", label: "Elegant", font: "var(--font-bodoni)", desc: "High-end" },
+                    { value: "editorial", label: "Editorial", font: "var(--font-lora)", desc: "Magazine" },
                   ] as { value: TypographyPreset; label: string; font: string; desc: string }[]).map(({ value, label, font, desc }) => (
                     <button
                       key={value}
@@ -968,7 +971,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                     >
                       <span
                         className="text-lg font-semibold"
-                        style={font.startsWith("var(") ? { fontFamily: font } : undefined}
+                        style={font.startsWith("var(") || font === "Ploni" ? { fontFamily: font } : undefined}
                       >
                         {label}
                       </span>
@@ -987,12 +990,15 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                 <div className="space-y-2">
                   {([
                     { value: "light", label: "Light", colors: ["#f8f5f0", "#2a2520", "#9da68d"] },
-                    { value: "gold", label: "Gold", colors: ["#faf6ed", "#3d3425", "#c8a95e"] },
-                    { value: "rose", label: "Rose", colors: ["#faf5f5", "#3d2b2b", "#c4929a"] },
-                    { value: "terracotta", label: "Terracotta", colors: ["#faf5f0", "#3d2e25", "#c49272"] },
-                    { value: "olive", label: "Olive", colors: ["#f5f6f2", "#2e3128", "#7a8c65"] },
-                    { value: "sea", label: "Sea", colors: ["#f3f6f8", "#262e34", "#6e8a9e"] },
-                    { value: "dark", label: "Dark", colors: ["#1a1a1a", "#e8e4e0", "#9da68d"] },
+                    { value: "gold", label: "Gold", colors: ["#f7f3e7", "#3d3425", "#b8962e"] },
+                    { value: "rose", label: "Rose", colors: ["#faf1f3", "#3d2b2b", "#bf6b82"] },
+                    { value: "terracotta", label: "Terracotta", colors: ["#f7efe6", "#3d2e25", "#b5714e"] },
+                    { value: "olive", label: "Olive", colors: ["#f0f3eb", "#2e3128", "#647a4a"] },
+                    { value: "sea", label: "Sea", colors: ["#edf2f7", "#1e2d3a", "#4a7d96"] },
+                    { value: "lavender", label: "Lavender", colors: ["#ebe4f3", "#2d2838", "#7c5aad"] },
+                    { value: "slate", label: "Slate", colors: ["#e6e8ee", "#25272e", "#555d78"] },
+                    { value: "mocha", label: "Mocha", colors: ["#ece3d7", "#332a22", "#7c5a3a"] },
+                    { value: "dark", label: "Dark", colors: ["#1a1a1a", "#e8e4e0", "#a3ad92"] },
                   ] as { value: ColorTheme; label: string; colors: string[] }[]).map(({ value, label, colors }) => (
                     <button
                       key={value}

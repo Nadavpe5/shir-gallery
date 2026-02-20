@@ -15,6 +15,7 @@ interface HighlightsSectionProps {
   assets: GalleryAsset[];
   onImageClick: (index: number) => void;
   gridSettings?: GridSettings;
+  fontClass?: string;
 }
 
 function getSmartObjectPosition(asset: GalleryAsset, isHero: boolean): string {
@@ -35,7 +36,9 @@ export function HighlightsSection({
   assets,
   onImageClick,
   gridSettings,
+  fontClass,
 }: HighlightsSectionProps) {
+  const serifClass = fontClass || "font-serif";
   if (assets.length === 0) return null;
 
   return (
@@ -50,7 +53,7 @@ export function HighlightsSection({
         <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
           Curated Selection
         </p>
-        <h2 className="font-serif text-2xl md:text-4xl font-bold">
+        <h2 className={`${serifClass} text-2xl md:text-4xl font-bold`}>
           Highlights
         </h2>
         <div className="w-px h-6 md:h-8 bg-sage/40 mx-auto mt-4 md:mt-5" />
