@@ -59,6 +59,18 @@ export const metadata: Metadata = {
     ],
     apple: "/apple-touch-icon.png",
   },
+  openGraph: {
+    title: "Shir Yadgar Photography",
+    description: "Premium client gallery",
+    siteName: "Shir Yadgar Photography",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Shir Yadgar Photography",
+    description: "Premium client gallery",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
