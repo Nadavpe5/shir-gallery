@@ -1,6 +1,22 @@
 import "server-only";
 import { supabaseAdmin } from "./supabase-server";
-import type { Gallery, GalleryAsset, GalleryWithAssets } from "./types";
+import type { Gallery, GalleryAsset, GalleryWithAssets, DesignSettings } from "./types";
+import { DEFAULT_DESIGN } from "./types";
+
+function parseDesignSettings(raw: unknown): DesignSettings {
+  if (typeof raw === "object" && raw !== null && "gridStyle" in raw) {
+    return { ...DEFAULT_DESIGN, ...raw } as DesignSettings;
+  }
+  if (typeof raw === "string") {
+    try {
+      const parsed = JSON.parse(raw) as Partial<DesignSettings>;
+      return { ...DEFAULT_DESIGN, ...parsed } as DesignSettings;
+    } catch {
+      return DEFAULT_DESIGN;
+    }
+  }
+  return DEFAULT_DESIGN;
+}
 
 export async function getGalleryBySlug(
   slug: string
@@ -12,7 +28,9 @@ export async function getGalleryBySlug(
     .single();
 
   if (error || !data) return null;
-  return data as Gallery;
+  const gallery = data as Gallery;
+  gallery.design_settings = parseDesignSettings(gallery.design_settings);
+  return gallery;
 }
 
 export async function getGalleryAssets(
