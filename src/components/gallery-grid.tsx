@@ -105,7 +105,7 @@ export function GalleryGrid({
         className="text-center mb-10 md:mb-14"
       >
         <h2 className={`${serifClass} text-2xl md:text-4xl font-bold`}>
-          Gallery.
+          Gallery
         </h2>
         <div className="w-px h-6 md:h-8 bg-sage/40 mx-auto mt-4 md:mt-5" />
       </motion.div>

@@ -8,6 +8,8 @@ import { getGalleryWithAssets, getGalleryBySlug } from "@/lib/queries";
 import { GalleryContent } from "@/components/gallery-content";
 import { ExpiredPage } from "@/components/expired-page";
 
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -18,7 +20,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const gallery = await getGalleryBySlug(slug);
 
   return {
-    title: gallery ? `${gallery.client_name} | Shir Yadgar Perez` : "Gallery",
+    title: gallery ? `${gallery.client_name} | Shir Yadgar Photography` : "Gallery",
     robots: { index: false, follow: false },
   };
 }
