@@ -20,16 +20,14 @@ interface HighlightsSectionProps {
 function getSmartObjectPosition(asset: GalleryAsset, isHero: boolean): string {
   const w = asset.width;
   const h = asset.height;
-
   if (!w || !h) return "center 30%";
 
   const ratio = w / h;
   const isPortrait = ratio < 0.85;
-  const isLandscape = ratio > 1.2;
 
-  if (isHero) return "center";
+  if (isHero) return isPortrait ? "center 25%" : "center";
   if (isPortrait) return "center 20%";
-  if (isLandscape) return "center";
+  if (ratio > 1.2) return "center";
   return "center 30%";
 }
 
