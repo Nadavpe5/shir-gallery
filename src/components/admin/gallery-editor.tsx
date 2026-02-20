@@ -600,9 +600,9 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
           <h2 className="text-lg font-semibold truncate leading-tight">
             {gallery.client_name}
           </h2>
-          {gallery.shoot_title && gallery.shoot_title !== gallery.client_name && (
+          {gallery.subtitle && gallery.subtitle !== gallery.client_name && (
             <p className="text-sm text-gray-400 mt-0.5 truncate">
-              {gallery.shoot_title}
+              {gallery.subtitle}
             </p>
           )}
           <div className="flex items-center gap-2 mt-3">
@@ -777,17 +777,6 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 focus:bg-white transition-all"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium uppercase tracking-wider text-gray-500 mb-2">
-                  Session Title
-                </label>
-                <input
-                  type="text"
-                  value={editTitle}
-                  onChange={(e) => setEditTitle(e.target.value)}
                   className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 focus:bg-white transition-all"
                 />
               </div>
