@@ -547,7 +547,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
   const galleryPhotos = assets.filter((a) => a.type === "gallery");
   const originals = assets.filter((a) => a.type === "original");
 
-  const isEditorial = design.gridStyle === "editorial";
+  const isEditorial = design.gridStyle === "editorial" || design.gridStyle === "editorial-masonry";
 
   async function moveAsset(sectionItems: AssetData[], fromIdx: number, toIdx: number) {
     if (toIdx < 0 || toIdx >= sectionItems.length) return;
@@ -1230,6 +1230,16 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                             <div className="h-2 rounded-[2px] bg-current" />
                           </div>
                         )},
+                        { value: "editorial-masonry", label: "Featured", icon: (
+                          <div className="flex flex-col gap-[2px] w-8 mx-auto mb-1.5">
+                            <div className="w-full h-2.5 rounded-[2px] bg-current" />
+                            <div className="flex gap-[2px]">
+                              <div className="flex-1 h-3 rounded-[2px] bg-current" />
+                              <div className="flex-1 h-3 rounded-[2px] bg-current" />
+                              <div className="flex-1 h-3 rounded-[2px] bg-current" />
+                            </div>
+                          </div>
+                        )},
                       ] as { value: GridStyle; label: string; icon: React.ReactNode }[]).map(({ value, label, icon }) => (
                         <button
                           key={value}
@@ -1246,7 +1256,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                       ))}
                     </div>
 
-                    {design.gridStyle === "editorial" && (
+                    {(design.gridStyle === "editorial" || design.gridStyle === "editorial-masonry") && (
                       <div className="mt-3 space-y-1.5">
                         {[
                           { label: "Highlights", count: highlights.length },

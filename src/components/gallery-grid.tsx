@@ -82,6 +82,7 @@ export function GalleryGrid({
   const style = gridSettings?.style || "vertical";
   const isMasonry = style === "masonry";
   const isEditorial = style === "editorial";
+  const isEditorialMasonry = style === "editorial-masonry";
   const aspect = style === "horizontal" ? "aspect-[4/3]" : "aspect-[3/4]";
   const cols = gridSettings?.size === "large"
     ? "grid-cols-2 md:grid-cols-2 lg:grid-cols-3"
@@ -147,6 +148,80 @@ export function GalleryGrid({
               </motion.div>
             );
           })}
+        </div>
+      ) : isEditorialMasonry ? (
+        <div className={masonryGap}>
+          {(() => {
+            const groups: GalleryAsset[][] = [];
+            for (let i = 0; i < assets.length; i += EDITORIAL_CYCLE) {
+              groups.push(assets.slice(i, i + EDITORIAL_CYCLE));
+            }
+            let globalIdx = 0;
+            return groups.map((group, gi) => {
+              const hero = group[0];
+              const rest = group.slice(1);
+              const heroIdx = globalIdx;
+              globalIdx += group.length;
+              return (
+                <div key={gi} className={gi > 0 ? "mt-3 md:mt-4" : ""}>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true, margin: "-30px" }}
+                    transition={{ duration: 0.5 }}
+                    className="relative cursor-pointer group overflow-hidden mb-3 md:mb-4"
+                    onClick={() => onImageClick(indexOffset + heroIdx)}
+                  >
+                    <ImageOverlay
+                      downloadUrl={hero.full_url}
+                      filename={hero.filename || undefined}
+                    />
+                    <Image
+                      src={hero.web_url}
+                      alt={hero.filename || `Photo ${heroIdx + 1}`}
+                      width={hero.width || 1600}
+                      height={hero.height || 1200}
+                      unoptimized
+                      className="w-full h-auto object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                      loading={heroIdx < 6 ? "eager" : "lazy"}
+                    />
+                  </motion.div>
+                  {rest.length > 0 && (
+                    <div className={`${masonryCols} ${masonryGap}`}>
+                      {rest.map((asset, ri) => {
+                        const absIdx = heroIdx + 1 + ri;
+                        return (
+                          <motion.div
+                            key={asset.id}
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true, margin: "-30px" }}
+                            transition={{ duration: 0.5, delay: (ri % 8) * 0.04 }}
+                            className="relative break-inside-avoid mb-3 md:mb-4 cursor-pointer group overflow-hidden"
+                            onClick={() => onImageClick(indexOffset + absIdx)}
+                          >
+                            <ImageOverlay
+                              downloadUrl={asset.full_url}
+                              filename={asset.filename || undefined}
+                            />
+                            <Image
+                              src={asset.web_url}
+                              alt={asset.filename || `Photo ${absIdx + 1}`}
+                              width={asset.width || 800}
+                              height={asset.height || 1200}
+                              unoptimized
+                              className="w-full h-auto object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                              loading="lazy"
+                            />
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            });
+          })()}
         </div>
       ) : isMasonry ? (
         <div className={`${masonryCols} ${masonryGap}`}>

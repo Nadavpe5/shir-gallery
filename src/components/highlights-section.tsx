@@ -125,6 +125,83 @@ export function HighlightsSection({
             );
           })}
         </div>
+      ) : gridSettings?.style === "editorial-masonry" ? (
+        <div className={gridSettings?.spacing === "large" ? "gap-5 md:gap-8" : "gap-4 md:gap-6"}>
+          {(() => {
+            const CYCLE = 6;
+            const groups: GalleryAsset[][] = [];
+            for (let i = 0; i < assets.length; i += CYCLE) {
+              groups.push(assets.slice(i, i + CYCLE));
+            }
+            const mCols = "columns-2 md:columns-3";
+            const mGap = gridSettings?.spacing === "large" ? "gap-5 md:gap-8" : "gap-4 md:gap-6";
+            let globalIdx = 0;
+            return groups.map((group, gi) => {
+              const hero = group[0];
+              const rest = group.slice(1);
+              const heroIdx = globalIdx;
+              globalIdx += group.length;
+              return (
+                <div key={gi} className={gi > 0 ? "mt-4 md:mt-6" : ""}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 24 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ duration: 0.6 }}
+                    className="relative cursor-pointer group overflow-hidden mb-4 md:mb-6"
+                    onClick={() => onImageClick(heroIdx)}
+                  >
+                    <ImageOverlay
+                      downloadUrl={hero.full_url}
+                      filename={hero.filename || undefined}
+                    />
+                    <Image
+                      src={hero.web_url}
+                      alt={hero.filename || `Highlight ${heroIdx + 1}`}
+                      width={hero.width || 1600}
+                      height={hero.height || 1200}
+                      unoptimized
+                      className="w-full h-auto object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                      loading={heroIdx < 4 ? "eager" : "lazy"}
+                    />
+                  </motion.div>
+                  {rest.length > 0 && (
+                    <div className={`${mCols} ${mGap}`}>
+                      {rest.map((asset, ri) => {
+                        const absIdx = heroIdx + 1 + ri;
+                        return (
+                          <motion.div
+                            key={asset.id}
+                            initial={{ opacity: 0, y: 24 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: "-50px" }}
+                            transition={{ duration: 0.6, delay: ri * 0.06 }}
+                            className="relative break-inside-avoid mb-4 md:mb-6 cursor-pointer group overflow-hidden"
+                            onClick={() => onImageClick(absIdx)}
+                          >
+                            <ImageOverlay
+                              downloadUrl={asset.full_url}
+                              filename={asset.filename || undefined}
+                            />
+                            <Image
+                              src={asset.web_url}
+                              alt={asset.filename || `Highlight ${absIdx + 1}`}
+                              width={asset.width || 800}
+                              height={asset.height || 1200}
+                              unoptimized
+                              className="w-full h-auto object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                              loading={heroIdx < 4 ? "eager" : "lazy"}
+                            />
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            });
+          })()}
+        </div>
       ) : gridSettings?.style === "masonry" ? (
         <div className={`columns-2 md:columns-3 ${gridSettings?.spacing === "large" ? "gap-5 md:gap-8" : "gap-4 md:gap-6"}`}>
           {assets.map((asset, i) => (

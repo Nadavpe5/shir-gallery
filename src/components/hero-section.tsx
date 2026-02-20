@@ -125,9 +125,6 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
               )}
             </div>
           )}
-          <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4 md:mb-6">
-            {gallery.shoot_title}
-          </p>
           <h1 className={`${serifClass} text-4xl md:text-7xl tracking-tight mb-4 md:mb-6 font-bold text-foreground`}>
             {nameContent}
           </h1>
@@ -160,9 +157,6 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
           {...anim}
           className={`flex-1 flex flex-col justify-center px-5 md:px-16 lg:px-20 py-10 md:py-24 ${isRtl ? "items-end text-right" : ""}`}
         >
-          <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4 md:mb-6">
-            {gallery.shoot_title}
-          </p>
           <h1 className={`${serifClass} text-4xl md:text-6xl lg:text-7xl tracking-tight mb-4 md:mb-6 font-bold text-foreground`}>
             {nameContent}
           </h1>
@@ -202,9 +196,6 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
     return (
       <section className={`py-16 md:py-40 px-5 md:px-16 lg:px-24 ${isRtl ? "text-right" : ""}`} dir={isRtl ? "rtl" : undefined}>
         <motion.div {...anim} className={`max-w-3xl ${isRtl ? "ml-auto" : ""}`}>
-          <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4 md:mb-6">
-            {gallery.shoot_title}
-          </p>
           <h1 className={`${serifClass} text-5xl md:text-8xl lg:text-9xl tracking-tight mb-6 md:mb-8 font-bold text-foreground`}>
             {nameContent}
           </h1>
@@ -235,9 +226,6 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
       <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
       <div className={`relative z-10 w-full px-4 md:px-16 lg:px-24 pb-5 md:pb-24 ${isRtl ? "text-right" : ""}`}>
         <motion.div {...anim} className={`max-w-4xl ${isRtl ? "ml-auto" : ""}`}>
-          <p className="text-[9px] md:text-[10px] tracking-[0.3em] uppercase text-white/70 mb-2 md:mb-6">
-            {gallery.shoot_title}
-          </p>
           <h1 className={`${serifClass} text-3xl md:text-7xl lg:text-8xl text-white tracking-tight mb-2 md:mb-6 font-bold`}>
             {nameContent}
           </h1>
