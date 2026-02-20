@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validateAdminSession } from "@/lib/admin-auth";
 import { supabaseAdmin } from "@/lib/supabase-server";
+import { deletePrefix } from "@/lib/r2";
 import bcrypt from "bcryptjs";
 
 interface RouteParams {
@@ -72,6 +73,22 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   }
 
   const { id } = await params;
+
+  const { data: gallery } = await supabaseAdmin
+    .from("galleries")
+    .select("slug")
+    .eq("id", id)
+    .single();
+
+  if (gallery?.slug) {
+    try {
+      const deleted = await deletePrefix(`${gallery.slug}/`);
+      console.log(`[delete] Cleaned ${deleted} R2 objects for ${gallery.slug}`);
+    } catch (err) {
+      console.error("[delete] R2 cleanup failed:", err);
+    }
+  }
+
   const { error } = await supabaseAdmin
     .from("galleries")
     .delete()
