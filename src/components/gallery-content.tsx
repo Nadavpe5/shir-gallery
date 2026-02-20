@@ -40,7 +40,8 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const preview = window.location.search.includes("preview=1");
-    setIsPreview(preview);
+    const isPwa = window.matchMedia("(display-mode: standalone)").matches;
+    setIsPreview(preview && isPwa);
     if (!preview) return;
     document.documentElement.style.scrollbarWidth = "none";
     const style = document.createElement("style");

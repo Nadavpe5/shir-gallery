@@ -12,7 +12,7 @@ export function MarqueeTicker({ gallery, daysRemaining }: MarqueeTickerProps) {
     <div className="border-y border-border py-5 bg-background">
       <div className="flex items-center justify-center">
         <span className="text-[11px] tracking-[0.25em] uppercase text-muted-foreground">
-          Shir Yadgar Perez
+          Shir Yadgar Photography.
         </span>
       </div>
     </div>
