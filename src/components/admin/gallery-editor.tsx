@@ -1056,6 +1056,48 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                   ))}
                 </div>
 
+                <h4 className="text-xs font-medium uppercase tracking-wider text-gray-500 mt-6 mb-3">
+                  Text Alignment
+                </h4>
+                <div className="grid grid-cols-3 gap-2.5">
+                  {([
+                    { value: "left" as const, label: "Left", icon: (
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="15" y2="12" />
+                        <line x1="3" y1="18" x2="18" y2="18" />
+                      </svg>
+                    )},
+                    { value: "center" as const, label: "Center", icon: (
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="7" y1="12" x2="17" y2="12" />
+                        <line x1="5" y1="18" x2="19" y2="18" />
+                      </svg>
+                    )},
+                    { value: "right" as const, label: "Right", icon: (
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="9" y1="12" x2="21" y2="12" />
+                        <line x1="6" y1="18" x2="21" y2="18" />
+                      </svg>
+                    )},
+                  ]).map(({ value, label, icon }) => (
+                    <button
+                      key={value}
+                      onClick={() => saveDesign({ ...design, coverTextAlign: value })}
+                      className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 text-center transition-all ${
+                        (design.coverTextAlign || "left") === value
+                          ? "border-gray-900 bg-gray-50"
+                          : "border-gray-100 hover:border-gray-300"
+                      }`}
+                    >
+                      {icon}
+                      <span className="text-[10px] font-medium">{label}</span>
+                    </button>
+                  ))}
+                </div>
+
                 {design.cover !== "minimal" && (
                   <>
                     <h4 className="text-xs font-medium uppercase tracking-wider text-gray-500 mt-6 mb-3">
