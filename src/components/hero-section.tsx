@@ -31,14 +31,8 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
   const isFit = coverFit === "fit";
   const serifClass = fontClass || "font-serif";
 
-  const nameContent = gallery.client_name.split("&").map((part, i, arr) => (
-    <span key={i}>
-      {part}
-      {i < arr.length - 1 && (
-        <span className="font-sans font-extralight">&amp;</span>
-      )}
-    </span>
-  ));
+  // Flatten nameContent to avoid nested span alignment issues
+  const nameContent = gallery.client_name.replace(/&/g, " & ");
 
   const metaContent = (textColor: string) => (
     <div className={`flex flex-wrap items-center gap-3 md:gap-5 text-[11px] md:text-xs tracking-wide ${textColor}`}>
@@ -226,12 +220,12 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
       <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
       <div className={`relative z-10 w-full px-4 md:px-16 lg:px-24 pb-5 md:pb-24 ${isRtl ? "text-right" : ""}`}>
         <motion.div {...anim} className={`max-w-4xl ${isRtl ? "ml-auto" : ""}`}>
-          <div className="flex flex-col w-full">
-            <h1 className={`${serifClass} text-3xl md:text-7xl lg:text-8xl text-white tracking-tight mb-2 md:mb-6 font-bold`} style={{ textAlign: isRtl ? 'right' : 'left' }}>
+          <div className="w-full">
+            <h1 className={`${serifClass} text-3xl md:text-7xl lg:text-8xl text-white tracking-tight mb-2 md:mb-6 font-bold block`} style={{ textAlign: isRtl ? 'right' : 'left', display: 'block', width: '100%' }}>
               {nameContent}
             </h1>
             {gallery.subtitle && (
-              <p className={`${serifClass} text-sm md:text-xl text-white/70 tracking-tight mb-4 md:mb-8`} style={{ textAlign: isRtl ? 'right' : 'left' }}>
+              <p className={`${serifClass} text-sm md:text-xl text-white/70 tracking-tight mb-4 md:mb-8 block`} style={{ textAlign: isRtl ? 'right' : 'left', display: 'block', width: '100%' }}>
                 {gallery.subtitle}
               </p>
             )}
