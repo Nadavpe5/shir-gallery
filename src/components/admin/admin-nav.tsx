@@ -18,7 +18,7 @@ export function AdminNav() {
       <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-14 flex items-center justify-between h-14 sm:h-16">
         <button
           onClick={() => router.push("/admin")}
-          className="flex items-end gap-2 group"
+          className="flex items-center gap-2.5 group"
         >
           <Image
             src="/logo-96.png"
@@ -28,7 +28,7 @@ export function AdminNav() {
             className="w-20 h-20 sm:w-24 sm:h-24 object-contain group-hover:opacity-80 transition-opacity"
             priority
           />
-          <span className="text-base sm:text-lg font-medium tracking-wide text-gray-800 truncate pb-1">
+          <span className="text-base sm:text-lg font-medium tracking-wide text-gray-800 truncate">
             Shir Yadgar Photography
           </span>
         </button>

@@ -25,10 +25,11 @@ export function GalleryHeader({ gallery, onShareClick }: GalleryHeaderProps) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border transition-all duration-300">
       <div className="flex items-center justify-between px-4 md:px-12 py-2.5 md:py-3">
-        <div className="min-w-0 flex-1 mr-3">
+        <div className="min-w-0 flex-1 mr-3 flex items-center gap-2 md:gap-3">
           <p className="text-xs md:text-sm font-medium tracking-wide uppercase truncate">
             {gallery.client_name}
           </p>
+          <span className="text-xs md:text-sm text-muted-foreground">|</span>
           <p className="text-[9px] md:text-[10px] tracking-[0.2em] uppercase text-muted-foreground truncate">
             Shir Yadgar Photography
           </p>

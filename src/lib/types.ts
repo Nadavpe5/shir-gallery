@@ -1,6 +1,7 @@
 export type CoverLayout = "full" | "center" | "left" | "minimal";
 export type CoverFit = "fill" | "fit";
 export type CoverFocusPoint = "top" | "center" | "bottom";
+export type CoverTextAlign = "left" | "center" | "right";
 export interface CoverPosition { x: number; y: number; }
 export type TypographyPreset = "sans" | "serif" | "modern" | "timeless" | "bold" | "subtle" | "ploni" | "elegant" | "editorial";
 export type ColorTheme = "light" | "gold" | "rose" | "terracotta" | "olive" | "sea" | "lavender" | "slate" | "mocha" | "dark";
@@ -12,6 +13,7 @@ export interface DesignSettings {
   cover: CoverLayout;
   coverFit: CoverFit;
   coverFocusPoint: CoverFocusPoint;
+  coverTextAlign: CoverTextAlign;
   coverPosition?: CoverPosition;
   coverZoom?: number;
   typography: TypographyPreset;
@@ -25,6 +27,7 @@ export const DEFAULT_DESIGN: DesignSettings = {
   cover: "full",
   coverFit: "fill",
   coverFocusPoint: "top",
+  coverTextAlign: "left",
   coverPosition: { x: 50, y: 30 },
   coverZoom: 100,
   typography: "serif",

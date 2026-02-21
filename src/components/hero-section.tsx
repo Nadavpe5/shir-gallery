@@ -26,6 +26,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
 
   const cover: CoverLayout = gallery.design_settings?.cover || "full";
   const coverFit: CoverFit = gallery.design_settings?.coverFit || "fill";
+  const textAlign = gallery.design_settings?.coverTextAlign || "left";
   const pos = gallery.design_settings?.coverPosition || { x: 50, y: 30 };
   const zoom = gallery.design_settings?.coverZoom ?? 100;
   const isFit = coverFit === "fit";
@@ -221,12 +222,13 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
       <div className={`relative z-10 w-full px-4 md:px-16 lg:px-24 pb-5 md:pb-24 ${isRtl ? "text-right" : ""}`}>
         <motion.div {...anim} className={`max-w-4xl ${isRtl ? "ml-auto" : ""}`}>
           <h1 
-            className={`${serifClass} text-3xl md:text-7xl lg:text-8xl text-white tracking-tight mb-2 md:mb-6 font-bold`} 
+            className={`${serifClass} text-3xl md:text-7xl lg:text-8xl text-white tracking-tight mb-4 md:mb-8 font-bold`} 
             style={{ 
-              textAlign: isRtl ? 'right' : 'left',
+              textAlign: isRtl ? 'right' : textAlign,
               display: 'block',
               width: '100%',
               margin: 0,
+              marginBottom: '1rem',
               padding: 0,
               textIndent: 0
             }}
@@ -235,21 +237,22 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
           </h1>
           {gallery.subtitle && (
             <p 
-              className={`${serifClass} text-sm md:text-xl text-white/70 tracking-tight mb-4 md:mb-8`} 
+              className={`${serifClass} text-sm md:text-xl text-white/70 tracking-tight mb-6 md:mb-10 font-normal`} 
               style={{ 
-                textAlign: isRtl ? 'right' : 'left',
+                textAlign: isRtl ? 'right' : textAlign,
                 display: 'block',
                 width: '100%',
                 margin: 0,
-                marginBottom: '1rem',
+                marginBottom: '1.5rem',
                 padding: 0,
-                textIndent: 0
+                textIndent: 0,
+                fontWeight: 400
               }}
             >
               {gallery.subtitle}
             </p>
           )}
-          <div className="mb-4 md:mb-10">{metaContent("text-white/60")}</div>
+          <div className="mb-4 md:mb-10" style={{ textAlign: isRtl ? 'right' : textAlign }}>{metaContent("text-white/60")}</div>
           {gallery.zip_url && (
             <a
               href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
