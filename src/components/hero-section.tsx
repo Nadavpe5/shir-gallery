@@ -191,17 +191,32 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
     return (
       <section className={`py-16 md:py-40 px-5 md:px-16 lg:px-24`} dir={isRtl ? "rtl" : undefined}>
         <motion.div {...anim}>
-          <div className={`max-w-3xl ${textAlign === 'center' ? 'mx-auto text-center' : textAlign === 'right' ? 'ml-auto text-right' : 'text-left'}`}>
-            <h1 className={`${serifClass} text-5xl md:text-8xl lg:text-9xl tracking-tight mb-6 md:mb-8 font-bold text-foreground`}>
-              {nameContent}
-            </h1>
-            {gallery.subtitle && (
-              <p className={`${serifClass} text-xl md:text-2xl text-muted-foreground max-w-xl mb-10`}>
-                {gallery.subtitle}
-              </p>
+          <div className={`max-w-3xl ${textAlign === 'center' ? 'mx-auto text-center' : textAlign === 'right' ? 'ml-auto text-right' : ''}`}>
+            {textAlign === 'left' ? (
+              <div className="flex flex-col" style={{ textRendering: 'geometricPrecision' }}>
+                <h1 className={`${serifClass} text-5xl md:text-8xl lg:text-9xl mb-6 md:mb-8 font-bold text-foreground`} style={{ letterSpacing: 'normal', fontFeatureSettings: '"kern" 0' }}>
+                  {nameContent}
+                </h1>
+                {gallery.subtitle && (
+                  <p className={`${serifClass} text-xl md:text-2xl text-muted-foreground max-w-xl mb-10`} style={{ letterSpacing: 'normal', fontFeatureSettings: '"kern" 0' }}>
+                    {gallery.subtitle}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <>
+                <h1 className={`${serifClass} text-5xl md:text-8xl lg:text-9xl tracking-tight mb-6 md:mb-8 font-bold text-foreground`}>
+                  {nameContent}
+                </h1>
+                {gallery.subtitle && (
+                  <p className={`${serifClass} text-xl md:text-2xl text-muted-foreground max-w-xl mb-10`}>
+                    {gallery.subtitle}
+                  </p>
+                )}
+              </>
             )}
           </div>
-          <div className="mb-10 text-left">{metaContent("text-muted-foreground/60")}</div>
+          <div className="mb-10">{metaContent("text-muted-foreground/60")}</div>
           {gallery.zip_url && (
             <a
               href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
@@ -216,25 +231,52 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
     );
   }
 
-  // Default "full" layout -- full-bleed cover image
+  // Default "full" layout -- full-bleed cover image  
   return (
     <section className="relative w-full min-h-[35dvh] md:min-h-[75vh] flex items-end overflow-hidden" dir={isRtl ? "rtl" : undefined}>
       {renderCoverImage()}
       <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-      <div className={`relative z-10 w-full px-4 md:px-16 lg:px-24 pb-5 md:pb-24`}>
+      
+      {/* Text content - positioned relative to alignment */}
+      <div className={`relative z-10 w-full px-4 md:px-16 lg:px-24 pb-28 md:pb-32`}>
         <motion.div {...anim}>
-          <div className={`max-w-4xl ${textAlign === 'center' ? 'mx-auto text-center' : textAlign === 'right' ? 'ml-auto text-right' : 'text-left'}`}>
-            <h1 className={`${serifClass} text-3xl md:text-7xl lg:text-8xl text-white tracking-tight mb-4 md:mb-8 font-bold`}>
-              {nameContent}
-            </h1>
-            {gallery.subtitle && (
-              <p className={`${serifClass} text-sm md:text-xl text-white/70 tracking-tight mb-6 md:mb-10 font-normal`}>
-                {gallery.subtitle}
-              </p>
+          <div className={`max-w-4xl ${textAlign === 'center' ? 'mx-auto text-center' : textAlign === 'right' ? 'ml-auto text-right' : ''}`}>
+            {textAlign === 'left' ? (
+              <div className="flex flex-col" style={{ textRendering: 'geometricPrecision' }}>
+                <h1 className={`${serifClass} text-3xl md:text-7xl lg:text-8xl text-white mb-4 md:mb-8 font-bold`} style={{ letterSpacing: 'normal', fontFeatureSettings: '"kern" 0' }}>
+                  {nameContent}
+                </h1>
+                {gallery.subtitle && (
+                  <p className={`${serifClass} text-sm md:text-xl text-white/70 font-normal`} style={{ letterSpacing: 'normal', fontFeatureSettings: '"kern" 0' }}>
+                    {gallery.subtitle}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <>
+                <h1 className={`${serifClass} text-3xl md:text-7xl lg:text-8xl text-white tracking-tight mb-4 md:mb-8 font-bold`}>
+                  {nameContent}
+                </h1>
+                {gallery.subtitle && (
+                  <p className={`${serifClass} text-sm md:text-xl text-white/70 tracking-tight font-normal`}>
+                    {gallery.subtitle}
+                  </p>
+                )}
+              </>
             )}
           </div>
-          <div className="mb-4 md:mb-10 text-left">{metaContent("text-white/60")}</div>
-          {gallery.zip_url && (
+        </motion.div>
+      </div>
+      
+      {/* Metadata - always at bottom left corner */}
+      <div className="absolute bottom-0 left-0 z-10 px-4 md:px-16 lg:px-24 pb-5 md:pb-10">
+        <motion.div {...anim}>{metaContent("text-white/60")}</motion.div>
+      </div>
+      
+      {/* Download button - positioned based on alignment */}
+      {gallery.zip_url && (
+        <div className={`absolute bottom-16 md:bottom-20 z-10 px-4 md:px-16 lg:px-24 ${textAlign === 'center' ? 'left-1/2 -translate-x-1/2' : textAlign === 'right' ? 'right-0' : 'left-0'}`}>
+          <motion.div {...anim}>
             <a
               href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
               className="inline-flex items-center gap-2 bg-white text-black tracking-[0.15em] uppercase text-[11px] font-medium px-7 py-3 transition-all hover:bg-white/90 active:scale-[0.98]"
@@ -242,9 +284,9 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
               <Download className="w-3.5 h-3.5" />
               Download All
             </a>
-          )}
-        </motion.div>
-      </div>
+          </motion.div>
+        </div>
+      )}
     </section>
   );
 }
