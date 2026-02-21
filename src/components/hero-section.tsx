@@ -221,11 +221,32 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
       <div className={`relative z-10 w-full px-4 md:px-16 lg:px-24 pb-5 md:pb-24 ${isRtl ? "text-right" : ""}`}>
         <motion.div {...anim} className={`max-w-4xl ${isRtl ? "ml-auto" : ""}`}>
           <div className="w-full">
-            <h1 className={`${serifClass} text-3xl md:text-7xl lg:text-8xl text-white tracking-tight mb-2 md:mb-6 font-bold block`} style={{ textAlign: isRtl ? 'right' : 'left', display: 'block', width: '100%' }}>
+            <h1 
+              className={`${serifClass} text-3xl md:text-7xl lg:text-8xl text-white tracking-tight mb-2 md:mb-6 font-bold`} 
+              style={{ 
+                textAlign: isRtl ? 'right' : 'left',
+                display: 'block',
+                width: '100%',
+                margin: 0,
+                padding: 0,
+                textIndent: 0
+              }}
+            >
               {nameContent}
             </h1>
             {gallery.subtitle && (
-              <p className={`${serifClass} text-sm md:text-xl text-white/70 tracking-tight mb-4 md:mb-8 block`} style={{ textAlign: isRtl ? 'right' : 'left', display: 'block', width: '100%' }}>
+              <p 
+                className={`${serifClass} text-sm md:text-xl text-white/70 tracking-tight mb-4 md:mb-8`} 
+                style={{ 
+                  textAlign: isRtl ? 'right' : 'left',
+                  display: 'block',
+                  width: '100%',
+                  margin: 0,
+                  marginBottom: isRtl ? '2rem' : '2rem',
+                  padding: 0,
+                  textIndent: 0
+                }}
+              >
                 {gallery.subtitle}
               </p>
             )}
