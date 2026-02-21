@@ -35,7 +35,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
   const nameContent = gallery.client_name.replace(/&/g, " & ");
 
   const metaContent = (textColor: string) => (
-    <div className={`flex flex-wrap items-center gap-3 md:gap-5 text-[11px] md:text-xs tracking-wide ${textColor}`}>
+    <div className={`flex flex-wrap gap-3 md:gap-5 text-[11px] md:text-xs tracking-wide ${textColor}`} style={{ alignItems: 'center' }}>
       {gallery.location && (
         <span className="inline-flex items-center gap-1.5">
           <MapPin className="w-3 h-3" />
@@ -220,37 +220,35 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
       <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
       <div className={`relative z-10 w-full px-4 md:px-16 lg:px-24 pb-5 md:pb-24 ${isRtl ? "text-right" : ""}`}>
         <motion.div {...anim} className={`max-w-4xl ${isRtl ? "ml-auto" : ""}`}>
-          <div className="w-full">
-            <h1 
-              className={`${serifClass} text-3xl md:text-7xl lg:text-8xl text-white tracking-tight mb-2 md:mb-6 font-bold`} 
+          <h1 
+            className={`${serifClass} text-3xl md:text-7xl lg:text-8xl text-white tracking-tight mb-2 md:mb-6 font-bold`} 
+            style={{ 
+              textAlign: isRtl ? 'right' : 'left',
+              display: 'block',
+              width: '100%',
+              margin: 0,
+              padding: 0,
+              textIndent: 0
+            }}
+          >
+            {nameContent}
+          </h1>
+          {gallery.subtitle && (
+            <p 
+              className={`${serifClass} text-sm md:text-xl text-white/70 tracking-tight mb-4 md:mb-8`} 
               style={{ 
                 textAlign: isRtl ? 'right' : 'left',
                 display: 'block',
                 width: '100%',
                 margin: 0,
+                marginBottom: '1rem',
                 padding: 0,
                 textIndent: 0
               }}
             >
-              {nameContent}
-            </h1>
-            {gallery.subtitle && (
-              <p 
-                className={`${serifClass} text-sm md:text-xl text-white/70 tracking-tight mb-4 md:mb-8`} 
-                style={{ 
-                  textAlign: isRtl ? 'right' : 'left',
-                  display: 'block',
-                  width: '100%',
-                  margin: 0,
-                  marginBottom: isRtl ? '2rem' : '2rem',
-                  padding: 0,
-                  textIndent: 0
-                }}
-              >
-                {gallery.subtitle}
-              </p>
-            )}
-          </div>
+              {gallery.subtitle}
+            </p>
+          )}
           <div className="mb-4 md:mb-10">{metaContent("text-white/60")}</div>
           {gallery.zip_url && (
             <a
