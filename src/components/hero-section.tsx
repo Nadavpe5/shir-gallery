@@ -231,7 +231,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
               {nameContent}
             </h1>
             {gallery.subtitle && (
-              <p className={`${serifClass} text-sm md:text-xl text-white/70 mb-4 md:mb-8 ${isRtl ? "text-right" : "text-left"}`}>
+              <p className={`${serifClass} text-sm md:text-xl text-white/70 tracking-tight mb-4 md:mb-8 ${isRtl ? "text-right" : "text-left"}`}>
                 {gallery.subtitle}
               </p>
             )}

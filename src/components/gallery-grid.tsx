@@ -153,7 +153,7 @@ export function GalleryGrid({
         <div
           className={`grid grid-cols-2 md:grid-cols-3 ${editorialGap}`}
           style={{
-            gridAutoRows: "clamp(240px, 38vw, 520px)",
+            gridAutoRows: "clamp(260px, 42vw, 680px)",
             gridAutoFlow: "dense",
           }}
         >
