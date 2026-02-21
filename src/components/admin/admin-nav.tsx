@@ -25,7 +25,7 @@ export function AdminNav() {
             alt="Shir Yadgar Photography"
             width={96}
             height={75}
-            className="w-16 h-16 sm:w-20 sm:h-20 object-contain group-hover:opacity-80 transition-opacity"
+            className="w-20 h-20 sm:w-24 sm:h-24 object-contain group-hover:opacity-80 transition-opacity"
             priority
           />
           <span className="text-base sm:text-lg font-medium tracking-wide text-gray-800 truncate">
