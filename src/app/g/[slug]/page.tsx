@@ -54,10 +54,19 @@ export default async function GalleryPage({ params, searchParams }: PageProps) {
   const galleryWithAssets = await getGalleryWithAssets(slug);
   if (!galleryWithAssets) notFound();
 
+  console.log('[SERVER DEBUG] design_settings type:', typeof galleryWithAssets.design_settings);
+  console.log('[SERVER DEBUG] design_settings value:', JSON.stringify(galleryWithAssets.design_settings));
+  console.log('[SERVER DEBUG] gridStyle:', galleryWithAssets.design_settings?.gridStyle);
+
   const headersList = await headers();
   const host = headersList.get("host") || "localhost:3000";
   const protocol = host.includes("localhost") ? "http" : "https";
   const galleryUrl = `${protocol}://${host}/g/${slug}`;
 
-  return <GalleryContent gallery={galleryWithAssets} galleryUrl={galleryUrl} />;
+  return (
+    <>
+      <div style={{ display: 'none' }} data-debug-grid-style={galleryWithAssets.design_settings?.gridStyle} data-debug-type={typeof galleryWithAssets.design_settings} />
+      <GalleryContent gallery={galleryWithAssets} galleryUrl={galleryUrl} />
+    </>
+  );
 }

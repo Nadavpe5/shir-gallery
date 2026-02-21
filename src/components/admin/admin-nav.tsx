@@ -18,17 +18,17 @@ export function AdminNav() {
       <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-14 flex items-center justify-between h-14 sm:h-16">
         <button
           onClick={() => router.push("/admin")}
-          className="flex items-center gap-3 group"
+          className="flex items-center gap-2 group"
         >
           <Image
             src="/logo-96.png"
             alt="Shir Yadgar Photography"
             width={96}
             height={75}
-            className="w-14 h-14 sm:w-[72px] sm:h-[72px] object-contain group-hover:opacity-80 transition-opacity"
+            className="w-16 h-16 sm:w-20 sm:h-20 object-contain group-hover:opacity-80 transition-opacity"
             priority
           />
-          <span className="text-sm sm:text-base font-medium tracking-wide text-gray-800 truncate">
+          <span className="text-base sm:text-lg font-medium tracking-wide text-gray-800 truncate">
             Shir Yadgar Photography
           </span>
         </button>

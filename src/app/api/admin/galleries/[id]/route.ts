@@ -25,6 +25,14 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
+  if (data && typeof data.design_settings === 'string') {
+    try {
+      data.design_settings = JSON.parse(data.design_settings);
+    } catch (e) {
+      console.error('[API GET] Failed to parse design_settings:', e);
+    }
+  }
+
   return NextResponse.json(data);
 }
 
