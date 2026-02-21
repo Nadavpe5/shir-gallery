@@ -188,12 +188,10 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
   }
 
   if (cover === "minimal") {
-    const alignClass = textAlign === 'center' ? 'text-center' : textAlign === 'right' ? 'text-right' : 'text-left';
-    
     return (
       <section className={`py-16 md:py-40 px-5 md:px-16 lg:px-24`} dir={isRtl ? "rtl" : undefined}>
         <motion.div {...anim}>
-          <div className={`max-w-3xl ${textAlign === 'center' ? 'mx-auto' : textAlign === 'right' ? 'ml-auto' : ''} ${alignClass}`}>
+          <div className={`max-w-3xl ${textAlign === 'center' ? 'mx-auto text-center' : textAlign === 'right' ? 'ml-auto text-right' : 'text-left'}`}>
             <h1 className={`${serifClass} text-5xl md:text-8xl lg:text-9xl tracking-tight mb-6 md:mb-8 font-bold text-foreground`}>
               {nameContent}
             </h1>
@@ -203,7 +201,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
               </p>
             )}
           </div>
-          <div className="mb-10">{metaContent("text-muted-foreground/60")}</div>
+          <div className="mb-10 text-left">{metaContent("text-muted-foreground/60")}</div>
           {gallery.zip_url && (
             <a
               href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
@@ -219,15 +217,13 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
   }
 
   // Default "full" layout -- full-bleed cover image
-  const alignClass = textAlign === 'center' ? 'text-center' : textAlign === 'right' ? 'text-right' : 'text-left';
-  
   return (
     <section className="relative w-full min-h-[35dvh] md:min-h-[75vh] flex items-end overflow-hidden" dir={isRtl ? "rtl" : undefined}>
       {renderCoverImage()}
       <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
       <div className={`relative z-10 w-full px-4 md:px-16 lg:px-24 pb-5 md:pb-24`}>
         <motion.div {...anim}>
-          <div className={`max-w-4xl ${textAlign === 'center' ? 'mx-auto' : textAlign === 'right' ? 'ml-auto' : ''} ${alignClass}`}>
+          <div className={`max-w-4xl ${textAlign === 'center' ? 'mx-auto text-center' : textAlign === 'right' ? 'ml-auto text-right' : 'text-left'}`}>
             <h1 className={`${serifClass} text-3xl md:text-7xl lg:text-8xl text-white tracking-tight mb-4 md:mb-8 font-bold`}>
               {nameContent}
             </h1>
@@ -237,7 +233,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
               </p>
             )}
           </div>
-          <div className="mb-4 md:mb-10">{metaContent("text-white/60")}</div>
+          <div className="mb-4 md:mb-10 text-left">{metaContent("text-white/60")}</div>
           {gallery.zip_url && (
             <a
               href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
