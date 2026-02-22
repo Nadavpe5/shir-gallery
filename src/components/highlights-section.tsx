@@ -115,7 +115,12 @@ export function HighlightsSection({
                   fill
                   unoptimized
                   className="object-cover w-full h-full transition-transform duration-700 ease-out group-hover:scale-[1.02]"
-                  style={{ objectPosition: objPos }}
+                  style={{ 
+                    objectPosition: objPos,
+                    transform: 'translateZ(0)',
+                    backfaceVisibility: 'hidden',
+                    WebkitFontSmoothing: 'antialiased'
+                  }}
                   loading={i < 4 ? "eager" : "lazy"}
                 />
               </motion.div>
@@ -181,7 +186,12 @@ export function HighlightsSection({
                   fill
                   unoptimized
                   className="object-cover w-full h-full transition-transform duration-700 ease-out group-hover:scale-[1.02]"
-                  style={{ objectPosition: objPos }}
+                  style={{ 
+                    objectPosition: objPos,
+                    transform: 'translateZ(0)',
+                    backfaceVisibility: 'hidden',
+                    WebkitFontSmoothing: 'antialiased'
+                  }}
                   loading={i < 4 ? "eager" : "lazy"}
                 />
               </motion.div>
@@ -211,6 +221,11 @@ export function HighlightsSection({
                 height={asset.height || 1200}
                 unoptimized
                 className="w-full h-auto object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                style={{ 
+                  transform: 'translateZ(0)',
+                  backfaceVisibility: 'hidden',
+                  WebkitFontSmoothing: 'antialiased'
+                }}
                 loading={i < 4 ? "eager" : "lazy"}
               />
             </motion.div>
@@ -248,7 +263,12 @@ export function HighlightsSection({
                     fill
                     unoptimized
                     className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
-                    style={{ objectPosition: objPos }}
+                    style={{ 
+                      objectPosition: objPos,
+                      transform: 'translateZ(0)',
+                      backfaceVisibility: 'hidden',
+                      WebkitFontSmoothing: 'antialiased'
+                    }}
                     loading={i < 4 ? "eager" : "lazy"}
                   />
                 </div>

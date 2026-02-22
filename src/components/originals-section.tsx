@@ -76,6 +76,11 @@ export function OriginalsSection({
                 height={asset.height || 1200}
                 unoptimized
                 className="w-full h-auto transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                style={{ 
+                  transform: 'translateZ(0)',
+                  backfaceVisibility: 'hidden',
+                  WebkitFontSmoothing: 'antialiased'
+                }}
                 loading="lazy"
               />
             </motion.div>

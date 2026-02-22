@@ -255,6 +255,11 @@
   .text-balance {
     text-wrap: balance;
   }
+  
+  img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
 }
 
 @keyframes marquee {
