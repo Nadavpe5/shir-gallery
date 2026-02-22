@@ -291,6 +291,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
   const [regenerating, setRegenerating] = useState(false);
   const [regenResult, setRegenResult] = useState<string | null>(null);
   const [rotatingAssets, setRotatingAssets] = useState<Set<string>>(new Set());
+  const [rotationProgress, setRotationProgress] = useState<{ current: number; total: number } | null>(null);
   const [previewVersion, setPreviewVersion] = useState(0);
   const [swappingHeroIdx, setSwappingHeroIdx] = useState<{ section: string; idx: number } | null>(null);
 
@@ -571,6 +572,55 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
       next.delete(assetId);
       return next;
     });
+  }
+
+  async function rotateSelected(times: number = 1) {
+    if (selectedAssets.size === 0) return;
+
+    const assetIds = Array.from(selectedAssets);
+    const total = assetIds.length;
+    
+    setRotationProgress({ current: 0, total });
+
+    try {
+      // Process photos sequentially (not in parallel) to avoid overwhelming the server
+      for (let index = 0; index < assetIds.length; index++) {
+        const assetId = assetIds[index];
+        setRotatingAssets((prev) => new Set(prev).add(assetId));
+        setRotationProgress({ current: index + 1, total });
+        
+        // Rotate multiple times if needed (e.g., 3 times = 270°)
+        for (let i = 0; i < times; i++) {
+          const res = await fetch(`/api/admin/galleries/${galleryId}/assets/rotate`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ assetId, direction: "cw" }),
+          });
+          if (res.ok) {
+            const updated = await res.json();
+            setAssets((prev) => prev.map((a) => (a.id === assetId ? updated : a)));
+          }
+        }
+        
+        // Clear rotating state for this photo
+        setRotatingAssets((prev) => {
+          const next = new Set(prev);
+          next.delete(assetId);
+          return next;
+        });
+      }
+    } catch (err) {
+      console.error("Batch rotate failed:", err);
+      // Clear all rotating states on error
+      setRotatingAssets(new Set());
+    }
+    
+    setRotationProgress(null);
+    // DON'T clear selection - keep it so user can rotate again if needed
+  }
+
+  function selectAllInSection(sectionAssets: AssetData[]) {
+    setSelectedAssets(new Set(sectionAssets.map(a => a.id)));
   }
 
   function toggleSelect(id: string) {
@@ -1502,6 +1552,11 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                 <span className="text-sm font-medium text-gray-700">
                   {selectedAssets.size} selected
                 </span>
+                {rotationProgress && (
+                  <span className="text-xs text-blue-600 font-medium">
+                    Rotating {rotationProgress.current}/{rotationProgress.total}...
+                  </span>
+                )}
                 <div className="h-4 w-px bg-gray-200 hidden sm:block" />
                 <select
                   onChange={(e) => {
@@ -1511,7 +1566,8 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                     setSelectedAssets(new Set());
                   }}
                   defaultValue=""
-                  className="text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                  disabled={!!rotationProgress}
+                  className="text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-40"
                 >
                   <option value="" disabled>
                     Move to...
@@ -1520,9 +1576,39 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                   <option value="gallery">Gallery</option>
                   <option value="original">Originals</option>
                 </select>
+                <div className="inline-flex items-center gap-1">
+                  <button
+                    onClick={() => rotateSelected(1)}
+                    disabled={!!rotationProgress}
+                    className="inline-flex items-center gap-1.5 text-sm text-gray-700 hover:text-gray-900 transition-colors px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                    title="Rotate 90° clockwise"
+                  >
+                    <RotateCw className="w-3.5 h-3.5" />
+                    90°
+                  </button>
+                  <button
+                    onClick={() => rotateSelected(2)}
+                    disabled={!!rotationProgress}
+                    className="inline-flex items-center gap-1.5 text-sm text-gray-700 hover:text-gray-900 transition-colors px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                    title="Rotate 180°"
+                  >
+                    <RotateCw className="w-3.5 h-3.5" />
+                    180°
+                  </button>
+                  <button
+                    onClick={() => rotateSelected(3)}
+                    disabled={!!rotationProgress}
+                    className="inline-flex items-center gap-1.5 text-sm text-gray-700 hover:text-gray-900 transition-colors px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                    title="Rotate 270° clockwise (90° counter-clockwise)"
+                  >
+                    <RotateCw className="w-3.5 h-3.5" />
+                    270°
+                  </button>
+                </div>
                 <button
                   onClick={deleteSelected}
-                  className="inline-flex items-center gap-1.5 text-sm text-red-600 hover:text-red-700 transition-colors"
+                  disabled={!!rotationProgress}
+                  className="inline-flex items-center gap-1.5 text-sm text-red-600 hover:text-red-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   Delete
@@ -1530,7 +1616,8 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                 <div className="h-4 w-px bg-gray-200" />
                 <button
                   onClick={() => setSelectedAssets(new Set())}
-                  className="text-sm text-gray-400 hover:text-gray-600 transition-colors"
+                  disabled={!!rotationProgress}
+                  className="text-sm text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   Clear
                 </button>
@@ -1581,18 +1668,26 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                 .filter(({ items }) => items.length > 0)
                 .map(({ label, items, type: sectionType }) => (
                   <div key={label}>
-                    <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">
-                      {label}{" "}
-                      <span className="text-gray-300">({items.length})</span>
-                      {swappingHeroIdx?.section === sectionType && (
-                        <button
-                          onClick={() => setSwappingHeroIdx(null)}
-                          className="ml-3 text-[10px] normal-case tracking-normal text-amber-600 hover:text-amber-700"
-                        >
-                          Cancel swap
-                        </button>
-                      )}
-                    </h3>
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
+                        {label}{" "}
+                        <span className="text-gray-300">({items.length})</span>
+                        {swappingHeroIdx?.section === sectionType && (
+                          <button
+                            onClick={() => setSwappingHeroIdx(null)}
+                            className="ml-3 text-[10px] normal-case tracking-normal text-amber-600 hover:text-amber-700"
+                          >
+                            Cancel swap
+                          </button>
+                        )}
+                      </h3>
+                      <button
+                        onClick={() => selectAllInSection(items)}
+                        className="text-xs text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                      >
+                        Select All
+                      </button>
+                    </div>
                     <DndContext sensors={dndSensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd(items)}>
                       <SortableContext items={items.map((a) => a.id)} strategy={rectSortingStrategy}>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 lg:gap-3">
