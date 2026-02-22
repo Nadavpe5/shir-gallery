@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Lightbox from "yet-another-react-lightbox";
 import Counter from "yet-another-react-lightbox/plugins/counter";
 import "yet-another-react-lightbox/styles.css";
@@ -23,19 +23,28 @@ interface ImageViewerProps {
 }
 
 export function ImageViewer({ slides, open, index, onClose, onIndexChange }: ImageViewerProps) {
+  const scrollPositionRef = useRef(0);
+
   useEffect(() => {
     if (open) {
+      scrollPositionRef.current = window.scrollY;
       document.body.style.overflow = "hidden";
       document.body.style.position = "fixed";
       document.body.style.width = "100%";
-      document.body.style.top = `-${window.scrollY}px`;
+      document.body.style.top = `-${scrollPositionRef.current}px`;
     } else {
-      const scrollY = document.body.style.top;
       document.body.style.overflow = "";
       document.body.style.position = "";
       document.body.style.width = "";
       document.body.style.top = "";
-      window.scrollTo(0, parseInt(scrollY || "0") * -1);
+      
+      requestAnimationFrame(() => {
+        window.scrollTo({
+          top: scrollPositionRef.current,
+          behavior: 'instant'
+        });
+        window.dispatchEvent(new Event('scroll'));
+      });
     }
   }, [open]);
 

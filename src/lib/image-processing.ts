@@ -3,7 +3,7 @@ import sharp from "sharp";
 import { getObjectBuffer, uploadBuffer } from "./r2";
 
 const WEB_MAX_WIDTH = 2400;
-const WEB_QUALITY = 92;
+const WEB_QUALITY = 85;
 
 export interface ThumbnailResult {
   url: string;
