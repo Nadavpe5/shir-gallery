@@ -50,9 +50,6 @@ export function HighlightsSection({
         transition={{ duration: 0.7 }}
         className="text-center mb-10 md:mb-14"
       >
-        <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
-          Curated Selection
-        </p>
         <h2 className={`${serifClass} text-2xl md:text-4xl font-bold`}>
           Highlights
         </h2>
