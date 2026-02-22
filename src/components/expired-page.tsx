@@ -4,11 +4,12 @@ import { motion } from "framer-motion";
 
 interface ExpiredPageProps {
   clientName: string;
+  theme?: string;
 }
 
-export function ExpiredPage({ clientName }: ExpiredPageProps) {
+export function ExpiredPage({ clientName, theme }: ExpiredPageProps) {
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 bg-background">
+    <div className="min-h-screen flex items-center justify-center px-6 bg-background" data-theme={theme}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

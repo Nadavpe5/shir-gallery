@@ -137,7 +137,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
           {gallery.zip_url && (
             <a
               href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
-              className="inline-flex items-center gap-1.5 bg-sage text-sage-foreground tracking-wide text-[10px] font-medium px-4 py-2 rounded-full transition-all hover:opacity-90 active:scale-[0.98] shadow-sm"
+              className="inline-flex items-center gap-1.5 bg-sage text-sage-foreground tracking-wide text-[10px] font-medium px-3.5 py-1.5 rounded-md transition-all hover:opacity-90 active:scale-[0.98] shadow-sm"
             >
               <Download className="w-3 h-3" />
               Download All
@@ -208,7 +208,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
           {gallery.zip_url && (
             <a
               href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
-              className="inline-flex items-center gap-1.5 bg-sage text-sage-foreground tracking-wide text-[10px] font-medium px-4 py-2 rounded-full transition-all hover:opacity-90 active:scale-[0.98] shadow-sm"
+              className="inline-flex items-center gap-1.5 bg-sage text-sage-foreground tracking-wide text-[10px] font-medium px-3.5 py-1.5 rounded-md transition-all hover:opacity-90 active:scale-[0.98] shadow-sm"
             >
               <Download className="w-3 h-3" />
               Download All
@@ -248,7 +248,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
                 <div className="mb-6 md:mb-8 text-left">
                   <a
                     href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
-                    className="inline-flex items-center gap-1.5 bg-white/95 text-gray-700 tracking-wide text-[10px] font-medium px-4 py-2 rounded-full transition-all hover:bg-white active:scale-[0.98] shadow-lg backdrop-blur-sm"
+                    className="inline-flex items-center gap-1.5 bg-white/95 text-gray-700 tracking-wide text-[10px] font-medium px-3.5 py-1.5 rounded-md transition-all hover:bg-white active:scale-[0.98] shadow-lg backdrop-blur-sm"
                   >
                     <Download className="w-3 h-3" />
                     Download All
@@ -278,7 +278,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
                 <div className={`mb-6 md:mb-8 ${textAlign === 'center' ? 'text-center' : 'text-right'}`}>
                   <a
                     href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
-                    className="inline-flex items-center gap-1.5 bg-white/95 text-gray-700 tracking-wide text-[10px] font-medium px-4 py-2 rounded-full transition-all hover:bg-white active:scale-[0.98] shadow-lg backdrop-blur-sm"
+                    className="inline-flex items-center gap-1.5 bg-white/95 text-gray-700 tracking-wide text-[10px] font-medium px-3.5 py-1.5 rounded-md transition-all hover:bg-white active:scale-[0.98] shadow-lg backdrop-blur-sm"
                   >
                     <Download className="w-3 h-3" />
                     Download All

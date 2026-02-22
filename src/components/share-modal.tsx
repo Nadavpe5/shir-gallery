@@ -60,7 +60,7 @@ export function ShareModal({
               <h3 className={`${serifClass} text-xl font-bold`}>Share</h3>
               <button
                 onClick={onClose}
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-secondary transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-secondary transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -93,7 +93,7 @@ export function ShareModal({
                 rel="noopener noreferrer"
                 className="flex flex-col items-center gap-2 group"
               >
-                <span className="w-12 h-12 flex items-center justify-center rounded-full bg-secondary group-hover:bg-secondary/80 transition-colors">
+                <span className="w-12 h-12 flex items-center justify-center rounded-md bg-secondary group-hover:bg-secondary/80 transition-colors">
                   <MessageCircle className="w-5 h-5" />
                 </span>
                 <span className="text-[10px] tracking-wide uppercase text-muted-foreground">
@@ -105,7 +105,7 @@ export function ShareModal({
                 href={emailUrl}
                 className="flex flex-col items-center gap-2 group"
               >
-                <span className="w-12 h-12 flex items-center justify-center rounded-full bg-secondary group-hover:bg-secondary/80 transition-colors">
+                <span className="w-12 h-12 flex items-center justify-center rounded-md bg-secondary group-hover:bg-secondary/80 transition-colors">
                   <Mail className="w-5 h-5" />
                 </span>
                 <span className="text-[10px] tracking-wide uppercase text-muted-foreground">

@@ -39,7 +39,7 @@ export function GalleryHeader({ gallery, onShareClick }: GalleryHeaderProps) {
           {gallery.zip_url && (
             <a
               href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(gallery.zip_url.split("/").pop() || "gallery.zip")}`}
-              className="inline-flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full hover:bg-secondary transition-colors"
+              className="inline-flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-md hover:bg-secondary transition-colors"
               aria-label="Download all"
             >
               <Download className="w-4 h-4" />
@@ -47,7 +47,7 @@ export function GalleryHeader({ gallery, onShareClick }: GalleryHeaderProps) {
           )}
           <button
             onClick={onShareClick}
-            className="inline-flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full hover:bg-secondary transition-colors"
+            className="inline-flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-md hover:bg-secondary transition-colors"
             aria-label="Share"
           >
             <Share2 className="w-4 h-4" />

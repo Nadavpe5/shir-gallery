@@ -28,9 +28,11 @@ export default async function LoginPage({ params }: PageProps) {
   const gallery = await getGalleryBySlug(slug);
   if (!gallery) notFound();
 
+  const theme = gallery.design_settings?.color || "light";
+
   const isExpired = new Date(gallery.expires_at) < new Date();
   if (isExpired) {
-    return <ExpiredPage clientName={gallery.client_name} />;
+    return <ExpiredPage clientName={gallery.client_name} theme={theme} />;
   }
 
   const session = await validateSession(slug);
@@ -38,5 +40,5 @@ export default async function LoginPage({ params }: PageProps) {
     redirect(`/g/${slug}`);
   }
 
-  return <PasswordGate slug={slug} clientName={gallery.client_name} />;
+  return <PasswordGate slug={slug} clientName={gallery.client_name} theme={theme} />;
 }

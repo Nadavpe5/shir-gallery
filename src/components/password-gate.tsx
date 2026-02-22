@@ -8,9 +8,10 @@ import { motion } from "framer-motion";
 interface PasswordGateProps {
   slug: string;
   clientName: string;
+  theme?: string;
 }
 
-export function PasswordGate({ slug, clientName }: PasswordGateProps) {
+export function PasswordGate({ slug, clientName, theme }: PasswordGateProps) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -45,7 +46,7 @@ export function PasswordGate({ slug, clientName }: PasswordGateProps) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 bg-background">
+    <div className="min-h-screen flex items-center justify-center px-6 bg-background" data-theme={theme}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -89,7 +90,7 @@ export function PasswordGate({ slug, clientName }: PasswordGateProps) {
           <button
             type="submit"
             disabled={loading || !password}
-            className="inline-flex items-center justify-center gap-2 bg-sage text-sage-foreground tracking-[0.15em] uppercase text-[11px] font-medium px-8 py-3 transition-all hover:opacity-85 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="inline-flex items-center justify-center gap-2 bg-sage text-sage-foreground tracking-[0.15em] uppercase text-[11px] font-medium px-8 py-3 rounded-md transition-all hover:opacity-85 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {loading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -102,9 +103,12 @@ export function PasswordGate({ slug, clientName }: PasswordGateProps) {
           </button>
         </form>
 
-        <p className="mt-14 text-[10px] tracking-[0.2em] uppercase text-muted-foreground/50">
-          Shir Yadgar Perez Photography
-        </p>
+        <div className="mt-14 flex flex-col items-center gap-2.5">
+          <img src="/logo-96.png" alt="Shir Yadgar Photography" width={96} height={75} className="w-20 h-20 md:w-24 md:h-24 opacity-40 object-contain" />
+          <p className="text-[9px] md:text-[10px] tracking-[0.25em] uppercase text-muted-foreground/50">
+            Shir Yadgar Photography
+          </p>
+        </div>
       </motion.div>
     </div>
   );
