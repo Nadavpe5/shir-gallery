@@ -35,28 +35,31 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
   // Flatten nameContent to avoid nested span alignment issues
   const nameContent = gallery.client_name.replace(/&/g, " & ");
 
-  const metaContent = (textColor: string) => (
-    <div className={`flex flex-wrap gap-3 md:gap-5 text-[11px] md:text-xs tracking-wide ${textColor}`} style={{ alignItems: 'center' }}>
-      {gallery.location && (
-        <span className="inline-flex items-center gap-1.5">
-          <MapPin className="w-3 h-3" />
-          {gallery.location}
-        </span>
-      )}
-      {formattedDate && (
-        <span className="inline-flex items-center gap-1.5">
-          <Calendar className="w-3 h-3" />
-          {formattedDate}
-        </span>
-      )}
-      {daysRemaining > 0 && (
-        <span className="inline-flex items-center gap-1.5">
-          <Clock className="w-3 h-3" />
-          Available for {daysRemaining} days
-        </span>
-      )}
-    </div>
-  );
+  const metaContent = (textColor: string, alignment?: string) => {
+    const justifyClass = alignment === 'left' ? 'justify-center' : alignment === 'center' ? 'justify-center' : alignment === 'right' ? 'justify-end' : '';
+    return (
+      <div className={`flex flex-wrap gap-3 md:gap-5 text-[11px] md:text-xs tracking-wide ${textColor} ${justifyClass}`} style={{ alignItems: 'center' }}>
+        {gallery.location && (
+          <span className="inline-flex items-center gap-1.5">
+            <MapPin className="w-3 h-3" />
+            {gallery.location}
+          </span>
+        )}
+        {formattedDate && (
+          <span className="inline-flex items-center gap-1.5">
+            <Calendar className="w-3 h-3" />
+            {formattedDate}
+          </span>
+        )}
+        {daysRemaining > 0 && (
+          <span className="inline-flex items-center gap-1.5">
+            <Clock className="w-3 h-3" />
+            Available for {daysRemaining} days
+          </span>
+        )}
+      </div>
+    );
+  };
 
   const anim = {
     initial: { opacity: 0, y: 30 },
@@ -128,15 +131,15 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
               {gallery.subtitle}
             </p>
           )}
-          <div className="flex justify-center mb-10">
-            {metaContent("text-muted-foreground/60")}
+          <div className="mb-10">
+            {metaContent("text-muted-foreground/60", "center")}
           </div>
           {gallery.zip_url && (
             <a
               href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
-              className="inline-flex items-center gap-2 bg-sage text-sage-foreground tracking-[0.15em] uppercase text-[11px] font-medium px-7 py-3 transition-all hover:opacity-85"
+              className="inline-flex items-center gap-1.5 bg-sage text-sage-foreground tracking-wide text-[10px] font-medium px-4 py-2 rounded-full transition-all hover:opacity-90 active:scale-[0.98] shadow-sm"
             >
-              <Download className="w-3.5 h-3.5" />
+              <Download className="w-3 h-3" />
               Download All
             </a>
           )}
@@ -164,9 +167,9 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
           {gallery.zip_url && (
             <a
               href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
-              className="inline-flex items-center gap-2 bg-sage text-sage-foreground tracking-[0.15em] uppercase text-[11px] font-medium px-7 py-3 transition-all hover:opacity-85 self-start"
+              className="inline-flex items-center gap-1.5 bg-sage text-sage-foreground tracking-wide text-[10px] font-medium px-4 py-2 rounded-full transition-all hover:opacity-90 active:scale-[0.98] shadow-sm self-start"
             >
-              <Download className="w-3.5 h-3.5" />
+              <Download className="w-3 h-3" />
               Download All
             </a>
           )}
@@ -201,13 +204,13 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
               </p>
             )}
           </div>
-          <div className="mb-10 text-left">{metaContent("text-muted-foreground/60")}</div>
+          <div className="mb-10">{metaContent("text-muted-foreground/60", textAlign)}</div>
           {gallery.zip_url && (
             <a
               href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
-              className="inline-flex items-center gap-2 bg-sage text-sage-foreground tracking-[0.15em] uppercase text-[11px] font-medium px-7 py-3 transition-all hover:opacity-85"
+              className="inline-flex items-center gap-1.5 bg-sage text-sage-foreground tracking-wide text-[10px] font-medium px-4 py-2 rounded-full transition-all hover:opacity-90 active:scale-[0.98] shadow-sm"
             >
-              <Download className="w-3.5 h-3.5" />
+              <Download className="w-3 h-3" />
               Download All
             </a>
           )}
@@ -222,51 +225,74 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
       {renderCoverImage()}
       <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
       
-      {/* Title and subtitle - positioned higher up */}
-      <div className={`absolute bottom-24 md:bottom-32 z-10 px-4 md:px-16 lg:px-24 ${textAlign === 'center' ? 'left-0 right-0' : textAlign === 'right' ? 'right-0' : 'left-0'}`}>
-        <motion.div {...anim}>
-          <div className={`max-w-4xl ${textAlign === 'center' ? 'mx-auto text-center' : textAlign === 'right' ? 'text-right' : 'text-center'}`}>
-            <h1 className={`${serifClass} text-3xl md:text-7xl lg:text-8xl text-white tracking-tight font-bold mb-2`}>
-              {nameContent}
-            </h1>
-            {gallery.subtitle && (
-              <p className={`${serifClass} text-sm md:text-xl text-white/70 tracking-tight font-normal`}>
-                {gallery.subtitle}
-              </p>
-            )}
-          </div>
-        </motion.div>
-      </div>
-      
-      {/* Metadata - absolute bottom, follows text alignment */}
+      {/* All content in one container for proper alignment */}
       <div className={`absolute bottom-5 md:bottom-10 z-10 px-4 md:px-16 lg:px-24 ${textAlign === 'center' ? 'left-0 right-0' : textAlign === 'right' ? 'right-0' : 'left-0'}`}>
         <motion.div {...anim}>
-          <div className={`max-w-4xl ${textAlign === 'center' ? 'mx-auto' : ''}`}>
-            <div className="flex justify-center">
-              {metaContent("text-white/60")}
-            </div>
-          </div>
-        </motion.div>
-      </div>
-      
-      {/* Download button - if exists */}
-      {gallery.zip_url && (
-        <div className={`absolute bottom-16 md:bottom-20 z-10 px-4 md:px-16 lg:px-24 ${textAlign === 'center' ? 'left-0 right-0' : textAlign === 'right' ? 'right-0' : 'left-0'}`}>
-          <motion.div {...anim}>
-            <div className={`max-w-4xl ${textAlign === 'center' ? 'mx-auto' : ''}`}>
-              <div className={textAlign === 'right' ? 'flex justify-end' : 'flex justify-center'}>
-                <a
-                  href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
-                  className="inline-flex items-center gap-2 bg-white text-black tracking-[0.15em] uppercase text-[11px] font-medium px-7 py-3 transition-all hover:bg-white/90 active:scale-[0.98]"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  Download All
-                </a>
+          {textAlign === 'left' ? (
+            // Special layout for left alignment - all elements align to same left edge
+            <div className="max-w-4xl">
+              {/* Title - left aligned with negative margin to push it left */}
+              <h1 className={`${serifClass} text-3xl md:text-7xl lg:text-8xl text-white tracking-tight font-bold mb-3 md:mb-4 text-left -ml-1 md:-ml-2 lg:-ml-3`}>
+                {nameContent}
+              </h1>
+              
+              {/* Subtitle - left aligned, starts at same position as title */}
+              {gallery.subtitle && (
+                <p className={`${serifClass} text-sm md:text-xl text-white/70 tracking-tight font-normal mb-6 md:mb-10 text-left`}>
+                  {gallery.subtitle}
+                </p>
+              )}
+              
+              {/* Download button - left aligned, starts at same position */}
+              {gallery.zip_url && (
+                <div className="mb-6 md:mb-8 text-left">
+                  <a
+                    href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
+                    className="inline-flex items-center gap-1.5 bg-white/95 text-gray-700 tracking-wide text-[10px] font-medium px-4 py-2 rounded-full transition-all hover:bg-white active:scale-[0.98] shadow-lg backdrop-blur-sm"
+                  >
+                    <Download className="w-3 h-3" />
+                    Download All
+                  </a>
+                </div>
+              )}
+              
+              {/* Metadata - left aligned, starts at same position */}
+              <div className="text-left">
+                {metaContent("text-white/60", 'left')}
               </div>
             </div>
-          </motion.div>
-        </div>
-      )}
+          ) : (
+            // Normal layout for center and right
+            <div className={`max-w-4xl ${textAlign === 'center' ? 'mx-auto' : ''}`}>
+              <h1 className={`${serifClass} text-3xl md:text-7xl lg:text-8xl text-white tracking-tight font-bold mb-3 md:mb-4 ${textAlign === 'center' ? 'text-center' : 'text-right'}`}>
+                {nameContent}
+              </h1>
+              
+              {gallery.subtitle && (
+                <p className={`${serifClass} text-sm md:text-xl text-white/70 tracking-tight font-normal mb-6 md:mb-10 ${textAlign === 'center' ? 'text-center' : 'text-right'}`}>
+                  {gallery.subtitle}
+                </p>
+              )}
+              
+              {gallery.zip_url && (
+                <div className={`mb-6 md:mb-8 ${textAlign === 'center' ? 'text-center' : 'text-right'}`}>
+                  <a
+                    href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
+                    className="inline-flex items-center gap-1.5 bg-white/95 text-gray-700 tracking-wide text-[10px] font-medium px-4 py-2 rounded-full transition-all hover:bg-white active:scale-[0.98] shadow-lg backdrop-blur-sm"
+                  >
+                    <Download className="w-3 h-3" />
+                    Download All
+                  </a>
+                </div>
+              )}
+              
+              <div className={textAlign === 'center' ? 'text-center' : 'text-right'}>
+                {metaContent("text-white/60", textAlign)}
+              </div>
+            </div>
+          )}
+        </motion.div>
+      </div>
     </section>
   );
 }

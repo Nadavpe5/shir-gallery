@@ -1,7 +1,22 @@
 import "server-only";
 import archiver from "archiver";
-import { PassThrough } from "stream";
-import { uploadBuffer } from "./r2";
+import { Readable } from "stream";
+import {
+  S3Client,
+  PutObjectCommand,
+} from "@aws-sdk/client-s3";
+
+const s3 = new S3Client({
+  region: "auto",
+  endpoint: process.env.R2_ENDPOINT!,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+  },
+});
+
+const BUCKET = process.env.R2_BUCKET_NAME!;
+const PUBLIC_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL!;
 
 interface ZipAsset {
   full_url: string;
@@ -15,18 +30,22 @@ export async function generateAndUploadZip(
   shootDate?: string | null
 ): Promise<string> {
   const archive = archiver("zip", { zlib: { level: 5 } });
-  const passThrough = new PassThrough();
-  const chunks: Buffer[] = [];
 
-  passThrough.on("data", (chunk: Buffer) => chunks.push(chunk));
+  const safeName = (clientName || gallerySlug).replace(/[^a-zA-Z0-9._-]/g, "_");
+  const dateStr = shootDate
+    ? new Date(shootDate).toISOString().slice(0, 10)
+    : new Date().toISOString().slice(0, 10);
+  const zipFilename = `${safeName}_${dateStr}`;
+  const zipKey = `${gallerySlug}/${zipFilename}.zip`;
 
-  const done = new Promise<Buffer>((resolve, reject) => {
-    passThrough.on("end", () => resolve(Buffer.concat(chunks)));
-    passThrough.on("error", reject);
-    archive.on("error", reject);
-  });
-
-  archive.pipe(passThrough);
+  const uploadPromise = s3.send(
+    new PutObjectCommand({
+      Bucket: BUCKET,
+      Key: zipKey,
+      Body: archive as unknown as Readable,
+      ContentType: "application/zip",
+    })
+  );
 
   const usedNames = new Set<string>();
   for (const asset of assets) {
@@ -44,8 +63,9 @@ export async function generateAndUploadZip(
     try {
       const response = await fetch(asset.full_url);
       if (response.ok && response.body) {
-        const arrayBuffer = await response.arrayBuffer();
-        archive.append(Buffer.from(arrayBuffer), { name });
+        const webStream = response.body;
+        const nodeStream = Readable.fromWeb(webStream as import("stream/web").ReadableStream);
+        archive.append(nodeStream, { name });
       }
     } catch (err) {
       console.warn(`[zip] Skipping ${name}:`, err instanceof Error ? err.message : err);
@@ -53,16 +73,8 @@ export async function generateAndUploadZip(
   }
 
   await archive.finalize();
-  const zipBuffer = await done;
+  await uploadPromise;
 
-  const safeName = (clientName || gallerySlug).replace(/[^a-zA-Z0-9._-]/g, "_");
-  const dateStr = shootDate
-    ? new Date(shootDate).toISOString().slice(0, 10)
-    : new Date().toISOString().slice(0, 10);
-  const zipFilename = `${safeName}_${dateStr}`;
-  const zipKey = `${gallerySlug}/${zipFilename}.zip`;
-  const zipUrl = await uploadBuffer(zipKey, zipBuffer, "application/zip");
-
-  console.log(`[zip] Generated ZIP: ${zipKey} (${(zipBuffer.length / 1024 / 1024).toFixed(1)}MB, ${assets.length} photos)`);
-  return zipUrl;
+  console.log(`[zip] Generated and uploaded ZIP: ${zipKey} (${assets.length} photos)`);
+  return `${PUBLIC_URL}/${zipKey}`;
 }

@@ -50,9 +50,9 @@ export function DownloadButton({ zipUrl, fontClass }: DownloadButtonProps) {
         <a
           href={`/api/download?url=${encodeURIComponent(zipUrl)}&name=${encodeURIComponent(zipUrl.split("/").pop() || "gallery.zip")}`}
           onClick={handleClick}
-          className="inline-flex items-center gap-2 bg-sage text-sage-foreground tracking-[0.15em] uppercase text-[11px] font-medium px-8 py-3.5 transition-all hover:opacity-85 active:scale-[0.98]"
+          className="inline-flex items-center gap-1.5 bg-sage text-sage-foreground tracking-wide text-[10px] font-medium px-4 py-2 rounded-full transition-all hover:opacity-90 active:scale-[0.98] shadow-sm"
         >
-          <Download className="w-3.5 h-3.5" />
+          <Download className="w-3 h-3" />
           Download ZIP
         </a>
 

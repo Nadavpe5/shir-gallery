@@ -280,6 +280,8 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
   const [assets, setAssets] = useState<AssetData[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [publishError, setPublishError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<SidebarTab>("photos");
   const [selectedAssets, setSelectedAssets] = useState<Set<string>>(new Set());
   const [uploadQueue, setUploadQueue] = useState<UploadItem[]>([]);
@@ -387,14 +389,25 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
   }
 
   async function handlePublish(published: boolean) {
-    const res = await fetch(`/api/admin/galleries/${galleryId}/publish`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ published }),
-    });
-    if (res.ok) {
-      const updated = await res.json();
-      setGallery(updated);
+    setPublishing(true);
+    setPublishError(null);
+    try {
+      const res = await fetch(`/api/admin/galleries/${galleryId}/publish`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ published }),
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setGallery(updated);
+      } else {
+        const data = await res.json().catch(() => ({ error: "Failed to publish" }));
+        setPublishError(data.error || "Failed to publish gallery");
+      }
+    } catch (err) {
+      setPublishError(err instanceof Error ? err.message : "Network error");
+    } finally {
+      setPublishing(false);
     }
   }
 
@@ -945,7 +958,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
               <button
                 onClick={saveDetails}
                 disabled={saving}
-                className="w-full inline-flex items-center justify-center gap-2 bg-gray-900 text-white rounded-lg px-4 py-3 text-sm font-medium hover:bg-gray-800 disabled:opacity-40 transition-colors shadow-sm"
+                className="w-full inline-flex items-center justify-center gap-2 bg-blue-100 text-blue-700 rounded-lg px-4 py-3 text-sm font-medium hover:bg-blue-200 disabled:opacity-40 transition-colors shadow-sm"
               >
                 {saving ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -989,7 +1002,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
               <button
                 onClick={saveDetails}
                 disabled={saving}
-                className="w-full inline-flex items-center justify-center gap-2 bg-gray-900 text-white rounded-lg px-4 py-3 text-sm font-medium hover:bg-gray-800 disabled:opacity-40 transition-colors shadow-sm"
+                className="w-full inline-flex items-center justify-center gap-2 bg-blue-100 text-blue-700 rounded-lg px-4 py-3 text-sm font-medium hover:bg-blue-200 disabled:opacity-40 transition-colors shadow-sm"
               >
                 {saving ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -1028,7 +1041,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                     setRegenerating(false);
                   }}
                   disabled={regenerating}
-                  className="w-full inline-flex items-center justify-center gap-2 border border-gray-200 text-gray-700 rounded-lg px-4 py-3 text-sm font-medium hover:bg-gray-50 disabled:opacity-40 transition-colors"
+                  className="w-full inline-flex items-center justify-center gap-2 bg-violet-100 text-violet-700 rounded-lg px-4 py-3 text-sm font-medium hover:bg-violet-200 disabled:opacity-40 transition-colors"
                 >
                   {regenerating ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -1047,26 +1060,51 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
 
         {/* Action Bar */}
         <div className="p-4 lg:p-5 border-t border-gray-100 space-y-2.5">
+          {publishError && (
+            <div className="bg-red-50 border border-red-100 rounded-lg px-3 py-2 text-xs text-red-700">
+              {publishError}
+            </div>
+          )}
           {gallery.status === "draft" ? (
             <button
               onClick={() => handlePublish(true)}
-              className="w-full inline-flex items-center justify-center gap-2 bg-green-600 text-white rounded-lg px-4 py-3 text-sm font-medium hover:bg-green-700 transition-colors shadow-sm"
+              disabled={publishing}
+              className="w-full inline-flex items-center justify-center gap-2 bg-emerald-100 text-emerald-700 rounded-lg px-4 py-3 text-sm font-medium hover:bg-emerald-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
             >
-              <Globe className="w-4 h-4" />
-              Publish
+              {publishing ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Publishing...
+                </>
+              ) : (
+                <>
+                  <Globe className="w-4 h-4" />
+                  Publish
+                </>
+              )}
             </button>
           ) : (
             <button
               onClick={() => handlePublish(false)}
-              className="w-full inline-flex items-center justify-center gap-2 bg-gray-100 text-gray-700 rounded-lg px-4 py-3 text-sm font-medium hover:bg-gray-200 transition-colors"
+              disabled={publishing}
+              className="w-full inline-flex items-center justify-center gap-2 bg-amber-100 text-amber-700 rounded-lg px-4 py-3 text-sm font-medium hover:bg-amber-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              <FileText className="w-4 h-4" />
-              Unpublish
+              {publishing ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Unpublishing...
+                </>
+              ) : (
+                <>
+                  <FileText className="w-4 h-4" />
+                  Unpublish
+                </>
+              )}
             </button>
           )}
           <button
             onClick={() => setShowShareModal(true)}
-            className="w-full inline-flex items-center justify-center gap-2 border border-gray-200 text-gray-700 rounded-lg px-4 py-3 text-sm font-medium hover:bg-gray-50 transition-colors"
+            className="w-full inline-flex items-center justify-center gap-2 bg-sky-100 text-sky-700 rounded-lg px-4 py-3 text-sm font-medium hover:bg-sky-200 transition-colors"
           >
             <Share2 className="w-4 h-4" />
             Share
@@ -1652,7 +1690,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
               </p>
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="inline-flex items-center gap-2 bg-gray-900 text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-gray-800"
+                className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-700 rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-indigo-200"
               >
                 <Upload className="w-4 h-4" />
                 Upload Photos
@@ -1762,7 +1800,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
                   setCopied(true);
                   setTimeout(() => setCopied(false), 2000);
                 }}
-                className="flex items-center gap-2 bg-gray-900 text-white px-5 py-3 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors shadow-sm"
+                className="flex items-center gap-2 bg-teal-100 text-teal-700 px-5 py-3 rounded-lg text-sm font-medium hover:bg-teal-200 transition-colors shadow-sm"
               >
                 {copied ? (
                   <Check className="w-4 h-4" />

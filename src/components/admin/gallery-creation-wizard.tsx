@@ -92,7 +92,7 @@ export function GalleryCreationWizard() {
             <div
               key={i}
               className={`h-1 flex-1 rounded-full transition-colors ${
-                i + 1 <= step ? "bg-gray-900" : "bg-gray-200"
+                i + 1 <= step ? "bg-indigo-400" : "bg-gray-200"
               }`}
             />
           ))}
@@ -197,7 +197,7 @@ export function GalleryCreationWizard() {
             <button
               onClick={() => setStep(2)}
               disabled={!clientName || !slug}
-              className="mt-8 inline-flex items-center gap-2 bg-gray-900 text-white rounded-lg px-6 py-3 text-sm font-medium hover:bg-gray-800 disabled:opacity-40 transition-colors shadow-sm"
+              className="mt-8 inline-flex items-center gap-2 bg-indigo-100 text-indigo-700 rounded-lg px-6 py-3 text-sm font-medium hover:bg-indigo-200 disabled:opacity-40 transition-colors shadow-sm"
             >
               Continue
               <ArrowRight className="w-4 h-4" />
@@ -258,7 +258,7 @@ export function GalleryCreationWizard() {
             <button
               onClick={createGallery}
               disabled={loading || !password}
-              className="mt-8 inline-flex items-center gap-2 bg-gray-900 text-white rounded-lg px-6 py-3 text-sm font-medium hover:bg-gray-800 disabled:opacity-40 transition-colors shadow-sm"
+              className="mt-8 inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 rounded-lg px-6 py-3 text-sm font-medium hover:bg-emerald-200 disabled:opacity-40 transition-colors shadow-sm"
             >
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
