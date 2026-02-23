@@ -1,8 +1,116 @@
 // One-time migration script for ofir gallery
 // Run with: npx tsx scripts/migrate-ofir-gallery.ts
 
-import { supabaseAdmin } from "../src/lib/supabase-server";
-import { generateSectionZips } from "../src/lib/section-zip-generator";
+import { createClient } from "@supabase/supabase-js";
+import archiver from "archiver";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { Readable } from "stream";
+import * as dotenv from "dotenv";
+import * as path from "path";
+
+// Load environment variables
+dotenv.config({ path: path.join(__dirname, "../.env.local") });
+
+// Create Supabase client
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  { auth: { persistSession: false } }
+);
+
+// Create S3 client for R2
+const s3 = new S3Client({
+  region: "auto",
+  endpoint: process.env.R2_ENDPOINT!,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+  },
+});
+
+const BUCKET = process.env.R2_BUCKET_NAME!;
+const PUBLIC_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL!;
+
+// Inline section ZIP generation
+interface ZipAsset {
+  full_url: string;
+  filename: string | null;
+}
+
+interface SectionZipResult {
+  url: string | null;
+  sizeBytes: number;
+  assetCount: number;
+}
+
+async function generateSectionZip(
+  gallerySlug: string,
+  sectionName: string,
+  assets: ZipAsset[]
+): Promise<SectionZipResult> {
+  if (assets.length === 0) {
+    console.log(`  [skip] ${sectionName} (0 assets)`);
+    return { url: null, sizeBytes: 0, assetCount: 0 };
+  }
+
+  console.log(`  [gen] ${sectionName}.zip (${assets.length} assets)...`);
+
+  const archive = archiver("zip", { zlib: { level: 5 } });
+  const zipKey = `${gallerySlug}/${sectionName}.zip`;
+
+  const usedNames = new Set<string>();
+  for (const asset of assets) {
+    let name = asset.filename || "photo.jpg";
+    
+    if (usedNames.has(name)) {
+      const ext = name.lastIndexOf(".");
+      const base = ext > 0 ? name.slice(0, ext) : name;
+      const extension = ext > 0 ? name.slice(ext) : ".jpg";
+      let counter = 2;
+      while (usedNames.has(`${base}_${counter}${extension}`)) counter++;
+      name = `${base}_${counter}${extension}`;
+    }
+    usedNames.add(name);
+
+    try {
+      const response = await fetch(asset.full_url);
+      if (response.ok && response.body) {
+        const webStream = response.body;
+        const nodeStream = Readable.fromWeb(webStream as any);
+        archive.append(nodeStream, { name });
+      }
+    } catch (err) {
+      console.warn(`    [warn] Skipping ${name}:`, err instanceof Error ? err.message : err);
+    }
+  }
+
+  archive.finalize();
+
+  const chunks: Buffer[] = [];
+  for await (const chunk of archive) {
+    chunks.push(Buffer.from(chunk));
+  }
+  const zipBuffer = Buffer.concat(chunks);
+
+  await s3.send(
+    new PutObjectCommand({
+      Bucket: BUCKET,
+      Key: zipKey,
+      Body: zipBuffer,
+      ContentType: "application/zip",
+      ContentLength: zipBuffer.length,
+    })
+  );
+
+  const url = `${PUBLIC_URL}/${zipKey}`;
+  console.log(`  ✓ Uploaded ${zipKey} (${(zipBuffer.length / 1024 / 1024).toFixed(2)} MB)`);
+
+  return {
+    url,
+    sizeBytes: zipBuffer.length,
+    assetCount: assets.length,
+  };
+}
 
 async function migrateOfirGallery() {
   console.log("🚀 Starting migration for ofir gallery...\n");
@@ -43,39 +151,28 @@ async function migrateOfirGallery() {
     console.log(`  - ${assets.length} total\n`);
     
     // 3. Generate section ZIPs
-    console.log("📦 Generating section ZIPs...\n");
-    const results = await generateSectionZips(
-      gallery.slug,
-      highlights,
-      galleryAssets,
-      originals
-    );
+    console.log("\n📦 Generating section ZIPs:");
     
-    console.log("\n✓ Generated section ZIPs:");
-    if (results.highlights.url) {
-      console.log(`  - highlights.zip: ${results.highlights.assetCount} photos, ${(results.highlights.sizeBytes / 1024 / 1024).toFixed(2)} MB`);
-    }
-    if (results.gallery.url) {
-      console.log(`  - gallery.zip: ${results.gallery.assetCount} photos, ${(results.gallery.sizeBytes / 1024 / 1024).toFixed(2)} MB`);
-    }
-    if (results.originals.url) {
-      console.log(`  - originals.zip: ${results.originals.assetCount} photos, ${(results.originals.sizeBytes / 1024 / 1024).toFixed(2)} MB`);
-    }
+    const highlightsResult = await generateSectionZip(gallery.slug, "highlights", highlights);
+    const galleryResult = await generateSectionZip(gallery.slug, "gallery", galleryAssets);
+    const originalsResult = await generateSectionZip(gallery.slug, "originals", originals);
+    
+    console.log("\n✓ Section ZIPs generated successfully");
     
     // 4. Update database
     console.log("\n💾 Updating database...");
     const { error: updateError } = await supabaseAdmin
       .from("galleries")
       .update({
-        zip_highlights_url: results.highlights.url,
-        zip_highlights_count: results.highlights.assetCount,
-        zip_highlights_size: results.highlights.sizeBytes,
-        zip_gallery_url: results.gallery.url,
-        zip_gallery_count: results.gallery.assetCount,
-        zip_gallery_size: results.gallery.sizeBytes,
-        zip_originals_url: results.originals.url,
-        zip_originals_count: results.originals.assetCount,
-        zip_originals_size: results.originals.sizeBytes,
+        zip_highlights_url: highlightsResult.url,
+        zip_highlights_count: highlightsResult.assetCount,
+        zip_highlights_size: highlightsResult.sizeBytes,
+        zip_gallery_url: galleryResult.url,
+        zip_gallery_count: galleryResult.assetCount,
+        zip_gallery_size: galleryResult.sizeBytes,
+        zip_originals_url: originalsResult.url,
+        zip_originals_count: originalsResult.assetCount,
+        zip_originals_size: originalsResult.sizeBytes,
       })
       .eq("id", gallery.id);
       
