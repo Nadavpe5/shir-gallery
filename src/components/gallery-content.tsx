@@ -164,7 +164,11 @@ export function GalleryContent({ gallery, galleryUrl }: GalleryContentProps) {
 
       <div className="mx-3 md:mx-16 lg:mx-24 border-t border-border" />
 
-      <DownloadButton galleryId={gallery.id} zipUrl={gallery.zip_url} fontClass={fontClass} />
+      <DownloadButton 
+        galleryId={gallery.id} 
+        hasAnySections={!!(gallery.zip_highlights_url || gallery.zip_gallery_url || gallery.zip_originals_url)}
+        fontClass={fontClass} 
+      />
 
       <footer className="border-t border-border py-8 md:py-10 px-5 md:px-16 flex flex-col items-center gap-2.5">
         <img src="/logo-96.png" alt="Shir Yadgar Photography" width={96} height={75} className="w-20 h-20 md:w-24 md:h-24 opacity-40 object-contain" />

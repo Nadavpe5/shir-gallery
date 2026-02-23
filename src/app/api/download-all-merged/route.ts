@@ -1,10 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-server";
-import archiver from "archiver";
-import { getObjectBuffer } from "@/lib/r2";
-
-export const runtime = "nodejs";
-export const maxDuration = 60;
 
 export async function GET(request: NextRequest) {
   const galleryId = request.nextUrl.searchParams.get("galleryId");
@@ -17,7 +12,6 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Fetch gallery section ZIP URLs
     const { data: gallery } = await supabaseAdmin
       .from("galleries")
       .select("slug, client_name, zip_highlights_url, zip_gallery_url, zip_originals_url")
@@ -28,59 +22,43 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Gallery not found" }, { status: 404 });
     }
 
-    // Check if any sections exist
-    if (!gallery.zip_highlights_url && !gallery.zip_gallery_url && !gallery.zip_originals_url) {
+    const sections = [];
+    
+    if (gallery.zip_highlights_url) {
+      sections.push({
+        url: gallery.zip_highlights_url,
+        name: `${gallery.client_name || gallery.slug}_Highlights.zip`,
+      });
+    }
+    
+    if (gallery.zip_gallery_url) {
+      sections.push({
+        url: gallery.zip_gallery_url,
+        name: `${gallery.client_name || gallery.slug}_Gallery.zip`,
+      });
+    }
+    
+    if (gallery.zip_originals_url) {
+      sections.push({
+        url: gallery.zip_originals_url,
+        name: `${gallery.client_name || gallery.slug}_Originals.zip`,
+      });
+    }
+
+    if (sections.length === 0) {
       return NextResponse.json(
-        { error: "No section ZIPs available" },
+        { error: "No section ZIPs available. Please republish the gallery." },
         { status: 404 }
       );
     }
 
-    console.log("[download-all-merged] Creating merged ZIP for:", gallery.slug);
+    console.log(`[download-all-merged] Returning ${sections.length} section URLs for:`, gallery.slug);
 
-    // Create archive
-    const archive = archiver("zip", { zlib: { level: 0 } }); // No compression for speed
-
-    const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL!;
-
-    // Add each section that exists
-    if (gallery.zip_highlights_url) {
-      console.log("[download-all-merged] Adding Highlights section");
-      const key = gallery.zip_highlights_url.replace(`${publicUrl}/`, "");
-      const buffer = await getObjectBuffer(key);
-      archive.append(buffer, { name: "Highlights.zip" });
-    }
-
-    if (gallery.zip_gallery_url) {
-      console.log("[download-all-merged] Adding Gallery section");
-      const key = gallery.zip_gallery_url.replace(`${publicUrl}/`, "");
-      const buffer = await getObjectBuffer(key);
-      archive.append(buffer, { name: "Gallery.zip" });
-    }
-
-    if (gallery.zip_originals_url) {
-      console.log("[download-all-merged] Adding Originals section");
-      const key = gallery.zip_originals_url.replace(`${publicUrl}/`, "");
-      const buffer = await getObjectBuffer(key);
-      archive.append(buffer, { name: "Originals.zip" });
-    }
-
-    await archive.finalize();
-
-    const filename = `${gallery.client_name || gallery.slug}_all.zip`;
-
-    console.log("[download-all-merged] Streaming merged ZIP:", filename);
-
-    return new NextResponse(archive as unknown as ReadableStream, {
-      headers: {
-        "Content-Type": "application/zip",
-        "Content-Disposition": `attachment; filename="${filename}"`,
-      },
-    });
+    return NextResponse.json({ sections });
   } catch (error) {
     console.error("[download-all-merged] Error:", error);
     return NextResponse.json(
-      { error: "Failed to create merged download" },
+      { error: "Failed to fetch download URLs" },
       { status: 500 }
     );
   }

@@ -182,18 +182,16 @@ async function migrateOfirGallery() {
     
     console.log("✓ Database updated\n");
     
-    // 5. Note about old ZIP
-    if (gallery.zip_url) {
-      console.log("⚠️  Old ZIP still exists:");
-      console.log(`   ${gallery.zip_url}`);
-      console.log("   You can manually delete it from R2 after verifying section downloads work.\n");
-    }
-    
     console.log("✅ Migration complete!\n");
-    console.log("Next steps:");
-    console.log("1. Test section downloads in the gallery");
-    console.log("2. Test 'Download All' merged download");
-    console.log("3. Manually delete old ZIP from R2 if everything works");
+    console.log("Summary:");
+    console.log(`  - Highlights: ${highlightsResult.assetCount} photos (${(highlightsResult.sizeBytes / 1024 / 1024).toFixed(2)} MB)`);
+    console.log(`  - Gallery: ${galleryResult.assetCount} photos (${(galleryResult.sizeBytes / 1024 / 1024).toFixed(2)} MB)`);
+    console.log(`  - Originals: ${originalsResult.assetCount} photos (${(originalsResult.sizeBytes / 1024 / 1024).toFixed(2)} MB)`);
+    console.log(`  - Total: ${highlightsResult.assetCount + galleryResult.assetCount + originalsResult.assetCount} photos`);
+    console.log("\nNext steps:");
+    console.log("1. Deploy changes to Vercel");
+    console.log("2. Test 'Download All' (downloads 3 separate files)");
+    console.log("3. Test individual section downloads");
     
   } catch (error) {
     console.error("\n❌ Migration failed:");
