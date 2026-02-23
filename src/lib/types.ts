@@ -50,6 +50,9 @@ export interface Gallery {
   expires_at: string;
   created_at: string;
   zip_url: string | null;
+  zip_generated_at: string | null;
+  zip_asset_count: number | null;
+  zip_size_bytes: number | null;
   edited_count: number;
   originals_count: number;
   status: "draft" | "published";

@@ -49,7 +49,8 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   const allowedFields = [
     "client_name", "shoot_title", "subtitle", "location",
     "shoot_date", "slug", "expires_at", "cover_image_url",
-    "zip_url", "edited_count", "originals_count", "design_settings",
+    "zip_url", "zip_generated_at", "zip_asset_count", "zip_size_bytes",
+    "edited_count", "originals_count", "design_settings",
   ];
 
   for (const field of allowedFields) {

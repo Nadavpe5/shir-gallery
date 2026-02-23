@@ -28,7 +28,7 @@ export async function generateAndUploadZip(
   assets: ZipAsset[],
   clientName?: string,
   shootDate?: string | null
-): Promise<string> {
+): Promise<{ url: string; sizeBytes: number; assetCount: number }> {
   const archive = archiver("zip", { zlib: { level: 5 } });
 
   const safeName = (clientName || gallerySlug).replace(/[^a-zA-Z0-9._-]/g, "_");
@@ -83,6 +83,11 @@ export async function generateAndUploadZip(
     })
   );
 
-  console.log(`[zip] Uploaded ZIP: ${zipKey} (${assets.length} photos)`);
-  return `${PUBLIC_URL}/${zipKey}`;
+  console.log(`[zip] Uploaded ZIP: ${zipKey} (${assets.length} photos, ${(zipBuffer.length / 1024 / 1024).toFixed(2)} MB)`);
+  
+  return {
+    url: `${PUBLIC_URL}/${zipKey}`,
+    sizeBytes: zipBuffer.length,
+    assetCount: assets.length,
+  };
 }

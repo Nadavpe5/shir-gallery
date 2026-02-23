@@ -25,7 +25,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     try {
       const { data: gallery } = await supabaseAdmin
         .from("galleries")
-        .select("slug, zip_url, client_name, shoot_date")
+        .select("slug, zip_url, client_name, shoot_date, zip_asset_count")
         .eq("id", id)
         .single();
 
@@ -42,22 +42,41 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         zipError = "No assets to include in ZIP";
         console.warn("[publish] No assets found for gallery:", id);
       } else {
-        // Delete old ZIP from R2 before creating new one
-        if (gallery.zip_url) {
-          try {
-            const { deleteObject } = await import("@/lib/r2");
-            const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL!;
-            const oldKey = gallery.zip_url.replace(`${publicUrl}/`, "");
-            await deleteObject(oldKey);
-            console.log("[publish] Deleted old ZIP:", oldKey);
-          } catch (e) {
-            console.warn("[publish] Failed to delete old ZIP:", e);
+        const currentAssetCount = assets.length;
+        
+        const needsRegeneration = 
+          !gallery.zip_url ||
+          !gallery.zip_asset_count ||
+          gallery.zip_asset_count !== currentAssetCount;
+        
+        if (needsRegeneration) {
+          console.log(`[publish] Regenerating ZIP (assets: ${gallery.zip_asset_count || 0} → ${currentAssetCount})`);
+          
+          if (gallery.zip_url) {
+            try {
+              const { deleteObject } = await import("@/lib/r2");
+              const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL!;
+              const oldKey = gallery.zip_url.replace(`${publicUrl}/`, "");
+              await deleteObject(oldKey);
+              console.log("[publish] Deleted old ZIP:", oldKey);
+            } catch (e) {
+              console.warn("[publish] Failed to delete old ZIP:", e);
+            }
           }
-        }
 
-        const { generateAndUploadZip } = await import("@/lib/zip-generator");
-        zipUrl = await generateAndUploadZip(gallery.slug, assets, gallery.client_name, gallery.shoot_date);
-        console.log("[publish] ZIP generated:", zipUrl);
+          const { generateAndUploadZip } = await import("@/lib/zip-generator");
+          const zipResult = await generateAndUploadZip(gallery.slug, assets, gallery.client_name, gallery.shoot_date);
+          zipUrl = zipResult.url;
+          
+          updateData.zip_url = zipResult.url;
+          updateData.zip_generated_at = new Date().toISOString();
+          updateData.zip_asset_count = zipResult.assetCount;
+          updateData.zip_size_bytes = zipResult.sizeBytes;
+          
+          console.log("[publish] ZIP generated:", zipResult.url);
+        } else {
+          console.log(`[publish] Skipping ZIP regeneration (${currentAssetCount} assets unchanged)`);
+        }
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Unknown error";
@@ -70,10 +89,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     status: published ? "published" : "draft",
   };
   
-  // Always update zip_url: set to new URL, null, or clear when unpublishing
-  if (published) {
-    updateData.zip_url = zipUrl;
-  } else {
+  if (!published) {
     updateData.zip_url = null;
   }
 
