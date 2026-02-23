@@ -11,6 +11,7 @@ interface GalleryHeaderProps {
 
 export function GalleryHeader({ gallery, onShareClick }: GalleryHeaderProps) {
   const [visible, setVisible] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     function handleScroll() {
@@ -19,6 +20,52 @@ export function GalleryHeader({ gallery, onShareClick }: GalleryHeaderProps) {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  async function handleDownloadAll() {
+    if (isDownloading) return;
+    
+    setIsDownloading(true);
+
+    try {
+      console.log("[GalleryHeader] Fetching section URLs for galleryId:", gallery.id);
+      const response = await fetch(`/api/download-all-merged?galleryId=${gallery.id}`);
+      const data = await response.json();
+
+      console.log("[GalleryHeader] API response:", data);
+
+      if (!response.ok || !data.sections || data.sections.length === 0) {
+        console.error("[GalleryHeader] Failed to get section URLs:", data.error);
+        setIsDownloading(false);
+        return;
+      }
+
+      console.log(`[GalleryHeader] Starting ${data.sections.length} downloads`);
+
+      for (let i = 0; i < data.sections.length; i++) {
+        const section = data.sections[i];
+        console.log(`[GalleryHeader] Downloading ${i + 1}/${data.sections.length}:`, section.name);
+        
+        const downloadUrl = `/api/download?url=${encodeURIComponent(section.url)}&name=${encodeURIComponent(section.name)}`;
+        
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.download = section.name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        if (i < data.sections.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      }
+
+      console.log("[GalleryHeader] All downloads triggered");
+    } catch (error) {
+      console.error("[GalleryHeader] Download failed:", error);
+    } finally {
+      setIsDownloading(false);
+    }
+  }
 
   if (!visible) return null;
 
@@ -37,17 +84,14 @@ export function GalleryHeader({ gallery, onShareClick }: GalleryHeaderProps) {
 
         <div className="flex items-center gap-1 md:gap-2 shrink-0">
           {(gallery.zip_gallery_url || gallery.zip_originals_url || gallery.zip_highlights_url) && (
-            <a
-              href="#download-all"
-              onClick={(e) => {
-                e.preventDefault();
-                document.querySelector('[data-download-all-section]')?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="inline-flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-md hover:bg-secondary transition-colors"
+            <button
+              onClick={handleDownloadAll}
+              disabled={isDownloading}
+              className="inline-flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-md hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Download all"
             >
               <Download className="w-4 h-4" />
-            </a>
+            </button>
           )}
           <button
             onClick={onShareClick}
