@@ -50,6 +50,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     "client_name", "shoot_title", "subtitle", "location",
     "shoot_date", "slug", "expires_at", "cover_image_url",
     "zip_url", "zip_generated_at", "zip_asset_count", "zip_size_bytes",
+    "zip_highlights_url", "zip_gallery_url", "zip_originals_url",
+    "zip_highlights_count", "zip_gallery_count", "zip_originals_count",
+    "zip_highlights_size", "zip_gallery_size", "zip_originals_size",
     "edited_count", "originals_count", "design_settings",
   ];
 

@@ -27,13 +27,13 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     try {
       const { data: gallery } = await supabaseAdmin
         .from("galleries")
-        .select("slug, zip_url, client_name, shoot_date, zip_asset_count")
+        .select("slug, zip_highlights_count, zip_gallery_count, zip_originals_count")
         .eq("id", id)
         .single();
 
       const { data: assets } = await supabaseAdmin
         .from("gallery_assets")
-        .select("full_url, filename")
+        .select("full_url, filename, type")
         .eq("gallery_id", id);
 
       if (!gallery) {
@@ -44,39 +44,49 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         zipError = "No assets to include in ZIP";
         console.warn("[publish] No assets found for gallery:", id);
       } else {
-        const currentAssetCount = assets.length;
-        
-        const needsRegeneration = 
-          !gallery.zip_url ||
-          !gallery.zip_asset_count ||
-          gallery.zip_asset_count !== currentAssetCount;
-        
-        if (needsRegeneration) {
-          console.log(`[publish] Regenerating ZIP (assets: ${gallery.zip_asset_count || 0} → ${currentAssetCount})`);
-          
-          if (gallery.zip_url) {
-            try {
-              const { deleteObject } = await import("@/lib/r2");
-              const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL!;
-              const oldKey = gallery.zip_url.replace(`${publicUrl}/`, "");
-              await deleteObject(oldKey);
-              console.log("[publish] Deleted old ZIP:", oldKey);
-            } catch (e) {
-              console.warn("[publish] Failed to delete old ZIP:", e);
-            }
-          }
+        // Group assets by type
+        const highlights = assets.filter(a => a.type === "highlight");
+        const galleryAssets = assets.filter(a => a.type === "gallery");
+        const originals = assets.filter(a => a.type === "original");
 
-          const { generateAndUploadZip } = await import("@/lib/zip-generator");
-          const zipResult = await generateAndUploadZip(gallery.slug, assets, gallery.client_name, gallery.shoot_date);
+        // Check if each section needs regeneration
+        const needsHighlightsRegen = 
+          highlights.length > 0 && 
+          (!gallery.zip_highlights_count || gallery.zip_highlights_count !== highlights.length);
+
+        const needsGalleryRegen = 
+          galleryAssets.length > 0 && 
+          (!gallery.zip_gallery_count || gallery.zip_gallery_count !== galleryAssets.length);
+
+        const needsOriginalsRegen = 
+          originals.length > 0 && 
+          (!gallery.zip_originals_count || gallery.zip_originals_count !== originals.length);
+
+        if (needsHighlightsRegen || needsGalleryRegen || needsOriginalsRegen) {
+          console.log(`[publish] Regenerating section ZIPs:`);
+          if (needsHighlightsRegen) console.log(`  - highlights: ${gallery.zip_highlights_count || 0} → ${highlights.length}`);
+          if (needsGalleryRegen) console.log(`  - gallery: ${gallery.zip_gallery_count || 0} → ${galleryAssets.length}`);
+          if (needsOriginalsRegen) console.log(`  - originals: ${gallery.zip_originals_count || 0} → ${originals.length}`);
+
+          const { generateSectionZips } = await import("@/lib/section-zip-generator");
+          const results = await generateSectionZips(gallery.slug, highlights, galleryAssets, originals);
+
+          // Update all section metadata
+          updateData.zip_highlights_url = results.highlights.url;
+          updateData.zip_highlights_count = results.highlights.assetCount;
+          updateData.zip_highlights_size = results.highlights.sizeBytes;
           
-          updateData.zip_url = zipResult.url;
-          updateData.zip_generated_at = new Date().toISOString();
-          updateData.zip_asset_count = zipResult.assetCount;
-          updateData.zip_size_bytes = zipResult.sizeBytes;
+          updateData.zip_gallery_url = results.gallery.url;
+          updateData.zip_gallery_count = results.gallery.assetCount;
+          updateData.zip_gallery_size = results.gallery.sizeBytes;
           
-          console.log("[publish] ZIP generated:", zipResult.url);
+          updateData.zip_originals_url = results.originals.url;
+          updateData.zip_originals_count = results.originals.assetCount;
+          updateData.zip_originals_size = results.originals.sizeBytes;
+
+          console.log("[publish] Section ZIPs generated successfully");
         } else {
-          console.log(`[publish] Skipping ZIP regeneration (${currentAssetCount} assets unchanged)`);
+          console.log(`[publish] Skipping ZIP regeneration (all sections unchanged)`);
         }
       }
     } catch (err) {
@@ -85,7 +95,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       console.error("[publish] ZIP generation failed:", err);
     }
   } else {
-    updateData.zip_url = null;
+    // When unpublishing, clear section URLs but keep metadata for smart regeneration
+    updateData.zip_highlights_url = null;
+    updateData.zip_gallery_url = null;
+    updateData.zip_originals_url = null;
   }
 
   const { data, error } = await supabaseAdmin

@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { Download } from "lucide-react";
 import type { GalleryAsset, GridStyle, GridSize, GridSpacing } from "@/lib/types";
 import { ImageOverlay } from "./image-overlay";
 
@@ -17,6 +18,8 @@ interface GalleryGridProps {
   indexOffset: number;
   gridSettings?: GridSettings;
   fontClass?: string;
+  galleryId?: string;
+  zipGalleryUrl?: string | null;
 }
 
 const EDITORIAL_CYCLE = 6;
@@ -76,6 +79,8 @@ export function GalleryGrid({
   indexOffset,
   gridSettings,
   fontClass,
+  galleryId,
+  zipGalleryUrl,
 }: GalleryGridProps) {
   if (assets.length === 0) return null;
 
@@ -108,6 +113,15 @@ export function GalleryGrid({
           Gallery
         </h2>
         <div className="w-px h-6 md:h-8 bg-sage/40 mx-auto mt-4 md:mt-5" />
+        {galleryId && zipGalleryUrl && (
+          <a
+            href={`/api/download-section?galleryId=${galleryId}&section=gallery`}
+            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mt-4"
+          >
+            <Download className="w-3.5 h-3.5" />
+            Download Gallery
+          </a>
+        )}
       </motion.div>
 
       {isEditorial ? (

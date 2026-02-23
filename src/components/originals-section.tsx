@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Download } from "lucide-react";
 import type { GalleryAsset, GridStyle, GridSize, GridSpacing } from "@/lib/types";
 import { ImageOverlay } from "./image-overlay";
 
@@ -19,6 +19,8 @@ interface OriginalsSectionProps {
   indexOffset: number;
   gridSettings?: GridSettings;
   fontClass?: string;
+  galleryId?: string;
+  zipOriginalsUrl?: string | null;
 }
 
 const BATCH_SIZE = 20;
@@ -29,6 +31,8 @@ export function OriginalsSection({
   indexOffset,
   gridSettings,
   fontClass,
+  galleryId,
+  zipOriginalsUrl,
 }: OriginalsSectionProps) {
   const serifClass = fontClass || "font-serif";
   const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
@@ -51,6 +55,15 @@ export function OriginalsSection({
           Originals
         </h2>
         <div className="w-px h-6 md:h-8 bg-sage/40 mx-auto mt-4 md:mt-5" />
+        {galleryId && zipOriginalsUrl && (
+          <a
+            href={`/api/download-section?galleryId=${galleryId}&section=originals`}
+            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mt-4"
+          >
+            <Download className="w-3.5 h-3.5" />
+            Download Originals
+          </a>
+        )}
       </motion.div>
 
       <div className={`columns-2 md:columns-4 lg:columns-5 ${gridSettings?.spacing === "large" ? "gap-5 md:gap-6" : "gap-3 md:gap-4"}`}>

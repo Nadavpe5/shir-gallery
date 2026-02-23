@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { Download } from "lucide-react";
 import type { GalleryAsset, GridStyle, GridSize, GridSpacing } from "@/lib/types";
 import { ImageOverlay } from "./image-overlay";
 
@@ -16,6 +17,8 @@ interface HighlightsSectionProps {
   onImageClick: (index: number) => void;
   gridSettings?: GridSettings;
   fontClass?: string;
+  galleryId?: string;
+  zipHighlightsUrl?: string | null;
 }
 
 function getSmartObjectPosition(asset: GalleryAsset, isHero: boolean): string {
@@ -37,6 +40,8 @@ export function HighlightsSection({
   onImageClick,
   gridSettings,
   fontClass,
+  galleryId,
+  zipHighlightsUrl,
 }: HighlightsSectionProps) {
   const serifClass = fontClass || "font-serif";
   if (assets.length === 0) return null;
@@ -54,6 +59,15 @@ export function HighlightsSection({
           Highlights
         </h2>
         <div className="w-px h-6 md:h-8 bg-sage/40 mx-auto mt-4 md:mt-5" />
+        {galleryId && zipHighlightsUrl && (
+          <a
+            href={`/api/download-section?galleryId=${galleryId}&section=highlights`}
+            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mt-4"
+          >
+            <Download className="w-3.5 h-3.5" />
+            Download Highlights
+          </a>
+        )}
       </motion.div>
 
       {gridSettings?.style === "editorial" ? (

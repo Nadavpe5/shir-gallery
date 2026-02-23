@@ -5,11 +5,12 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 
 interface DownloadButtonProps {
+  galleryId: string;
   zipUrl: string | null;
   fontClass?: string;
 }
 
-export function DownloadButton({ zipUrl, fontClass }: DownloadButtonProps) {
+export function DownloadButton({ galleryId, zipUrl, fontClass }: DownloadButtonProps) {
   const serifClass = fontClass || "font-serif";
   const [showNote, setShowNote] = useState(false);
 
@@ -36,9 +37,6 @@ export function DownloadButton({ zipUrl, fontClass }: DownloadButtonProps) {
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.7 }}
       >
-        <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
-          Take Them Home
-        </p>
         <h2 className={`${serifClass} text-2xl md:text-4xl font-bold mb-4`}>
           Download All
         </h2>
@@ -48,7 +46,7 @@ export function DownloadButton({ zipUrl, fontClass }: DownloadButtonProps) {
         </p>
 
         <a
-          href={`/api/download?url=${encodeURIComponent(zipUrl)}&name=${encodeURIComponent(zipUrl.split("/").pop() || "gallery.zip")}`}
+          href={`/api/download-all-merged?galleryId=${galleryId}`}
           onClick={handleClick}
           className="inline-flex items-center gap-1.5 bg-sage text-sage-foreground tracking-wide text-[10px] font-medium px-3.5 py-1.5 rounded-md transition-all hover:opacity-90 active:scale-[0.98] shadow-sm"
         >

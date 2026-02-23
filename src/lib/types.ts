@@ -49,10 +49,26 @@ export interface Gallery {
   cover_image_url: string | null;
   expires_at: string;
   created_at: string;
+  
+  // Section ZIP URLs
+  zip_highlights_url: string | null;
+  zip_gallery_url: string | null;
+  zip_originals_url: string | null;
+  
+  // Section ZIP metadata
+  zip_highlights_count: number | null;
+  zip_gallery_count: number | null;
+  zip_originals_count: number | null;
+  zip_highlights_size: number | null;
+  zip_gallery_size: number | null;
+  zip_originals_size: number | null;
+  
+  // Legacy fields (for backward compatibility)
   zip_url: string | null;
   zip_generated_at: string | null;
   zip_asset_count: number | null;
   zip_size_bytes: number | null;
+  
   edited_count: number;
   originals_count: number;
   status: "draft" | "published";
