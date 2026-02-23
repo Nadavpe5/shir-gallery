@@ -103,3 +103,17 @@ export async function deletePrefix(prefix: string): Promise<number> {
 export function getPublicUrl(key: string): string {
   return `${PUBLIC_URL}/${key}`;
 }
+
+export async function getSignedDownloadUrl(
+  key: string,
+  filename?: string
+): Promise<string> {
+  const command = new GetObjectCommand({
+    Bucket: BUCKET,
+    Key: key,
+    ResponseContentDisposition: filename
+      ? `attachment; filename="${filename}"`
+      : undefined,
+  });
+  return getSignedUrl(s3, command, { expiresIn: 3600 });
+}

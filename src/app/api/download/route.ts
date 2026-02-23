@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getSignedDownloadUrl } from "@/lib/r2";
 
 export async function GET(request: NextRequest) {
   const url = request.nextUrl.searchParams.get("url");
@@ -14,19 +15,12 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      return NextResponse.json({ error: "Fetch failed" }, { status: 502 });
-    }
-
-    const headers = new Headers();
-    headers.set("Content-Disposition", `attachment; filename="${name}"`);
-    headers.set("Content-Type", response.headers.get("Content-Type") || "image/jpeg");
-    const contentLength = response.headers.get("Content-Length");
-    if (contentLength) headers.set("Content-Length", contentLength);
-
-    return new NextResponse(response.body, { status: 200, headers });
-  } catch {
+    const key = url.replace(`${allowedHost}/`, "");
+    const signedUrl = await getSignedDownloadUrl(key, name);
+    
+    return NextResponse.redirect(signedUrl);
+  } catch (error) {
+    console.error("[download] Failed to generate signed URL:", error);
     return NextResponse.json({ error: "Download failed" }, { status: 500 });
   }
 }
