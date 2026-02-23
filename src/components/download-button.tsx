@@ -78,7 +78,7 @@ export function DownloadButton({ galleryId, hasAnySections, fontClass }: Downloa
   }
 
   return (
-    <section className="px-5 md:px-16 lg:px-24 py-14 md:py-32 text-center">
+    <section className="px-5 md:px-16 lg:px-24 py-14 md:py-32 text-center" data-download-all-section>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}

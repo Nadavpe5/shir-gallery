@@ -36,9 +36,13 @@ export function GalleryHeader({ gallery, onShareClick }: GalleryHeaderProps) {
         </div>
 
         <div className="flex items-center gap-1 md:gap-2 shrink-0">
-          {gallery.zip_url && (
+          {(gallery.zip_gallery_url || gallery.zip_originals_url || gallery.zip_highlights_url) && (
             <a
-              href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(gallery.zip_url.split("/").pop() || "gallery.zip")}`}
+              href="#download-all"
+              onClick={(e) => {
+                e.preventDefault();
+                document.querySelector('[data-download-all-section]')?.scrollIntoView({ behavior: 'smooth' });
+              }}
               className="inline-flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-md hover:bg-secondary transition-colors"
               aria-label="Download all"
             >

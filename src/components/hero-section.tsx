@@ -67,7 +67,7 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
     transition: { duration: 1, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
   };
 
-  const zipName = gallery.zip_url?.split("/").pop() || "gallery.zip";
+  const hasDownload = !!(gallery.zip_gallery_url || gallery.zip_originals_url || gallery.zip_highlights_url);
 
   const zoomScale = zoom > 100 ? zoom / 100 : 1;
 
@@ -134,9 +134,13 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
           <div className="mb-10">
             {metaContent("text-muted-foreground/60", "center")}
           </div>
-          {gallery.zip_url && (
+          {hasDownload && (
             <a
-              href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
+              href="#download-all"
+              onClick={(e) => {
+                e.preventDefault();
+                document.querySelector('[data-download-all-section]')?.scrollIntoView({ behavior: 'smooth' });
+              }}
               className="inline-flex items-center gap-1.5 bg-sage text-sage-foreground tracking-wide text-[10px] font-medium px-3.5 py-1.5 rounded-md transition-all hover:opacity-90 active:scale-[0.98] shadow-sm"
             >
               <Download className="w-3 h-3" />
@@ -164,9 +168,13 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
             </p>
           )}
           <div className="mb-10">{metaContent("text-muted-foreground/60")}</div>
-          {gallery.zip_url && (
+          {hasDownload && (
             <a
-              href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
+              href="#download-all"
+              onClick={(e) => {
+                e.preventDefault();
+                document.querySelector('[data-download-all-section]')?.scrollIntoView({ behavior: 'smooth' });
+              }}
               className="inline-flex items-center gap-1.5 bg-sage text-sage-foreground tracking-wide text-[10px] font-medium px-4 py-2 rounded-full transition-all hover:opacity-90 active:scale-[0.98] shadow-sm self-start"
             >
               <Download className="w-3 h-3" />
@@ -205,9 +213,13 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
             )}
           </div>
           <div className="mb-10">{metaContent("text-muted-foreground/60", textAlign)}</div>
-          {gallery.zip_url && (
+          {hasDownload && (
             <a
-              href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
+              href="#download-all"
+              onClick={(e) => {
+                e.preventDefault();
+                document.querySelector('[data-download-all-section]')?.scrollIntoView({ behavior: 'smooth' });
+              }}
               className="inline-flex items-center gap-1.5 bg-sage text-sage-foreground tracking-wide text-[10px] font-medium px-3.5 py-1.5 rounded-md transition-all hover:opacity-90 active:scale-[0.98] shadow-sm"
             >
               <Download className="w-3 h-3" />
@@ -243,11 +255,14 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
                 </p>
               )}
               
-              {/* Download button - left aligned, starts at same position */}
-              {gallery.zip_url && (
+              {hasDownload && (
                 <div className="mb-6 md:mb-8 text-left">
                   <a
-                    href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
+                    href="#download-all"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.querySelector('[data-download-all-section]')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
                     className="inline-flex items-center gap-1.5 bg-white/95 text-gray-700 tracking-wide text-[10px] font-medium px-3.5 py-1.5 rounded-md transition-all hover:bg-white active:scale-[0.98] shadow-lg backdrop-blur-sm"
                   >
                     <Download className="w-3 h-3" />
@@ -274,10 +289,14 @@ export function HeroSection({ gallery, coverUrl, daysRemaining, fontClass }: Her
                 </p>
               )}
               
-              {gallery.zip_url && (
+              {hasDownload && (
                 <div className={`mb-6 md:mb-8 ${textAlign === 'center' ? 'text-center' : 'text-right'}`}>
                   <a
-                    href={`/api/download?url=${encodeURIComponent(gallery.zip_url)}&name=${encodeURIComponent(zipName)}`}
+                    href="#download-all"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.querySelector('[data-download-all-section]')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
                     className="inline-flex items-center gap-1.5 bg-white/95 text-gray-700 tracking-wide text-[10px] font-medium px-3.5 py-1.5 rounded-md transition-all hover:bg-white active:scale-[0.98] shadow-lg backdrop-blur-sm"
                   >
                     <Download className="w-3 h-3" />
