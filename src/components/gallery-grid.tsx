@@ -109,19 +109,25 @@ export function GalleryGrid({
         transition={{ duration: 0.7 }}
         className="text-center mb-10 md:mb-14"
       >
-        <h2 className={`${serifClass} text-2xl md:text-4xl font-bold`}>
-          Gallery
-        </h2>
-        <div className="w-px h-6 md:h-8 bg-sage/40 mx-auto mt-4 md:mt-5" />
-        {galleryId && zipGalleryUrl && (
-          <a
-            href={`/api/download-section?galleryId=${galleryId}&section=gallery`}
-            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mt-4"
-          >
-            <Download className="w-3.5 h-3.5" />
-            Download Gallery
-          </a>
-        )}
+      <h2 className={`${serifClass} text-2xl md:text-4xl font-bold`}>
+        Gallery
+      </h2>
+      <div className="w-px h-6 md:h-8 bg-sage/40 mx-auto mt-4 md:mt-5" />
+      {galleryId && zipGalleryUrl && (
+        <motion.a
+          href={`/api/download-section?galleryId=${galleryId}&section=gallery`}
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          whileHover={{ scale: 1.05, y: -2 }}
+          whileTap={{ scale: 0.95 }}
+          className={`${serifClass} inline-flex items-center gap-1.5 bg-sage/5 hover:bg-sage/15 text-sage border border-sage/30 hover:border-sage/50 px-3 py-1 rounded text-[10px] tracking-wide transition-all duration-300 mt-4 shadow-sm hover:shadow-md active:shadow-sm`}
+        >
+          <Download className="w-3 h-3" />
+          Download Gallery
+        </motion.a>
+      )}
       </motion.div>
 
       {isEditorial ? (

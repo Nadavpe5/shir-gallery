@@ -86,21 +86,24 @@ export function DownloadButton({ galleryId, hasAnySections, fontClass }: Downloa
         transition={{ duration: 0.7 }}
       >
         <h2 className={`${serifClass} text-2xl md:text-4xl font-bold mb-4`}>
-          Download All
+          Get your photos
         </h2>
         <div className="w-px h-8 bg-sage/40 mx-auto mb-8" />
-        <p className="text-muted-foreground text-sm mb-10 max-w-md mx-auto">
-          Get all your photographs in a single ZIP file
-        </p>
 
-        <button
+        <motion.button
           onClick={handleDownloadAll}
           disabled={isDownloading}
-          className="inline-flex items-center gap-1.5 bg-sage text-sage-foreground tracking-wide text-[10px] font-medium px-3.5 py-1.5 rounded-md transition-all hover:opacity-90 active:scale-[0.98] shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          whileHover={{ scale: 1.05, y: -2 }}
+          whileTap={{ scale: 0.95 }}
+          className={`${serifClass} inline-flex items-center gap-1.5 bg-sage hover:bg-sage/90 text-sage-foreground border border-sage hover:border-sage/80 px-3 py-1 rounded text-[10px] tracking-wide transition-all duration-300 shadow-sm hover:shadow-md active:shadow-sm disabled:opacity-50 disabled:cursor-not-allowed`}
         >
           <Download className="w-3 h-3" />
-          {isDownloading ? "Downloading..." : "Download ZIP"}
-        </button>
+          {isDownloading ? "Downloading..." : "Download All"}
+        </motion.button>
 
         {showNote && (
           <p className="mt-5 text-xs text-muted-foreground animate-in fade-in">
