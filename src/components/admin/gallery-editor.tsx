@@ -282,6 +282,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [publishError, setPublishError] = useState<string | null>(null);
+  const [publishWarning, setPublishWarning] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<SidebarTab>("photos");
   const [selectedAssets, setSelectedAssets] = useState<Set<string>>(new Set());
   const [uploadQueue, setUploadQueue] = useState<UploadItem[]>([]);
@@ -391,6 +392,7 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
   async function handlePublish(published: boolean) {
     setPublishing(true);
     setPublishError(null);
+    setPublishWarning(null);
     try {
       const res = await fetch(`/api/admin/galleries/${galleryId}/publish`, {
         method: "POST",
@@ -400,6 +402,9 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
       if (res.ok) {
         const updated = await res.json();
         setGallery(updated);
+        if (updated.warning) {
+          setPublishWarning(updated.warning);
+        }
       } else {
         const data = await res.json().catch(() => ({ error: "Failed to publish" }));
         setPublishError(data.error || "Failed to publish gallery");
@@ -1063,6 +1068,16 @@ export function GalleryEditor({ galleryId }: { galleryId: string }) {
           {publishError && (
             <div className="bg-red-50 border border-red-100 rounded-lg px-3 py-2 text-xs text-red-700">
               {publishError}
+            </div>
+          )}
+          {publishWarning && (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-xs text-amber-800">
+              {publishWarning}
+            </div>
+          )}
+          {gallery.status === "published" && !gallery.zip_url && (
+            <div className="bg-orange-50 border border-orange-200 rounded-lg px-3 py-2 text-xs text-orange-800">
+              Gallery published but ZIP file is missing. Republish to regenerate.
             </div>
           )}
           {gallery.status === "draft" ? (

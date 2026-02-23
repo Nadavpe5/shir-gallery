@@ -38,15 +38,6 @@ export async function generateAndUploadZip(
   const zipFilename = `${safeName}_${dateStr}`;
   const zipKey = `${gallerySlug}/${zipFilename}.zip`;
 
-  const uploadPromise = s3.send(
-    new PutObjectCommand({
-      Bucket: BUCKET,
-      Key: zipKey,
-      Body: archive as unknown as Readable,
-      ContentType: "application/zip",
-    })
-  );
-
   const usedNames = new Set<string>();
   for (const asset of assets) {
     let name = asset.filename || "photo.jpg";
@@ -72,9 +63,26 @@ export async function generateAndUploadZip(
     }
   }
 
-  await archive.finalize();
-  await uploadPromise;
+  archive.finalize();
 
-  console.log(`[zip] Generated and uploaded ZIP: ${zipKey} (${assets.length} photos)`);
+  const chunks: Buffer[] = [];
+  for await (const chunk of archive) {
+    chunks.push(Buffer.from(chunk));
+  }
+  const zipBuffer = Buffer.concat(chunks);
+
+  console.log(`[zip] Generated ZIP buffer: ${(zipBuffer.length / 1024 / 1024).toFixed(2)} MB`);
+
+  await s3.send(
+    new PutObjectCommand({
+      Bucket: BUCKET,
+      Key: zipKey,
+      Body: zipBuffer,
+      ContentType: "application/zip",
+      ContentLength: zipBuffer.length,
+    })
+  );
+
+  console.log(`[zip] Uploaded ZIP: ${zipKey} (${assets.length} photos)`);
   return `${PUBLIC_URL}/${zipKey}`;
 }

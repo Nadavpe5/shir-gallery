@@ -19,6 +19,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   const { published } = await request.json();
 
   let zipUrl: string | null = null;
+  let zipError: string | null = null;
 
   if (published) {
     try {
@@ -33,7 +34,14 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         .select("full_url, filename")
         .eq("gallery_id", id);
 
-      if (gallery && assets && assets.length > 0) {
+      if (!gallery) {
+        return NextResponse.json({ error: "Gallery not found" }, { status: 404 });
+      }
+
+      if (!assets || assets.length === 0) {
+        zipError = "No assets to include in ZIP";
+        console.warn("[publish] No assets found for gallery:", id);
+      } else {
         // Delete old ZIP from R2 before creating new one
         if (gallery.zip_url) {
           try {
@@ -52,6 +60,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         console.log("[publish] ZIP generated:", zipUrl);
       }
     } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Unknown error";
+      zipError = `ZIP generation failed: ${errorMessage}`;
       console.error("[publish] ZIP generation failed:", err);
     }
   }
@@ -59,7 +69,13 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   const updateData: Record<string, unknown> = {
     status: published ? "published" : "draft",
   };
-  if (zipUrl) updateData.zip_url = zipUrl;
+  
+  // Always update zip_url: set to new URL, null, or clear when unpublishing
+  if (published) {
+    updateData.zip_url = zipUrl;
+  } else {
+    updateData.zip_url = null;
+  }
 
   const { data, error } = await supabaseAdmin
     .from("galleries")
@@ -70,6 +86,14 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  // Return with warning if ZIP generation failed
+  if (published && zipError) {
+    return NextResponse.json({ 
+      ...data, 
+      warning: zipError 
+    }, { status: 200 });
   }
 
   return NextResponse.json(data);
