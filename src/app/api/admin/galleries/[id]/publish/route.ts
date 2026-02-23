@@ -18,8 +18,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   const { id } = await params;
   const { published } = await request.json();
 
-  let zipUrl: string | null = null;
   let zipError: string | null = null;
+  const updateData: Record<string, unknown> = {
+    status: published ? "published" : "draft",
+  };
 
   if (published) {
     try {
@@ -66,7 +68,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
           const { generateAndUploadZip } = await import("@/lib/zip-generator");
           const zipResult = await generateAndUploadZip(gallery.slug, assets, gallery.client_name, gallery.shoot_date);
-          zipUrl = zipResult.url;
           
           updateData.zip_url = zipResult.url;
           updateData.zip_generated_at = new Date().toISOString();
@@ -83,13 +84,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       zipError = `ZIP generation failed: ${errorMessage}`;
       console.error("[publish] ZIP generation failed:", err);
     }
-  }
-
-  const updateData: Record<string, unknown> = {
-    status: published ? "published" : "draft",
-  };
-  
-  if (!published) {
+  } else {
     updateData.zip_url = null;
   }
 
