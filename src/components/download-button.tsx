@@ -32,18 +32,26 @@ export function DownloadButton({ galleryId, hasAnySections, fontClass }: Downloa
     setShowNote(true);
 
     try {
+      console.log("[DownloadButton] Fetching section URLs for galleryId:", galleryId);
       const response = await fetch(`/api/download-all-merged?galleryId=${galleryId}`);
       const data = await response.json();
 
+      console.log("[DownloadButton] API response:", data);
+
       if (!response.ok || !data.sections || data.sections.length === 0) {
-        console.error("Failed to get section URLs:", data.error);
+        console.error("[DownloadButton] Failed to get section URLs:", data.error);
+        alert(`Download failed: ${data.error || "No sections available"}`);
         setShowNote(false);
         setIsDownloading(false);
         return;
       }
 
+      console.log(`[DownloadButton] Starting ${data.sections.length} downloads`);
+
       for (let i = 0; i < data.sections.length; i++) {
         const section = data.sections[i];
+        console.log(`[DownloadButton] Downloading ${i + 1}/${data.sections.length}:`, section.name);
+        
         const downloadUrl = `/api/download?url=${encodeURIComponent(section.url)}&name=${encodeURIComponent(section.name)}`;
         
         const link = document.createElement("a");
@@ -58,9 +66,11 @@ export function DownloadButton({ galleryId, hasAnySections, fontClass }: Downloa
         }
       }
 
+      console.log("[DownloadButton] All downloads triggered");
       setTimeout(() => setShowNote(false), 5000);
     } catch (error) {
-      console.error("Download failed:", error);
+      console.error("[DownloadButton] Download failed:", error);
+      alert(`Download failed: ${error instanceof Error ? error.message : "Unknown error"}`);
       setShowNote(false);
     } finally {
       setIsDownloading(false);
