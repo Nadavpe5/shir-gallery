@@ -26,19 +26,19 @@ export default async function OGImage() {
       >
         <div
           style={{
-            width: 120,
-            height: 120,
+            width: 180,
+            height: 180,
             borderRadius: "50%",
-            border: "2.5px solid #7c5a3a",
+            border: "4px solid #7c5a3a",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            marginBottom: 36,
+            marginBottom: 48,
           }}
         >
           <svg
-            width="52"
-            height="52"
+            width="80"
+            height="80"
             viewBox="0 0 24 24"
             fill="none"
             stroke="#7c5a3a"
@@ -53,12 +53,12 @@ export default async function OGImage() {
 
         <div
           style={{
-            fontSize: 52,
+            fontSize: 68,
             fontWeight: 700,
             color: "#7c5a3a",
             letterSpacing: "0.04em",
             textTransform: "uppercase",
-            marginBottom: 14,
+            marginBottom: 18,
           }}
         >
           Shir Yadgar
@@ -66,7 +66,7 @@ export default async function OGImage() {
 
         <div
           style={{
-            fontSize: 18,
+            fontSize: 24,
             fontWeight: 300,
             color: "#7c5a3a",
             letterSpacing: "0.25em",
