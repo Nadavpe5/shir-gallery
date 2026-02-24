@@ -7,7 +7,7 @@ export const contentType = "image/png";
 
 export default async function OGImage() {
   const ploniFont = await fetch(
-    new URL("../../public/fonts/ploni/PloniRegular.otf", import.meta.url)
+    new URL("../../public/fonts/ploni/PloniBold.otf", import.meta.url)
   ).then((res) => res.arrayBuffer());
 
   return new ImageResponse(
@@ -20,7 +20,7 @@ export default async function OGImage() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(145deg, #ece3d7 0%, #d4c7b5 100%)",
+          background: "linear-gradient(145deg, #f5f1ea 0%, #e8e2d8 100%)",
           fontFamily: "Ploni",
         }}
       >
@@ -54,9 +54,9 @@ export default async function OGImage() {
         <div
           style={{
             fontSize: 52,
-            fontWeight: 400,
+            fontWeight: 700,
             color: "#7c5a3a",
-            letterSpacing: "0.14em",
+            letterSpacing: "0.04em",
             textTransform: "uppercase",
             marginBottom: 14,
           }}
@@ -85,7 +85,7 @@ export default async function OGImage() {
           name: "Ploni",
           data: ploniFont,
           style: "normal",
-          weight: 400,
+          weight: 700,
         },
       ],
     }
